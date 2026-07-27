@@ -1592,7 +1592,7 @@
         color: var(--teal);
       }
 
-      /* ---------- registros corporales (acordeón) ---------- */ /* ← NUEVO */
+      /* ---------- registros corporales (acordeón) ---------- */
       .body-rec {
         border: 1px solid var(--line);
         background: var(--panel2);
@@ -2618,6 +2618,14 @@
               sets: [1, 1, 3]
             },
             {
+              n: 'Press de pecho en máquina',
+              g: 'pecho',
+              reps: '8–12',
+              rest: '90 s – 2 min',
+              sets: [1, 1, 3],
+              note: 'Guiada · sin estabilizadores · más cerca del fallo con seguridad'
+            },
+            {
               n: 'Press militar sentado (mancuerna)',
               g: 'hombros',
               reps: '8–12',
@@ -3593,7 +3601,6 @@
           (key === 'peso' ? b.peso : b.m[key])
         )
       }
-      /* ← MODIFICADO: deltas con unidad */
       const DELTA_UNITS = {
         peso: 'kg',
         cintura: 'cm',
@@ -3683,7 +3690,6 @@
           })
         )
       }
-      /* ← MODIFICADO: registros con acordeón de medidas */
       function renderBody() {
         updateBodyStats()
         renderChart()
@@ -3729,7 +3735,6 @@
           })
           .join('')
       }
-      /* ← MODIFICADO: listener con toggle de acordeón */
       $('#bodyList').addEventListener('click', (e) => {
         const toggle = e.target.closest('.br-toggle')
         if (toggle) {
