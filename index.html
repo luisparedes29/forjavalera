@@ -1649,7 +1649,10 @@
         visibility: hidden;
         opacity: 0;
         pointer-events: none;
-        transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1), opacity 0.45s, visibility 0.45s;
+        transition:
+          transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1),
+          opacity 0.45s,
+          visibility 0.45s;
       }
       #timer.on {
         transform: none;
@@ -2847,7 +2850,7 @@
           el.classList.add(d > 0 ? 'up' : 'down')
         }
         const lastH = [...rs].reverse().find((r) => r.altura != null)
-        $('#stAltura').textContent = lastH ? fmtN(lastH, 0) : '—'
+        $('#stAltura').textContent = lastH ? fmtN(lastH.altura, 0) : '—' // ← FIX: era fmtN(lastH, 0)
         $('#stRegs').textContent = rs.length
       }
 
