@@ -1625,14 +1625,34 @@
         color: var(--volt);
         border-color: var(--volt);
       }
-      @media (max-width: 560px) {
+      @media (max-width: 640px) {
         #timer {
           left: 12px;
-          right: 12px;
+          right: auto;
           bottom: 12px;
+          gap: 10px;
+          padding: 9px 12px;
+          max-width: calc(100vw - 24px);
+          box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.45);
+        }
+        #timer svg {
+          width: 42px;
+          height: 42px;
+        }
+        .t-info b {
+          font-size: 19px;
         }
         .t-info span {
-          max-width: none;
+          font-size: 9px;
+          max-width: 118px;
+          margin-top: 2px;
+        }
+        .t-btns {
+          gap: 5px;
+        }
+        .t-btns button {
+          padding: 6px 8px;
+          font-size: 9px;
         }
       }
 
