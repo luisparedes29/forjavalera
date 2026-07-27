@@ -2,7 +2,10 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     <title>FORJA · Cuaderno de Entrenamiento</title>
     <meta
       name="description"
@@ -37,6 +40,7 @@
         --teal: #3fd8c7;
         --red: #ff6b6b;
         --blue: #5db9ff;
+        --tabbar-h: 0px;
       }
       * {
         margin: 0;
@@ -117,10 +121,11 @@
       }
 
       header.top,
+      .tabs,
       main,
+      .cuerpo-main,
       footer,
-      .stats,
-      .routine-wrap {
+      .stats {
         position: relative;
         z-index: 1;
       }
@@ -211,6 +216,76 @@
         font-weight: 700;
       }
 
+      /* ---------- tabs desktop ---------- */
+      .tabs {
+        display: flex;
+        gap: 10px;
+        max-width: 1340px;
+        margin: 0 auto;
+        padding: 20px 28px 0;
+      }
+      .tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        color: var(--muted);
+        cursor: pointer;
+        font-family: Anton;
+        font-weight: 400;
+        font-size: 16px;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        padding: 10px 26px;
+        transition: 0.2s;
+        box-shadow: none;
+      }
+      .tab svg {
+        width: 17px;
+        height: 17px;
+        flex: none;
+      }
+      .tab:hover {
+        transform: translateY(-2px);
+        border-color: var(--volt);
+        color: var(--volt);
+      }
+      .tab.active {
+        background: var(--volt);
+        color: #101408;
+        border-color: var(--volt);
+        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
+      }
+      .tab.active:hover {
+        transform: none;
+        color: #101408;
+      }
+      @media (max-width: 1020px) {
+        .tabs {
+          display: none;
+        }
+      }
+
+      /* ---------- vistas ---------- */
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+        animation: viewIn 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+      }
+      @keyframes viewIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
       .stats {
         display: flex;
         flex-wrap: wrap;
@@ -238,17 +313,35 @@
         line-height: 1;
         font-variant-numeric: tabular-nums;
       }
-      .stat:nth-child(1) b {
+      #statsHierro .stat:nth-child(1) b {
         color: var(--volt);
       }
-      .stat:nth-child(2) b {
+      #statsHierro .stat:nth-child(2) b {
         color: var(--teal);
       }
-      .stat:nth-child(4) b {
+      #statsHierro .stat:nth-child(4) b {
         color: var(--orange);
       }
-      .stat:nth-child(5) b {
+      #statsHierro .stat:nth-child(5) b {
         color: var(--blue);
+      }
+      .stats-cuerpo .stat:nth-child(1) b {
+        color: var(--orange);
+      }
+      .stats-cuerpo .stat:nth-child(3) b {
+        color: var(--teal);
+      }
+      .stats-cuerpo .stat:nth-child(4) b {
+        color: var(--blue);
+      }
+      #stDelta {
+        color: var(--muted);
+      }
+      #stDelta.up {
+        color: var(--orange);
+      }
+      #stDelta.down {
+        color: var(--teal);
       }
       .stat span {
         font-size: 10px;
@@ -270,14 +363,17 @@
         max-width: 1340px;
         margin: 0 auto;
       }
-      .col {
-        display: flex;
-        flex-direction: column;
+      .cuerpo-main {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         gap: 22px;
-        min-width: 0;
+        padding: 20px 28px 56px;
+        max-width: 1340px;
+        margin: 0 auto;
       }
       @media (max-width: 1020px) {
-        main {
+        main,
+        .cuerpo-main {
           grid-template-columns: 1fr;
         }
       }
@@ -385,9 +481,6 @@
       }
       .d3 {
         transition-delay: 0.18s;
-      }
-      .d4 {
-        transition-delay: 0.24s;
       }
 
       input[type='text'],
@@ -1431,7 +1524,7 @@
         border: 1px solid var(--line);
         background: var(--panel2);
         padding: 13px;
-        margin: 16px 0 10px;
+        margin-bottom: 10px;
       }
       .chart-box h3 {
         font-size: 10px;
@@ -1542,7 +1635,7 @@
       #timer {
         position: fixed;
         left: 22px;
-        bottom: 22px;
+        bottom: calc(22px + var(--tabbar-h));
         z-index: 99;
         display: flex;
         align-items: center;
@@ -1552,11 +1645,17 @@
         border-left: 3px solid var(--orange);
         padding: 12px 16px;
         box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.45);
-        transform: translateY(180%);
-        transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+        transform: translateY(calc(100% + var(--tabbar-h) + 24px));
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1), opacity 0.45s, visibility 0.45s;
       }
       #timer.on {
         transform: none;
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
       }
       #timer svg {
         width: 56px;
@@ -1629,7 +1728,7 @@
         #timer {
           left: 12px;
           right: auto;
-          bottom: 12px;
+          bottom: calc(12px + var(--tabbar-h));
           gap: 10px;
           padding: 9px 12px;
           max-width: calc(100vw - 24px);
@@ -1656,9 +1755,76 @@
         }
       }
 
+      /* ---------- tabbar mobile ---------- */
+      .tabbar {
+        display: none;
+      }
+      @media (max-width: 1020px) {
+        :root {
+          --tabbar-h: calc(72px + env(safe-area-inset-bottom));
+        }
+        body {
+          padding-bottom: calc(var(--tabbar-h) + 10px);
+        }
+        .tabbar {
+          position: fixed;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 60;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          background: rgba(14, 19, 22, 0.94);
+          backdrop-filter: blur(10px);
+          border-top: 1px solid var(--line);
+          padding-bottom: env(safe-area-inset-bottom);
+        }
+        .tabbar-btn {
+          background: none;
+          border: none;
+          color: var(--muted);
+          cursor: pointer;
+          padding: 15px 0 13px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 6px;
+          font: 700 11px 'Space Grotesk';
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          position: relative;
+          transition: color 0.2s;
+        }
+        .tabbar-btn svg {
+          width: 24px;
+          height: 24px;
+          transition: transform 0.2s;
+        }
+        .tabbar-btn::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 22%;
+          right: 22%;
+          height: 3px;
+          background: var(--volt);
+          transform: scaleX(0);
+          transition: transform 0.25s;
+        }
+        .tabbar-btn.active {
+          color: var(--volt);
+        }
+        .tabbar-btn.active::before {
+          transform: scaleX(1);
+        }
+        .tabbar-btn.active svg {
+          transform: translateY(-2px);
+        }
+      }
+
       #toasts {
         position: fixed;
-        bottom: 22px;
+        bottom: calc(22px + var(--tabbar-h));
         right: 22px;
         z-index: 100;
         display: flex;
@@ -1714,6 +1880,7 @@
         outline: 2px solid var(--volt);
         outline-offset: 2px;
       }
+
       /* ---------- mobile: stats 2-2-1 + márgenes ---------- */
       @media (max-width: 640px) {
         header.top {
@@ -1723,7 +1890,10 @@
           padding: 16px 16px 0;
         }
         main {
-          padding: 16px 16px 48px;
+          padding: 16px 16px 40px;
+        }
+        .cuerpo-main {
+          padding: 16px 16px 40px;
         }
         footer {
           padding: 16px 16px 24px;
@@ -1751,28 +1921,37 @@
           font-size: 9px;
           letter-spacing: 0.16em;
         }
-        .stat:nth-child(1) {
+        #statsHierro .stat:nth-child(1) {
           border-top-color: var(--volt);
         }
-        .stat:nth-child(2) {
+        #statsHierro .stat:nth-child(2) {
           border-top-color: var(--teal);
         }
-        .stat:nth-child(4) {
+        #statsHierro .stat:nth-child(4) {
           border-top-color: var(--orange);
         }
-        .stat:nth-child(5) {
+        #statsHierro .stat:nth-child(5) {
           border-top-color: var(--blue);
         }
-        .stat:last-child {
+        .stats-cuerpo .stat:nth-child(1) {
+          border-top-color: var(--orange);
+        }
+        .stats-cuerpo .stat:nth-child(3) {
+          border-top-color: var(--teal);
+        }
+        .stats-cuerpo .stat:nth-child(4) {
+          border-top-color: var(--blue);
+        }
+        #statsHierro .stat:last-child {
           grid-column: 1/-1;
           display: flex;
           align-items: baseline;
           gap: 12px;
         }
-        .stat:last-child b {
+        #statsHierro .stat:last-child b {
           font-size: 20px;
         }
-        .stat:last-child span {
+        #statsHierro .stat:last-child span {
           margin-left: auto;
         }
       }
@@ -1814,112 +1993,150 @@
       </div>
     </header>
 
-    <section class="stats reveal in">
-      <div class="stat">
-        <b id="stVol" data-v="0">0</b><span>kg volumen hoy</span>
-      </div>
-      <div class="stat"><b id="stSets" data-v="0">0</b><span>series</span></div>
-      <div class="stat">
-        <b id="stEx" data-v="0">0</b><span>ejercicios</span>
-      </div>
-      <div class="stat">
-        <b id="stHist" data-v="0">0</b><span>sesiones guardadas</span>
-      </div>
-      <div class="stat"><b id="stLast">—</b><span>último registro</span></div>
-    </section>
+    <!-- tabs desktop -->
+    <nav class="tabs" role="tablist" aria-label="Secciones de la app">
+      <button
+        class="tab active"
+        data-view="hierro"
+        role="tab"
+        aria-selected="true"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <path d="M6.5 6.5v11M17.5 6.5v11M2.5 9.5v5M21.5 9.5v5M6.5 12h11" />
+        </svg>
+        Hierro
+      </button>
+      <button class="tab" data-view="cuerpo" role="tab" aria-selected="false">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <rect x="3.5" y="3.5" width="17" height="17" rx="2.5" />
+          <path d="M8.5 15a3.5 3.5 0 0 1 7 0" />
+          <path d="M12 15l2.2-2.2" />
+        </svg>
+        Cuerpo
+      </button>
+    </nav>
 
-    <!-- 01 RUTINA -->
-    <div class="routine-wrap">
-      <section class="panel reveal d1" style="--acc: var(--blue)">
-        <h2>
-          <span class="n">01/</span> Rutina · Bloque actual
-          <span class="rir">RIR objetivo 2–3</span>
-        </h2>
-        <div class="routine-bar">
-          <div class="day-tabs" id="dayTabs"></div>
-          <div class="week-ctl">
-            <span class="badge-deload hide" id="deloadBadge"
-              >DELOAD · ~50% volumen</span
-            >
-            <div class="wk">
-              <span class="wk-label">Semana</span>
-              <button id="wkMinus" aria-label="Semana anterior">−</button>
-              <b id="wkNum">1</b>
-              <button id="wkPlus" aria-label="Semana siguiente">+</button>
-              <span class="pips" id="pips"></span>
-            </div>
-            <label class="switch"
-              ><input type="checkbox" id="deload" /><span
-                class="sw-track"
-              ></span
-              ><span class="sw-label">DELOAD</span></label
-            >
-          </div>
+    <!-- ============ VISTA HIERRO ============ -->
+    <div id="view-hierro" class="view active">
+      <section class="stats reveal in" id="statsHierro">
+        <div class="stat">
+          <b id="stVol" data-v="0">0</b><span>kg volumen hoy</span>
         </div>
-        <div class="stall-banner hide" id="stallBanner">
-          <b>⚠ Estancamiento:</b>
-          <span id="stallList"></span>&nbsp;llevás 2+ sesiones sin progresar.
-          Según tu bloque: <b>toca deload</b> o revisar sueño/nutrición.
-          <button class="btn-mini" id="stallDeload">Activar DELOAD</button>
+        <div class="stat">
+          <b id="stSets" data-v="0">0</b><span>series</span>
         </div>
-        <div class="day-title" id="dayTitle"></div>
-        <div id="rtList"></div>
-        <div class="routine-actions">
-          <button class="btn btn-volt" id="loadDay">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z" />
-            </svg>
-            Cargar día completo en sesión
-          </button>
-          <span class="day-hint" id="dayHint"></span>
+        <div class="stat">
+          <b id="stEx" data-v="0">0</b><span>ejercicios</span>
         </div>
-        <details class="notes">
-          <summary>▸ Notas del bloque</summary>
-          <ul>
-            <li>
-              <b>RIR 2–3:</b> guardar 2–3 reps antes del fallo en todas las
-              series.
-            </li>
-            <li>
-              <b>Descansos:</b> 60–90 s alcanza para el estímulo de hipertrofia
-              en aislamiento. En compuestos pesados (sentadilla, press de banca,
-              peso muerto rumano) subir a 2–3 min — el objetivo es mantener
-              rendimiento y técnica. Prensa, press militar, hip thrust y remos
-              quedan en 2 min.
-            </li>
-            <li>
-              <b>Progresión:</b> la S3 de los básicos aparece en la semana 3 y
-              la de los aislamientos en la semana 5 — así progresa en volumen el
-              bloque. Si dos semanas seguidas no subís carga ni reps, es señal
-              de que toca deload o de que la recuperación (sueño/nutrición) no
-              está acompañando.
-            </li>
-            <li>
-              <b>Deload:</b> cada 5–6 semanas, reducir volumen a ~50% (menos
-              series, mismo peso o levemente inferior) antes de iniciar un nuevo
-              bloque.
-            </li>
-            <li>
-              <b>Miércoles:</b> si la sesión se siente muy cargada de fatiga
-              acumulada, se puede mover al jueves y correr la semana un día.
-              Ningún ejercicio impone carga axial lumbar directa (todo es
-              sentado, banco o con apoyo); si aparece molestia lumbar puntual,
-              conviene revisar técnica.
-            </li>
-          </ul>
-        </details>
+        <div class="stat">
+          <b id="stHist" data-v="0">0</b><span>sesiones guardadas</span>
+        </div>
+        <div class="stat"><b id="stLast">—</b><span>último registro</span></div>
       </section>
-    </div>
 
-    <main>
-      <div class="col">
+      <!-- 01 RUTINA -->
+      <div class="routine-wrap">
+        <section class="panel reveal d1" style="--acc: var(--blue)">
+          <h2>
+            <span class="n">01/</span> Rutina · Bloque actual
+            <span class="rir">RIR objetivo 2–3</span>
+          </h2>
+          <div class="routine-bar">
+            <div class="day-tabs" id="dayTabs"></div>
+            <div class="week-ctl">
+              <span class="badge-deload hide" id="deloadBadge"
+                >DELOAD · ~50% volumen</span
+              >
+              <div class="wk">
+                <span class="wk-label">Semana</span>
+                <button id="wkMinus" aria-label="Semana anterior">−</button>
+                <b id="wkNum">1</b>
+                <button id="wkPlus" aria-label="Semana siguiente">+</button>
+                <span class="pips" id="pips"></span>
+              </div>
+              <label class="switch"
+                ><input type="checkbox" id="deload" /><span
+                  class="sw-track"
+                ></span
+                ><span class="sw-label">DELOAD</span></label
+              >
+            </div>
+          </div>
+          <div class="stall-banner hide" id="stallBanner">
+            <b>⚠ Estancamiento:</b>
+            <span id="stallList"></span>&nbsp;llevás 2+ sesiones sin progresar.
+            Según tu bloque: <b>toca deload</b> o revisar sueño/nutrición.
+            <button class="btn-mini" id="stallDeload">Activar DELOAD</button>
+          </div>
+          <div class="day-title" id="dayTitle"></div>
+          <div id="rtList"></div>
+          <div class="routine-actions">
+            <button class="btn btn-volt" id="loadDay">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z" />
+              </svg>
+              Cargar día completo en sesión
+            </button>
+            <span class="day-hint" id="dayHint"></span>
+          </div>
+          <details class="notes">
+            <summary>▸ Notas del bloque</summary>
+            <ul>
+              <li>
+                <b>RIR 2–3:</b> guardar 2–3 reps antes del fallo en todas las
+                series.
+              </li>
+              <li>
+                <b>Descansos:</b> 60–90 s alcanza para el estímulo de
+                hipertrofia en aislamiento. En compuestos pesados (sentadilla,
+                press de banca, peso muerto rumano) subir a 2–3 min — el
+                objetivo es mantener rendimiento y técnica. Prensa, press
+                militar, hip thrust y remos quedan en 2 min.
+              </li>
+              <li>
+                <b>Progresión:</b> la S3 de los básicos aparece en la semana 3 y
+                la de los aislamientos en la semana 5 — así progresa en volumen
+                el bloque. Si dos semanas seguidas no subís carga ni reps, es
+                señal de que toca deload o de que la recuperación
+                (sueño/nutrición) no está acompañando.
+              </li>
+              <li>
+                <b>Deload:</b> cada 5–6 semanas, reducir volumen a ~50% (menos
+                series, mismo peso o levemente inferior) antes de iniciar un
+                nuevo bloque.
+              </li>
+              <li>
+                <b>Miércoles:</b> si la sesión se siente muy cargada de fatiga
+                acumulada, se puede mover al jueves y correr la semana un día.
+                Ningún ejercicio impone carga axial lumbar directa (todo es
+                sentado, banco o con apoyo); si aparece molestia lumbar puntual,
+                conviene revisar técnica.
+              </li>
+            </ul>
+          </details>
+        </section>
+      </div>
+
+      <main>
         <!-- 02 SESIÓN -->
         <section
           class="panel reveal d2"
@@ -1984,16 +2201,24 @@
           <h2><span class="n">03/</span> Historial de sesiones</h2>
           <div id="historyList"></div>
         </section>
-      </div>
+      </main>
+    </div>
 
-      <aside class="col">
-        <!-- 04 ANTROPOMETRÍA -->
-        <section
-          class="panel reveal d4"
-          id="bodyPanel"
-          style="--acc: var(--orange)"
-        >
-          <h2><span class="n">04/</span> Antropometría</h2>
+    <!-- ============ VISTA CUERPO ============ -->
+    <div id="view-cuerpo" class="view">
+      <section class="stats stats-cuerpo" id="statsCuerpo">
+        <div class="stat"><b id="stPeso">—</b><span>kg actuales</span></div>
+        <div class="stat">
+          <b id="stDelta">—</b><span>kg vs. anterior</span>
+        </div>
+        <div class="stat"><b id="stAltura">—</b><span>cm de altura</span></div>
+        <div class="stat"><b id="stRegs">0</b><span>registros</span></div>
+      </section>
+
+      <div class="cuerpo-main">
+        <!-- 01 REGISTRO -->
+        <section class="panel" style="--acc: var(--orange)">
+          <h2><span class="n">01/</span> Registro antropométrico</h2>
           <div class="duo">
             <div class="big-field">
               <label for="peso">Peso corporal</label>
@@ -2029,8 +2254,13 @@
           >
             Guardar registro
           </button>
+        </section>
+
+        <!-- 02 EVOLUCIÓN -->
+        <section class="panel" style="--acc: var(--orange)">
+          <h2><span class="n">02/</span> Evolución</h2>
           <div class="chart-box">
-            <h3>Evolución del peso <span id="chartRange"></span></h3>
+            <h3>Peso corporal <span id="chartRange"></span></h3>
             <svg id="chart" preserveAspectRatio="none"></svg>
             <p class="chart-empty" id="chartEmpty">
               Guarda tu peso de forma regular para ver la curva.
@@ -2040,8 +2270,8 @@
           <h3 class="sub">Registros</h3>
           <div id="bodyList"></div>
         </section>
-      </aside>
-    </main>
+      </div>
+    </div>
 
     <footer>
       <svg width="30" height="16" viewBox="0 0 48 24" aria-hidden="true">
@@ -2065,6 +2295,46 @@
       </button>
       <span class="right">Hecho para levantar pesado</span>
     </footer>
+
+    <!-- tabbar mobile -->
+    <nav class="tabbar" role="tablist" aria-label="Secciones de la app">
+      <button
+        class="tabbar-btn active"
+        data-view="hierro"
+        role="tab"
+        aria-selected="true"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <path d="M6.5 6.5v11M17.5 6.5v11M2.5 9.5v5M21.5 9.5v5M6.5 12h11" />
+        </svg>
+        <span>Hierro</span>
+      </button>
+      <button
+        class="tabbar-btn"
+        data-view="cuerpo"
+        role="tab"
+        aria-selected="false"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <rect x="3.5" y="3.5" width="17" height="17" rx="2.5" />
+          <path d="M8.5 15a3.5 3.5 0 0 1 7 0" />
+          <path d="M12 15l2.2-2.2" />
+        </svg>
+        <span>Cuerpo</span>
+      </button>
+    </nav>
 
     <!-- temporizador de descanso -->
     <div id="timer" role="timer" aria-live="polite">
@@ -2408,6 +2678,28 @@
       let dayIdx = td < 5 ? td : 0
       const persistSession = () => saveL(LS.session, state.exercises)
 
+      /* ---------- navegación Hierro / Cuerpo ---------- */
+      function switchView(name, push) {
+        name = name === 'cuerpo' ? 'cuerpo' : 'hierro'
+        $$('.view').forEach((v) =>
+          v.classList.toggle('active', v.id === 'view-' + name)
+        )
+        $$('[data-view]').forEach((b) => {
+          const on = b.dataset.view === name
+          b.classList.toggle('active', on)
+          if (b.hasAttribute('aria-selected'))
+            b.setAttribute('aria-selected', String(on))
+        })
+        if (push && location.hash !== '#' + name) location.hash = name
+        window.scrollTo({ top: 0 })
+      }
+      $$('[data-view]').forEach((b) =>
+        b.addEventListener('click', () => switchView(b.dataset.view, true))
+      )
+      window.addEventListener('hashchange', () =>
+        switchView((location.hash || '#hierro').slice(1), false)
+      )
+
       /* ---------- utilidades de nombre / progreso ---------- */
       const normName = (s) =>
         String(s)
@@ -2493,7 +2785,7 @@
       tick()
       setInterval(tick, 15000)
 
-      /* ---------- stats ---------- */
+      /* ---------- stats hierro ---------- */
       function setNum(id, val) {
         const el = $('#' + id),
           from = parseFloat(el.dataset.v || '0'),
@@ -2537,6 +2829,26 @@
               month: 'short'
             })
           : '—'
+      }
+
+      /* ---------- stats cuerpo ---------- */
+      function updateBodyStats() {
+        const rs = state.body
+        const lastW = [...rs].reverse().find((r) => r.peso != null)
+        $('#stPeso').textContent = lastW ? fmtN(lastW.peso, 1) : '—'
+        const d = lastDelta('peso'),
+          el = $('#stDelta')
+        el.classList.remove('up', 'down')
+        if (d == null) {
+          el.textContent = '—'
+        } else {
+          el.textContent =
+            (d > 0 ? '▲ ' : d < 0 ? '▼ ' : '') + fmtN(Math.abs(d), 1)
+          el.classList.add(d > 0 ? 'up' : 'down')
+        }
+        const lastH = [...rs].reverse().find((r) => r.altura != null)
+        $('#stAltura').textContent = lastH ? fmtN(lastH, 0) : '—'
+        $('#stRegs').textContent = rs.length
       }
 
       /* ---------- barra de progreso de sesión ---------- */
@@ -2626,26 +2938,43 @@
       $('#timerAdd').addEventListener('click', () => Timer.add15())
       $('#timerPause').addEventListener('click', () => Timer.toggle())
       $('#timerClose').addEventListener('click', () => Timer.stop())
+      let audioCtx = null
+      document.addEventListener(
+        'pointerdown',
+        () => {
+          if (!audioCtx) {
+            try {
+              audioCtx = new (
+                window.AudioContext || window.webkitAudioContext
+              )()
+            } catch (e) {}
+          }
+          if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume()
+        },
+        { capture: true }
+      )
       function beep() {
         try {
-          const ctx = new (window.AudioContext || window.webkitAudioContext)()
+          if (!audioCtx)
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+          if (audioCtx.state === 'suspended') audioCtx.resume()
           ;[
             [880, 0],
             [1174, 0.2]
           ].forEach(([f, d]) => {
-            const o = ctx.createOscillator(),
-              g = ctx.createGain()
+            const o = audioCtx.createOscillator(),
+              g = audioCtx.createGain()
             o.connect(g)
-            g.connect(ctx.destination)
+            g.connect(audioCtx.destination)
             o.type = 'sine'
             o.frequency.value = f
-            g.gain.setValueAtTime(0.16, ctx.currentTime + d)
+            g.gain.setValueAtTime(0.16, audioCtx.currentTime + d)
             g.gain.exponentialRampToValueAtTime(
               0.001,
-              ctx.currentTime + d + 0.55
+              audioCtx.currentTime + d + 0.55
             )
-            o.start(ctx.currentTime + d)
-            o.stop(ctx.currentTime + d + 0.55)
+            o.start(audioCtx.currentTime + d)
+            o.stop(audioCtx.currentTime + d + 0.55)
           })
         } catch (e) {}
       }
@@ -3263,6 +3592,7 @@
         )
       }
       function renderBody() {
+        updateBodyStats()
         renderChart()
         renderDeltas()
         const box = $('#bodyList'),
@@ -3310,7 +3640,7 @@
       $('#exportBtn').addEventListener('click', () => {
         const data = {
           app: 'FORJA',
-          version: 2,
+          version: 3,
           exportedAt: new Date().toISOString(),
           week: weekState,
           session: state.exercises,
@@ -3400,7 +3730,7 @@
         updateStats()
       }
 
-      /* ---------- PWA: botón instalar + service worker ---------- */
+      /* ---------- PWA ---------- */
       let deferredPrompt = null
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault()
@@ -3433,6 +3763,7 @@
       $$('.reveal:not(.in)').forEach((el) => io.observe(el))
 
       renderAll()
+      switchView((location.hash || '#hierro').slice(1), false)
     </script>
   </body>
 </html>
