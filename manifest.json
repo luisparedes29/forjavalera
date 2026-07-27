@@ -1,0 +1,16 @@
+{
+  "name": "FORJA — Cuaderno de Entrenamiento",
+  "short_name": "FORJA",
+  "description": "Tu rutina, series, cargas y medidas antropométricas. Funciona sin conexión.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0e1316",
+  "theme_color": "#0e1316",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

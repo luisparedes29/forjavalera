@@ -1,0 +1,3356 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FORJA · Cuaderno de Entrenamiento</title>
+    <meta
+      name="description"
+      content="Tu rutina, series, cargas y medidas antropométricas. Funciona sin conexión."
+    />
+    <meta name="theme-color" content="#0e1316" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <link rel="icon" type="image/svg+xml" href="icon.svg" />
+    <link rel="apple-touch-icon" href="icon.svg" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0e1316;
+        --panel: #151c21;
+        --panel2: #1a232a;
+        --field: #0c1114;
+        --line: #27323b;
+        --ink: #e9f1ec;
+        --muted: #8ba0a8;
+        --volt: #c9f24b;
+        --orange: #ff7a2f;
+        --teal: #3fd8c7;
+        --red: #ff6b6b;
+        --blue: #5db9ff;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: 'Space Grotesk', sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      ::selection {
+        background: var(--volt);
+        color: #101408;
+      }
+
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+          linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.025) 1px,
+            transparent 1px
+          );
+        background-size: 44px 44px;
+      }
+      body::after {
+        content: '';
+        position: fixed;
+        inset: -20%;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            620px 420px at 12% -5%,
+            rgba(201, 242, 75, 0.09),
+            transparent 60%
+          ),
+          radial-gradient(
+            720px 520px at 96% 112%,
+            rgba(255, 122, 47, 0.11),
+            transparent 60%
+          ),
+          radial-gradient(
+            520px 400px at 82% 0%,
+            rgba(93, 185, 255, 0.05),
+            transparent 60%
+          );
+        animation: drift 26s ease-in-out infinite alternate;
+      }
+      @keyframes drift {
+        to {
+          transform: translate(2%, -2%) scale(1.06);
+        }
+      }
+      .tape {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        z-index: 50;
+        background: repeating-linear-gradient(
+          -45deg,
+          var(--volt) 0 14px,
+          #0b0e0c 14px 28px
+        );
+      }
+
+      header.top,
+      main,
+      footer,
+      .stats,
+      .routine-wrap {
+        position: relative;
+        z-index: 1;
+      }
+
+      header.top {
+        position: sticky;
+        top: 6px;
+        z-index: 40;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        padding: 13px 28px;
+        background: rgba(14, 19, 22, 0.88);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: inherit;
+      }
+      .barbell {
+        width: 46px;
+        transition: transform 0.3s cubic-bezier(0.3, 1.4, 0.4, 1);
+      }
+      .brand:hover .barbell {
+        transform: rotate(-9deg) translateY(-2px);
+      }
+      .brand h1 {
+        font-family: Anton;
+        font-weight: 400;
+        font-size: 27px;
+        letter-spacing: 0.07em;
+        line-height: 1;
+      }
+      .brand h1 span {
+        color: var(--volt);
+      }
+      .brand small {
+        display: block;
+        font-size: 9px;
+        letter-spacing: 0.3em;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-top: 3px;
+      }
+      .top-right {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .btn-install {
+        background: none;
+        border: 1px solid var(--volt);
+        color: var(--volt);
+        cursor: pointer;
+        font: 700 10px 'Space Grotesk';
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 8px 13px;
+        transition: 0.2s;
+      }
+      .btn-install:hover {
+        background: rgba(201, 242, 75, 0.12);
+        transform: translateY(-1px);
+      }
+      .chip-date {
+        text-align: right;
+      }
+      .chip-date b {
+        font-size: 13px;
+        text-transform: capitalize;
+        font-weight: 600;
+      }
+      .chip-date span {
+        display: block;
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        margin-top: 2px;
+      }
+      .clock {
+        color: var(--volt);
+        font-weight: 700;
+      }
+
+      .stats {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 24px 28px 4px;
+        max-width: 1340px;
+        margin: 0 auto;
+      }
+      .stat {
+        padding: 4px 30px;
+        border-left: 2px solid var(--line);
+        transition: transform 0.2s;
+      }
+      .stat:first-child {
+        border-left: none;
+        padding-left: 0;
+      }
+      .stat:hover {
+        transform: translateY(-3px);
+      }
+      .stat b {
+        font-family: Anton;
+        font-weight: 400;
+        font-size: clamp(30px, 4vw, 44px);
+        display: block;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+      }
+      .stat:nth-child(1) b {
+        color: var(--volt);
+      }
+      .stat:nth-child(2) b {
+        color: var(--teal);
+      }
+      .stat:nth-child(4) b {
+        color: var(--orange);
+      }
+      .stat:nth-child(5) b {
+        color: var(--blue);
+      }
+      .stat span {
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .routine-wrap {
+        padding: 20px 28px 0;
+        max-width: 1340px;
+        margin: 0 auto;
+      }
+      main {
+        display: grid;
+        grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr);
+        gap: 22px;
+        padding: 20px 28px 56px;
+        max-width: 1340px;
+        margin: 0 auto;
+      }
+      .col {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        min-width: 0;
+      }
+      @media (max-width: 1020px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        padding: 20px 22px 24px;
+        position: relative;
+        clip-path: polygon(
+          0 0,
+          calc(100% - 16px) 0,
+          100% 16px,
+          100% 100%,
+          0 100%
+        );
+        scroll-margin-top: 96px;
+      }
+      .panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--acc, var(--volt));
+      }
+      .panel h2 {
+        font-family: Anton;
+        font-weight: 400;
+        font-size: 20px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .panel h2 .n {
+        color: var(--acc, var(--volt));
+        font-size: 13px;
+        font-family: 'Space Grotesk';
+        font-weight: 700;
+        letter-spacing: 0.2em;
+      }
+      .autosave {
+        margin-left: auto;
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-family: 'Space Grotesk';
+        font-weight: 500;
+      }
+      .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--volt);
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.25;
+          transform: scale(0.75);
+        }
+      }
+      .sub {
+        font-size: 10px;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 18px 0 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .sub::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--line);
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(16px);
+        transition:
+          opacity 0.6s ease,
+          transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+      }
+      .reveal.in {
+        opacity: 1;
+        transform: none;
+      }
+      .d1 {
+        transition-delay: 0.05s;
+      }
+      .d2 {
+        transition-delay: 0.12s;
+      }
+      .d3 {
+        transition-delay: 0.18s;
+      }
+      .d4 {
+        transition-delay: 0.24s;
+      }
+
+      input[type='text'],
+      input[type='number'],
+      select {
+        background: var(--field);
+        border: 1px solid var(--line);
+        color: var(--ink);
+        font: 500 14px 'Space Grotesk';
+        padding: 11px 12px;
+        width: 100%;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--volt);
+        box-shadow: 0 0 0 3px rgba(201, 242, 75, 0.12);
+      }
+      ::placeholder {
+        color: rgba(139, 160, 168, 0.55);
+      }
+      input[type='number']::-webkit-outer-spin-button,
+      input[type='number']::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      input[type='number'] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+      select {
+        appearance: none;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23c9f24b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 32px;
+      }
+
+      .btn {
+        font: 700 12px 'Space Grotesk';
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        padding: 12px 22px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s,
+          background 0.2s,
+          color 0.2s,
+          border-color 0.2s;
+      }
+      .btn-volt {
+        background: var(--volt);
+        color: #101408;
+        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
+      }
+      .btn-orange {
+        background: var(--orange);
+        color: #1a0d05;
+        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
+      }
+      .btn-volt:hover,
+      .btn-orange:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.5);
+      }
+      .btn-volt:active,
+      .btn-orange:active {
+        transform: translate(1px, 1px);
+        box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+      }
+      .btn-ghost {
+        background: transparent;
+        border-color: var(--line);
+        color: var(--muted);
+      }
+      .btn-ghost:hover {
+        border-color: var(--ink);
+        color: var(--ink);
+        transform: translate(-1px, -1px);
+      }
+      .icon-btn {
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        width: 28px;
+        height: 28px;
+        display: grid;
+        place-items: center;
+        border-radius: 4px;
+        transition: 0.15s;
+        flex: none;
+      }
+      .icon-btn:hover {
+        color: var(--red);
+        background: rgba(255, 93, 93, 0.12);
+        transform: scale(1.12);
+      }
+      .link-btn {
+        background: none;
+        border: none;
+        color: var(--volt);
+        font: 700 11px 'Space Grotesk';
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        cursor: pointer;
+        border-bottom: 1px solid transparent;
+        padding: 0;
+      }
+      .link-btn:hover {
+        border-color: var(--volt);
+      }
+      .hide {
+        display: none !important;
+      }
+
+      /* ---------- rutina ---------- */
+      .rir {
+        margin-left: auto;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--teal);
+        border: 1px solid rgba(63, 216, 199, 0.4);
+        padding: 4px 10px;
+        transform: skewX(-10deg);
+      }
+      .routine-bar {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .day-tabs {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .day-tab {
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        color: var(--muted);
+        cursor: pointer;
+        padding: 8px 13px 7px;
+        text-align: center;
+        min-width: 78px;
+        position: relative;
+        transition: 0.2s;
+        font-family: 'Space Grotesk';
+      }
+      .day-tab b {
+        display: block;
+        font-family: Anton;
+        font-weight: 400;
+        font-size: 15px;
+        letter-spacing: 0.1em;
+        color: var(--ink);
+        transition: 0.2s;
+      }
+      .day-tab span {
+        font-size: 9px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .day-tab::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 3px;
+        background: var(--dc);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.25s;
+      }
+      .day-tab:hover {
+        transform: translateY(-2px);
+        border-color: var(--dc);
+      }
+      .day-tab.active {
+        border-color: var(--dc);
+        color: var(--dc);
+        background: color-mix(in srgb, var(--dc) 10%, var(--panel2));
+      }
+      .day-tab.active::after {
+        transform: scaleX(1);
+      }
+      .day-tab.active b {
+        color: var(--dc);
+      }
+      .week-ctl {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .wk {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .wk-label {
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .wk button {
+        width: 26px;
+        height: 26px;
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        color: var(--ink);
+        cursor: pointer;
+        font: 700 15px 'Space Grotesk';
+        transition: 0.15s;
+      }
+      .wk button:hover:not(:disabled) {
+        border-color: var(--volt);
+        color: var(--volt);
+        transform: translateY(-1px);
+      }
+      .wk button:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+      .wk b {
+        font-family: Anton;
+        font-weight: 400;
+        font-size: 22px;
+        min-width: 22px;
+        text-align: center;
+        color: var(--volt);
+      }
+      .pips {
+        display: flex;
+        gap: 4px;
+      }
+      .pips i {
+        width: 10px;
+        height: 10px;
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        transition: 0.25s;
+      }
+      .pips i.on {
+        background: var(--volt);
+        border-color: var(--volt);
+      }
+      .pips.deload i.on {
+        background: var(--orange);
+        border-color: var(--orange);
+      }
+      .switch {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .switch input {
+        display: none;
+      }
+      .sw-track {
+        width: 34px;
+        height: 18px;
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        position: relative;
+        transition: 0.2s;
+        flex: none;
+      }
+      .sw-track::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 12px;
+        height: 12px;
+        background: var(--muted);
+        transition: 0.2s;
+      }
+      .switch input:checked + .sw-track {
+        background: rgba(255, 122, 47, 0.2);
+        border-color: var(--orange);
+      }
+      .switch input:checked + .sw-track::after {
+        left: 18px;
+        background: var(--orange);
+      }
+      .sw-label {
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        color: var(--muted);
+        font-weight: 700;
+        transition: 0.2s;
+      }
+      .switch input:checked ~ .sw-label {
+        color: var(--orange);
+      }
+      .badge-deload {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        color: var(--orange);
+        border: 1px solid var(--orange);
+        padding: 3px 10px;
+        transform: skewX(-10deg);
+        animation: pulse 2s infinite;
+      }
+      .stall-banner {
+        border: 1px solid rgba(255, 122, 47, 0.5);
+        border-left: 4px solid var(--orange);
+        background: rgba(255, 122, 47, 0.07);
+        padding: 12px 14px;
+        margin-bottom: 16px;
+        font-size: 12.5px;
+        color: var(--muted);
+        line-height: 1.6;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        animation: pop 0.4s ease;
+      }
+      .stall-banner > b {
+        color: var(--orange);
+      }
+      #stallList b {
+        color: var(--ink);
+      }
+      .btn-mini {
+        background: var(--orange);
+        border: none;
+        color: #1a0d05;
+        font: 700 10px 'Space Grotesk';
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 8px 12px;
+        cursor: pointer;
+        margin-left: auto;
+        box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.4);
+        transition: 0.15s;
+      }
+      .btn-mini:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4);
+      }
+      .day-title {
+        margin-bottom: 10px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .day-title b {
+        font-family: Anton;
+        font-weight: 400;
+        font-size: 17px;
+        letter-spacing: 0.05em;
+        color: var(--ink);
+        text-transform: uppercase;
+        margin-right: 6px;
+      }
+      .rt-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        padding: 11px 14px;
+        margin-bottom: 8px;
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--gc);
+        background: var(--panel2);
+        transition: 0.2s;
+        animation: pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+      }
+      .rt-row:hover {
+        transform: translateX(4px);
+        border-color: var(--gc);
+      }
+      .rt-idx {
+        font-family: Anton;
+        color: var(--gc);
+        font-size: 15px;
+      }
+      .rt-info {
+        flex: 1;
+        min-width: 190px;
+      }
+      .rt-info b {
+        font-size: 14px;
+        font-weight: 600;
+        display: block;
+      }
+      .rt-info i {
+        font-style: normal;
+        font-size: 11px;
+        color: var(--muted);
+        display: block;
+        margin-top: 2px;
+      }
+      .rt-info .stall-i {
+        color: var(--orange);
+      }
+      .rt-meta {
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.03em;
+      }
+      .rt-sets {
+        font-size: 12px;
+        min-width: 92px;
+        text-align: right;
+      }
+      .rt-sets b {
+        font-family: Anton;
+        font-weight: 400;
+        font-size: 17px;
+        color: var(--ink);
+      }
+      .rt-sets i {
+        font-style: normal;
+        display: block;
+        font-size: 9px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--orange);
+      }
+      .rt-add {
+        background: none;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        cursor: pointer;
+        font: 700 10px 'Space Grotesk';
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 7px 12px;
+        transition: 0.2s;
+      }
+      .rt-add:hover {
+        border-color: var(--volt);
+        color: var(--volt);
+        background: rgba(201, 242, 75, 0.08);
+      }
+      .routine-actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-top: 14px;
+        flex-wrap: wrap;
+      }
+      .day-hint {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .day-hint b {
+        color: var(--volt);
+      }
+      .notes {
+        margin-top: 16px;
+        border-top: 1px dashed var(--line);
+        padding-top: 12px;
+      }
+      .notes summary {
+        cursor: pointer;
+        font: 700 11px 'Space Grotesk';
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+        transition: 0.2s;
+        list-style: none;
+      }
+      .notes summary::-webkit-details-marker {
+        display: none;
+      }
+      .notes summary:hover,
+      .notes[open] summary {
+        color: var(--blue);
+      }
+      .notes ul {
+        margin: 12px 0 0 4px;
+        display: grid;
+        gap: 8px;
+      }
+      .notes li {
+        font-size: 12.5px;
+        color: var(--muted);
+        line-height: 1.65;
+        list-style: none;
+        padding-left: 16px;
+        position: relative;
+      }
+      .notes li::before {
+        content: '▸';
+        position: absolute;
+        left: 0;
+        color: var(--blue);
+      }
+      .notes li b {
+        color: var(--ink);
+      }
+
+      /* ---------- sesión ---------- */
+      .sess-prog {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: -4px 0 16px;
+      }
+      .sp-bar {
+        flex: 1;
+        height: 10px;
+        background: var(--field);
+        border: 1px solid var(--line);
+        position: relative;
+        overflow: hidden;
+      }
+      .sp-bar i {
+        position: absolute;
+        inset: 0;
+        width: 0;
+        background: linear-gradient(90deg, var(--teal), var(--volt));
+        transition: width 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+      }
+      .sp-bar::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          -55deg,
+          transparent 0 8px,
+          rgba(0, 0, 0, 0.22) 8px 16px
+        );
+      }
+      #spText {
+        font-size: 11px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      #spText b {
+        font-family: Anton;
+        font-weight: 400;
+        font-size: 14px;
+        color: var(--ink);
+        letter-spacing: 0.04em;
+      }
+      .add-ex {
+        display: grid;
+        grid-template-columns: 1fr 160px auto;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+      @media (max-width: 600px) {
+        .add-ex {
+          grid-template-columns: 1fr;
+        }
+      }
+      .ex-card {
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--gc, #8ba0a8);
+        background: var(--panel2);
+        margin-bottom: 14px;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s,
+          border-color 0.2s;
+        animation: pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+      }
+      @keyframes pop {
+        from {
+          opacity: 0;
+          transform: translateY(10px) scale(0.98);
+        }
+      }
+      .ex-card:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.45);
+      }
+      .ex-head {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 12px 14px 10px;
+        border-bottom: 1px solid var(--line);
+        flex-wrap: wrap;
+      }
+      .ex-idx {
+        font-family: Anton;
+        color: var(--gc);
+        font-size: 15px;
+      }
+      .ex-name {
+        font-family: Anton;
+        font-weight: 400;
+        font-size: 19px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .tag {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        transform: skewX(-10deg);
+        color: var(--gc);
+        background: rgba(255, 255, 255, 0.05);
+        background: color-mix(in srgb, var(--gc) 16%, transparent);
+        border: 1px solid color-mix(in srgb, var(--gc) 45%, transparent);
+      }
+      .ex-meta {
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.04em;
+      }
+      .ex-vol {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+      }
+      .ex-vol b {
+        color: var(--volt);
+        font-size: 14px;
+      }
+      .ex-note {
+        font-size: 11px;
+        color: var(--muted);
+        margin: 9px 14px 0;
+        padding-left: 9px;
+        border-left: 2px solid var(--gc);
+        line-height: 1.5;
+      }
+      .sets {
+        padding: 8px 14px 4px;
+      }
+      .sets-head,
+      .set-row {
+        display: grid;
+        grid-template-columns: 26px 40px 1fr 1fr 36px;
+        gap: 10px;
+        align-items: center;
+      }
+      .sets-head {
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 6px 0;
+      }
+      .set-row {
+        padding: 5px 0;
+        border-top: 1px dashed rgba(255, 255, 255, 0.07);
+        transition: background 0.2s;
+      }
+      .set-check {
+        width: 22px;
+        height: 22px;
+        border: 1px solid var(--line);
+        background: rgba(0, 0, 0, 0.25);
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        color: transparent;
+        transition: 0.15s;
+        padding: 0;
+      }
+      .set-check svg {
+        display: block;
+      }
+      .set-check:hover {
+        border-color: var(--gc);
+        color: color-mix(in srgb, var(--gc) 65%, transparent);
+        transform: scale(1.12);
+      }
+      .set-row.done .set-check {
+        background: var(--gc);
+        border-color: var(--gc);
+        color: #0c0f0a;
+      }
+      .set-row.done input,
+      .set-row.done .set-num {
+        opacity: 0.45;
+      }
+      .set-num {
+        width: 26px;
+        height: 26px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--line);
+        font-weight: 700;
+        font-size: 12px;
+        color: var(--gc);
+        background: rgba(0, 0, 0, 0.25);
+        transition: 0.15s;
+      }
+      .set-row:hover .set-num {
+        background: var(--gc);
+        color: #0c0f0a;
+        border-color: var(--gc);
+      }
+      .set-row input {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--line);
+        padding: 4px 2px;
+        font: 600 15px 'Space Grotesk';
+        box-shadow: none;
+        transition: opacity 0.2s;
+      }
+      .set-row input:focus {
+        border-color: var(--gc);
+        box-shadow: 0 1px 0 var(--gc);
+      }
+      .ex-foot {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px 13px;
+        flex-wrap: wrap;
+      }
+      .add-set {
+        background: none;
+        border: 1px dashed var(--line);
+        color: var(--muted);
+        cursor: pointer;
+        font: 700 11px 'Space Grotesk';
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 7px 14px;
+        transition: 0.2s;
+      }
+      .add-set:hover {
+        border-color: var(--gc);
+        color: var(--gc);
+      }
+      .prog {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 4px 9px;
+        transform: skewX(-8deg);
+        border: 1px solid;
+        animation: pop 0.3s ease;
+      }
+      .prog[data-t='up'] {
+        color: var(--volt);
+        border-color: rgba(201, 242, 75, 0.5);
+        background: rgba(201, 242, 75, 0.08);
+      }
+      .prog[data-t='ok'] {
+        color: var(--teal);
+        border-color: rgba(63, 216, 199, 0.5);
+        background: rgba(63, 216, 199, 0.08);
+      }
+      .prog[data-t='down'] {
+        color: var(--orange);
+        border-color: rgba(255, 122, 47, 0.5);
+        background: rgba(255, 122, 47, 0.08);
+      }
+      .best {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .best b {
+        color: var(--volt);
+      }
+      .session-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+      @keyframes flashGlow {
+        0% {
+          box-shadow: 0 0 0 0 rgba(201, 242, 75, 0.55);
+        }
+        100% {
+          box-shadow: 0 0 0 20px rgba(201, 242, 75, 0);
+        }
+      }
+      .flash {
+        animation: flashGlow 1s ease-out 2;
+      }
+
+      .empty {
+        border: 1px dashed var(--line);
+        padding: 32px 20px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .empty svg {
+        opacity: 0.45;
+        margin-bottom: 10px;
+      }
+      .empty p {
+        font-size: 13px;
+        margin-bottom: 12px;
+        line-height: 1.6;
+      }
+      .empty b {
+        color: var(--ink);
+      }
+
+      .hist-item {
+        border: 1px solid var(--line);
+        background: var(--panel2);
+        margin-bottom: 10px;
+        overflow: hidden;
+        transition: border-color 0.2s;
+      }
+      .hist-item:hover {
+        border-color: var(--teal);
+      }
+      .hist-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        background: none;
+        border: none;
+        color: var(--ink);
+        padding: 12px 14px;
+        cursor: pointer;
+        font-family: 'Space Grotesk';
+        text-align: left;
+        flex-wrap: wrap;
+        transition: background 0.2s;
+      }
+      .hist-head:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .hist-date {
+        text-transform: capitalize;
+        font-size: 13px;
+      }
+      .hist-date b {
+        font-family: Anton;
+        font-weight: 400;
+        letter-spacing: 0.05em;
+        margin-right: 5px;
+        color: var(--teal);
+      }
+      .hist-meta {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .hist-meta b {
+        color: var(--ink);
+      }
+      .chev {
+        transition: transform 0.3s;
+        color: var(--muted);
+      }
+      .hist-item.open .chev {
+        transform: rotate(180deg);
+      }
+      .hist-body {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease;
+        background: rgba(0, 0, 0, 0.18);
+      }
+      .hist-item.open .hist-body {
+        max-height: 440px;
+        overflow: auto;
+      }
+      .hist-ex {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 9px 14px;
+        font-size: 13px;
+        border-top: 1px dashed rgba(255, 255, 255, 0.06);
+        flex-wrap: wrap;
+      }
+      .hist-ex span:first-child {
+        font-weight: 600;
+      }
+      .sug {
+        font-style: normal;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 2px 7px;
+        margin-left: 8px;
+        transform: skewX(-8deg);
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .sug-up {
+        color: var(--volt);
+        border: 1px solid rgba(201, 242, 75, 0.4);
+      }
+      .sug-ok {
+        color: var(--teal);
+        border: 1px solid rgba(63, 216, 199, 0.4);
+      }
+      .sug-down {
+        color: var(--orange);
+        border: 1px solid rgba(255, 122, 47, 0.4);
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .del-hist {
+        margin: 10px 14px 13px;
+        background: none;
+        border: 1px solid rgba(255, 93, 93, 0.4);
+        color: var(--red);
+        cursor: pointer;
+        font: 700 10px 'Space Grotesk';
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        padding: 6px 12px;
+        transition: 0.2s;
+      }
+      .del-hist:hover {
+        background: rgba(255, 93, 93, 0.15);
+      }
+
+      /* ---------- antropometría ---------- */
+      .duo {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 4px;
+      }
+      .big-field {
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        padding: 12px 14px;
+        transition:
+          border-color 0.2s,
+          transform 0.2s;
+      }
+      .big-field:focus-within {
+        border-color: var(--orange);
+        transform: translateY(-2px);
+      }
+      .big-field label {
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .big-field .wrap {
+        display: flex;
+        align-items: baseline;
+        gap: 7px;
+        margin-top: 2px;
+      }
+      .big-field input {
+        background: none;
+        border: none;
+        padding: 0;
+        font-family: Anton;
+        font-size: 30px;
+        letter-spacing: 0.02em;
+        box-shadow: none;
+      }
+      .big-field input:focus {
+        box-shadow: none;
+      }
+      .big-field em {
+        font-style: normal;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .meas-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 480px) {
+        .meas-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .duo {
+          grid-template-columns: 1fr;
+        }
+      }
+      .meas {
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        padding: 8px 11px;
+        transition:
+          border-color 0.2s,
+          transform 0.2s;
+      }
+      .meas:hover {
+        transform: translateY(-2px);
+      }
+      .meas:focus-within {
+        border-color: var(--orange);
+      }
+      .meas span {
+        font-size: 9px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 3px;
+      }
+      .meas-in {
+        display: flex;
+        align-items: baseline;
+        gap: 5px;
+      }
+      .meas input {
+        background: none;
+        border: none;
+        padding: 0;
+        font: 600 15px 'Space Grotesk';
+        box-shadow: none;
+      }
+      .meas em {
+        font-style: normal;
+        font-size: 10px;
+        color: var(--muted);
+      }
+      .chart-box {
+        border: 1px solid var(--line);
+        background: var(--panel2);
+        padding: 13px;
+        margin: 16px 0 10px;
+      }
+      .chart-box h3 {
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        font-weight: 600;
+      }
+      .chart-box h3 span {
+        color: var(--volt);
+      }
+      #chart {
+        width: 100%;
+        height: 110px;
+        display: block;
+      }
+      .ch-line {
+        stroke: var(--volt);
+        stroke-width: 2;
+        fill: none;
+        stroke-linecap: round;
+      }
+      .ch-area {
+        fill: url(#gArea);
+      }
+      .ch-dot {
+        fill: var(--bg);
+        stroke: var(--volt);
+        stroke-width: 1.5;
+      }
+      .ch-lab {
+        fill: var(--volt);
+        font: 700 10px 'Space Grotesk';
+        text-anchor: end;
+      }
+      .chart-empty {
+        font-size: 12px;
+        color: var(--muted);
+        text-align: center;
+        padding: 18px 8px;
+      }
+      .deltas {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .delta {
+        font-size: 11px;
+        padding: 4px 10px;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        background: var(--panel2);
+      }
+      .delta b {
+        font-weight: 700;
+      }
+      .delta .up {
+        color: var(--orange);
+      }
+      .delta .down {
+        color: var(--teal);
+      }
+      .body-rec {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 9px 12px;
+        border: 1px solid var(--line);
+        background: var(--panel2);
+        margin-bottom: 8px;
+        transition: 0.2s;
+      }
+      .body-rec:hover {
+        border-color: var(--orange);
+        transform: translateX(4px);
+      }
+      .br-date {
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: capitalize;
+        min-width: 78px;
+      }
+      .br-main {
+        font-size: 13px;
+      }
+      .br-main b {
+        font-family: Anton;
+        font-weight: 400;
+        font-size: 17px;
+        letter-spacing: 0.03em;
+      }
+      .br-main span {
+        color: var(--muted);
+        font-size: 11px;
+        margin-left: 8px;
+      }
+      .br-actions {
+        display: flex;
+        gap: 4px;
+      }
+
+      /* ---------- temporizador ---------- */
+      #timer {
+        position: fixed;
+        left: 22px;
+        bottom: 22px;
+        z-index: 99;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--orange);
+        padding: 12px 16px;
+        box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.45);
+        transform: translateY(180%);
+        transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+      }
+      #timer.on {
+        transform: none;
+      }
+      #timer svg {
+        width: 56px;
+        height: 56px;
+        transform: rotate(-90deg);
+        flex: none;
+      }
+      .tr-bg {
+        fill: none;
+        stroke: var(--line);
+        stroke-width: 4;
+      }
+      .tr-fg {
+        fill: none;
+        stroke: var(--orange);
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-dasharray: 150.8;
+        stroke-dashoffset: 0;
+        transition:
+          stroke-dashoffset 1s linear,
+          stroke 0.3s;
+      }
+      #timer.done .tr-fg {
+        stroke: var(--volt);
+      }
+      #timer.done #timerTime {
+        color: var(--volt);
+        animation: pulse 1s infinite;
+      }
+      .t-info b {
+        font-family: Anton;
+        font-weight: 400;
+        font-size: 26px;
+        display: block;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+      }
+      .t-info span {
+        font-size: 10px;
+        color: var(--muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        display: block;
+        margin-top: 3px;
+        max-width: 160px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .t-btns {
+        display: flex;
+        gap: 6px;
+      }
+      .t-btns button {
+        background: var(--field);
+        border: 1px solid var(--line);
+        color: var(--muted);
+        cursor: pointer;
+        font: 700 10px 'Space Grotesk';
+        letter-spacing: 0.08em;
+        padding: 7px 9px;
+        transition: 0.15s;
+      }
+      .t-btns button:hover {
+        color: var(--volt);
+        border-color: var(--volt);
+      }
+      @media (max-width: 560px) {
+        #timer {
+          left: 12px;
+          right: 12px;
+          bottom: 12px;
+        }
+        .t-info span {
+          max-width: none;
+        }
+      }
+
+      #toasts {
+        position: fixed;
+        bottom: 22px;
+        right: 22px;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .toast {
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--volt);
+        padding: 11px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        transform: translateX(120%);
+        transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+        box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.4);
+        max-width: 320px;
+      }
+      .toast.show {
+        transform: none;
+      }
+      .toast.warn {
+        border-left-color: var(--orange);
+      }
+      footer {
+        border-top: 1px solid var(--line);
+        padding: 18px 28px 28px;
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        color: var(--muted);
+        font-size: 12px;
+        flex-wrap: wrap;
+      }
+      footer .right {
+        margin-left: auto;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        font-size: 10px;
+      }
+      ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--line);
+        border: 2px solid var(--bg);
+      }
+      :focus-visible {
+        outline: 2px solid var(--volt);
+        outline-offset: 2px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="tape"></div>
+
+    <header class="top">
+      <a class="brand" href="#">
+        <svg class="barbell" viewBox="0 0 48 24" aria-hidden="true">
+          <rect x="1" y="8" width="4" height="8" fill="#c9f24b" />
+          <rect x="6" y="4.5" width="4.5" height="15" fill="#c9f24b" />
+          <rect x="11.5" y="10.5" width="25" height="3" fill="#8ba0a8" />
+          <rect x="37.5" y="4.5" width="4.5" height="15" fill="#c9f24b" />
+          <rect x="43" y="8" width="4" height="8" fill="#c9f24b" />
+        </svg>
+        <span
+          ><h1>FOR<span>JA</span></h1>
+          <small>cuaderno de fuerza</small></span
+        >
+      </a>
+      <div class="top-right">
+        <button class="btn-install hide" id="installBtn">⤓ Instalar app</button>
+        <div class="chip-date">
+          <b id="today">—</b>
+          <span
+            ><span class="clock" id="clock">--:--</span> · datos locales</span
+          >
+        </div>
+      </div>
+    </header>
+
+    <section class="stats reveal in">
+      <div class="stat">
+        <b id="stVol" data-v="0">0</b><span>kg volumen hoy</span>
+      </div>
+      <div class="stat"><b id="stSets" data-v="0">0</b><span>series</span></div>
+      <div class="stat">
+        <b id="stEx" data-v="0">0</b><span>ejercicios</span>
+      </div>
+      <div class="stat">
+        <b id="stHist" data-v="0">0</b><span>sesiones guardadas</span>
+      </div>
+      <div class="stat"><b id="stLast">—</b><span>último registro</span></div>
+    </section>
+
+    <!-- 01 RUTINA -->
+    <div class="routine-wrap">
+      <section class="panel reveal d1" style="--acc: var(--blue)">
+        <h2>
+          <span class="n">01/</span> Rutina · Bloque actual
+          <span class="rir">RIR objetivo 2–3</span>
+        </h2>
+        <div class="routine-bar">
+          <div class="day-tabs" id="dayTabs"></div>
+          <div class="week-ctl">
+            <span class="badge-deload hide" id="deloadBadge"
+              >DELOAD · ~50% volumen</span
+            >
+            <div class="wk">
+              <span class="wk-label">Semana</span>
+              <button id="wkMinus" aria-label="Semana anterior">−</button>
+              <b id="wkNum">1</b>
+              <button id="wkPlus" aria-label="Semana siguiente">+</button>
+              <span class="pips" id="pips"></span>
+            </div>
+            <label class="switch"
+              ><input type="checkbox" id="deload" /><span
+                class="sw-track"
+              ></span
+              ><span class="sw-label">DELOAD</span></label
+            >
+          </div>
+        </div>
+        <div class="stall-banner hide" id="stallBanner">
+          <b>⚠ Estancamiento:</b>
+          <span id="stallList"></span>&nbsp;llevás 2+ sesiones sin progresar.
+          Según tu bloque: <b>toca deload</b> o revisar sueño/nutrición.
+          <button class="btn-mini" id="stallDeload">Activar DELOAD</button>
+        </div>
+        <div class="day-title" id="dayTitle"></div>
+        <div id="rtList"></div>
+        <div class="routine-actions">
+          <button class="btn btn-volt" id="loadDay">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z" />
+            </svg>
+            Cargar día completo en sesión
+          </button>
+          <span class="day-hint" id="dayHint"></span>
+        </div>
+        <details class="notes">
+          <summary>▸ Notas del bloque</summary>
+          <ul>
+            <li>
+              <b>RIR 2–3:</b> guardar 2–3 reps antes del fallo en todas las
+              series.
+            </li>
+            <li>
+              <b>Descansos:</b> 60–90 s alcanza para el estímulo de hipertrofia
+              en aislamiento. En compuestos pesados (sentadilla, press de banca,
+              peso muerto rumano) subir a 2–3 min — el objetivo es mantener
+              rendimiento y técnica. Prensa, press militar, hip thrust y remos
+              quedan en 2 min.
+            </li>
+            <li>
+              <b>Progresión:</b> la S3 de los básicos aparece en la semana 3 y
+              la de los aislamientos en la semana 5 — así progresa en volumen el
+              bloque. Si dos semanas seguidas no subís carga ni reps, es señal
+              de que toca deload o de que la recuperación (sueño/nutrición) no
+              está acompañando.
+            </li>
+            <li>
+              <b>Deload:</b> cada 5–6 semanas, reducir volumen a ~50% (menos
+              series, mismo peso o levemente inferior) antes de iniciar un nuevo
+              bloque.
+            </li>
+            <li>
+              <b>Miércoles:</b> si la sesión se siente muy cargada de fatiga
+              acumulada, se puede mover al jueves y correr la semana un día.
+              Ningún ejercicio impone carga axial lumbar directa (todo es
+              sentado, banco o con apoyo); si aparece molestia lumbar puntual,
+              conviene revisar técnica.
+            </li>
+          </ul>
+        </details>
+      </section>
+    </div>
+
+    <main>
+      <div class="col">
+        <!-- 02 SESIÓN -->
+        <section
+          class="panel reveal d2"
+          id="sessionPanel"
+          style="--acc: var(--volt)"
+        >
+          <h2>
+            <span class="n">02/</span> Sesión actual
+            <span class="autosave"
+              ><span class="dot"></span>borrador autoguardado</span
+            >
+          </h2>
+          <div class="sess-prog hide" id="sessProg">
+            <div class="sp-bar"><i id="spFill"></i></div>
+            <span id="spText"></span>
+          </div>
+          <div class="add-ex">
+            <input
+              type="text"
+              id="exName"
+              placeholder="Nombre del ejercicio (p. ej. Press de banca)"
+            />
+            <select id="exGroup">
+              <option value="pecho">Pecho</option>
+              <option value="espalda">Espalda</option>
+              <option value="hombros">Hombros</option>
+              <option value="brazos">Brazos</option>
+              <option value="piernas">Piernas</option>
+              <option value="gluteos">Glúteos</option>
+              <option value="core">Core</option>
+              <option value="cardio">Cardio</option>
+            </select>
+            <button class="btn btn-volt" id="addEx">+ Añadir</button>
+          </div>
+          <div id="exList"></div>
+          <div class="session-actions">
+            <button class="btn btn-volt" id="saveSession">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+                />
+                <path d="M17 21v-8H7v8M7 3v5h8" />
+              </svg>
+              Guardar sesión
+            </button>
+            <button class="btn btn-ghost" id="copySession">
+              Copiar como texto
+            </button>
+            <button class="btn btn-ghost" id="clearSession">Limpiar</button>
+          </div>
+        </section>
+
+        <!-- 03 HISTORIAL -->
+        <section class="panel reveal d3" style="--acc: var(--teal)">
+          <h2><span class="n">03/</span> Historial de sesiones</h2>
+          <div id="historyList"></div>
+        </section>
+      </div>
+
+      <aside class="col">
+        <!-- 04 ANTROPOMETRÍA -->
+        <section
+          class="panel reveal d4"
+          id="bodyPanel"
+          style="--acc: var(--orange)"
+        >
+          <h2><span class="n">04/</span> Antropometría</h2>
+          <div class="duo">
+            <div class="big-field">
+              <label for="peso">Peso corporal</label>
+              <div class="wrap">
+                <input
+                  type="number"
+                  id="peso"
+                  step="0.1"
+                  min="0"
+                  placeholder="0.0"
+                /><em>kg</em>
+              </div>
+            </div>
+            <div class="big-field">
+              <label for="altura">Altura</label>
+              <div class="wrap">
+                <input
+                  type="number"
+                  id="altura"
+                  step="0.1"
+                  min="0"
+                  placeholder="0.0"
+                /><em>cm</em>
+              </div>
+            </div>
+          </div>
+          <h3 class="sub">Medidas corporales</h3>
+          <div class="meas-grid" id="measGrid"></div>
+          <button
+            class="btn btn-orange"
+            id="saveBody"
+            style="width: 100%; justify-content: center"
+          >
+            Guardar registro
+          </button>
+          <div class="chart-box">
+            <h3>Evolución del peso <span id="chartRange"></span></h3>
+            <svg id="chart" preserveAspectRatio="none"></svg>
+            <p class="chart-empty" id="chartEmpty">
+              Guarda tu peso de forma regular para ver la curva.
+            </p>
+          </div>
+          <div class="deltas" id="deltas"></div>
+          <h3 class="sub">Registros</h3>
+          <div id="bodyList"></div>
+        </section>
+      </aside>
+    </main>
+
+    <footer>
+      <svg width="30" height="16" viewBox="0 0 48 24" aria-hidden="true">
+        <rect x="1" y="8" width="4" height="8" fill="#c9f24b" />
+        <rect x="6" y="4.5" width="4.5" height="15" fill="#c9f24b" />
+        <rect x="11.5" y="10.5" width="25" height="3" fill="#8ba0a8" />
+        <rect x="37.5" y="4.5" width="4.5" height="15" fill="#c9f24b" />
+        <rect x="43" y="8" width="4" height="8" fill="#c9f24b" />
+      </svg>
+      <span>FORJA — tus datos viven solo en este navegador.</span>
+      <button class="link-btn" id="exportBtn">Exportar respaldo</button>
+      <button class="link-btn" id="importBtn">Importar respaldo</button>
+      <input
+        type="file"
+        id="importFile"
+        accept="application/json,.json"
+        hidden
+      />
+      <button class="link-btn" id="wipe" style="color: var(--red)">
+        Borrar todos los datos
+      </button>
+      <span class="right">Hecho para levantar pesado</span>
+    </footer>
+
+    <!-- temporizador de descanso -->
+    <div id="timer" role="timer" aria-live="polite">
+      <svg viewBox="0 0 56 56">
+        <circle class="tr-bg" cx="28" cy="28" r="24" />
+        <circle class="tr-fg" id="timerRing" cx="28" cy="28" r="24" />
+      </svg>
+      <div class="t-info">
+        <b id="timerTime">0:00</b><span id="timerLabel">descanso</span>
+      </div>
+      <div class="t-btns">
+        <button id="timerAdd">+15 s</button>
+        <button id="timerPause" title="Pausar / reanudar">❚❚</button>
+        <button id="timerClose" title="Cerrar">✕</button>
+      </div>
+    </div>
+
+    <div id="toasts"></div>
+
+    <script>
+      const $ = (s) => document.querySelector(s),
+        $$ = (s) => [...document.querySelectorAll(s)]
+      const uid = () =>
+        crypto.randomUUID
+          ? crypto.randomUUID()
+          : 'id' + Date.now() + Math.random().toString(16).slice(2)
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              '&': '&amp;',
+              '<': '&lt;',
+              '>': '&gt;',
+              '"': '&quot;',
+              "'": '&#39;'
+            })[c]
+        )
+      const load = (k, f) => {
+        try {
+          return JSON.parse(localStorage.getItem(k)) ?? f
+        } catch (e) {
+          return f
+        }
+      }
+      const saveL = (k, v) => localStorage.setItem(k, JSON.stringify(v))
+      const fmtN = (n, d = 0) =>
+        (+n).toLocaleString('es-ES', {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: d
+        })
+
+      const LS = {
+        session: 'forja_session',
+        history: 'forja_history',
+        body: 'forja_body',
+        week: 'forja_week'
+      }
+      const GROUPS = {
+        pecho: 'Pecho',
+        espalda: 'Espalda',
+        hombros: 'Hombros',
+        brazos: 'Brazos',
+        piernas: 'Piernas',
+        gluteos: 'Glúteos',
+        core: 'Core',
+        cardio: 'Cardio'
+      }
+      const GCOLORS = {
+        pecho: '#ff6b6b',
+        espalda: '#3fd8c7',
+        hombros: '#5db9ff',
+        brazos: '#c9f24b',
+        piernas: '#ffb02e',
+        gluteos: '#ff8bd1',
+        core: '#b78bff',
+        cardio: '#ff7a2f'
+      }
+      const MEASURES = [
+        ['cuello', 'Cuello'],
+        ['hombros', 'Hombros'],
+        ['pecho', 'Pecho'],
+        ['brazo', 'Brazo'],
+        ['antebrazo', 'Antebrazo'],
+        ['cintura', 'Cintura'],
+        ['cadera', 'Cadera'],
+        ['muslo', 'Muslo'],
+        ['pantorrilla', 'Pantorrilla']
+      ]
+
+      /* ---------- RUTINA (sets = semana mínima de cada serie) ---------- */
+      const ROUTINE = [
+        {
+          id: 'lun',
+          day: 'Lunes',
+          short: 'LUN',
+          title: 'Tren Superior 1',
+          focus: 'Tracción',
+          side: '#ff6b6b',
+          ex: [
+            {
+              n: 'Jalón al pecho polea alta',
+              g: 'espalda',
+              reps: '6–10',
+              rest: '90 s – 2 min',
+              sets: [1, 1, 3]
+            },
+            {
+              n: 'Remo con barra o máquina',
+              g: 'espalda',
+              reps: '6–10',
+              rest: '90 s – 2 min',
+              sets: [1, 1, 3]
+            },
+            {
+              n: 'Pullover en polea alta',
+              g: 'espalda',
+              reps: '12–15',
+              rest: '60–90 s',
+              sets: [1, 1]
+            },
+            {
+              n: 'Curl de bíceps con barra',
+              g: 'brazos',
+              reps: '10–12',
+              rest: '60–90 s',
+              sets: [1, 1, 5]
+            },
+            {
+              n: 'Curl martillo con mancuernas',
+              g: 'brazos',
+              reps: '10–15',
+              rest: '60–90 s',
+              sets: [1, 1]
+            }
+          ]
+        },
+        {
+          id: 'mar',
+          day: 'Martes',
+          short: 'MAR',
+          title: 'Tren Inferior 1',
+          focus: 'Cuádriceps',
+          side: '#5db9ff',
+          ex: [
+            {
+              n: 'Sentadilla libre o Hack',
+              g: 'piernas',
+              reps: '6–10',
+              rest: '2–3 min',
+              sets: [1, 1, 3]
+            },
+            {
+              n: 'Prensa de piernas',
+              g: 'piernas',
+              reps: '8–12',
+              rest: '2 min',
+              sets: [1, 1, 3]
+            },
+            {
+              n: 'Extensión de cuádriceps',
+              g: 'piernas',
+              reps: '12–15',
+              rest: '60–90 s',
+              sets: [1, 1, 5]
+            },
+            {
+              n: 'Elevación de talones de pie',
+              g: 'piernas',
+              reps: '12–15',
+              rest: '60–90 s',
+              sets: [1, 1, 5],
+              note: 'Pausa 1 s abajo'
+            },
+            {
+              n: 'Plancha abdominal (plank)',
+              g: 'core',
+              reps: 'al fallo',
+              rest: '45–60 s',
+              sets: [1, 1, 5],
+              note: 'Al fallo técnico · anotar segundos en "reps"'
+            }
+          ]
+        },
+        {
+          id: 'mie',
+          day: 'Miércoles',
+          short: 'MIÉ',
+          title: 'Tren Superior 2',
+          focus: 'Empuje',
+          side: '#ff6b6b',
+          ex: [
+            {
+              n: 'Press de banca (barra/mancuerna)',
+              g: 'pecho',
+              reps: '6–10',
+              rest: '2–3 min',
+              sets: [1, 1, 3]
+            },
+            {
+              n: 'Press militar sentado (mancuerna)',
+              g: 'hombros',
+              reps: '8–12',
+              rest: '2 min',
+              sets: [1, 1, 3]
+            },
+            {
+              n: 'Aperturas (Pec-Deck o poleas)',
+              g: 'pecho',
+              reps: '12–15',
+              rest: '60–90 s',
+              sets: [1, 1, 5]
+            },
+            {
+              n: 'Elevaciones laterales (mancuerna)',
+              g: 'hombros',
+              reps: '12–15',
+              rest: '60–90 s',
+              sets: [1, 1, 5]
+            },
+            {
+              n: 'Extensión tríceps en polea',
+              g: 'brazos',
+              reps: '10–15',
+              rest: '60–90 s',
+              sets: [1, 1, 5],
+              note: 'Priorizar variante overhead / detrás de la cabeza'
+            }
+          ]
+        },
+        {
+          id: 'jue',
+          day: 'Jueves',
+          short: 'JUE',
+          title: 'Tren Inferior 2',
+          focus: 'Cadena posterior',
+          side: '#5db9ff',
+          ex: [
+            {
+              n: 'Peso muerto rumano',
+              g: 'piernas',
+              reps: '6–10',
+              rest: '2–3 min',
+              sets: [1, 1, 3]
+            },
+            {
+              n: 'Hip thrust o zancada búlgara',
+              g: 'gluteos',
+              reps: '8–12',
+              rest: '2 min',
+              sets: [1, 1, 3],
+              note: 'Complemento de glúteo / cadena posterior'
+            },
+            {
+              n: 'Curl de isquios sentado',
+              g: 'piernas',
+              reps: '10–15',
+              rest: '60–90 s',
+              sets: [1, 1, 5],
+              note: 'Sentado > tumbado: isquios en posición más larga'
+            },
+            {
+              n: 'Elevación de talones sentado',
+              g: 'piernas',
+              reps: '12–15',
+              rest: '60–90 s',
+              sets: [1, 1, 5]
+            },
+            {
+              n: 'Crunch abdominal en polea',
+              g: 'core',
+              reps: '15–20',
+              rest: '60–90 s',
+              sets: [1, 1]
+            }
+          ]
+        },
+        {
+          id: 'vie',
+          day: 'Viernes',
+          short: 'VIE',
+          title: 'Tren Superior 3',
+          focus: 'Equilibrado',
+          side: '#ff6b6b',
+          ex: [
+            {
+              n: 'Remo en polea baja (Gironda)',
+              g: 'espalda',
+              reps: '8–12',
+              rest: '90 s – 2 min',
+              sets: [1, 1, 3]
+            },
+            {
+              n: 'Press inclinado (mancuernas)',
+              g: 'pecho',
+              reps: '8–12',
+              rest: '90 s – 2 min',
+              sets: [1, 1, 3]
+            },
+            {
+              n: 'Face pull en polea alta',
+              g: 'hombros',
+              reps: '12–15',
+              rest: '60–90 s',
+              sets: [1, 1, 5]
+            },
+            {
+              n: 'Elevaciones laterales en polea',
+              g: 'hombros',
+              reps: '12–15',
+              rest: '60–90 s',
+              sets: [1, 1, 5]
+            },
+            {
+              n: 'Extensión tríceps copa',
+              g: 'brazos',
+              reps: '10–15',
+              rest: '60–90 s',
+              sets: [1, 1],
+              note: 'Priorizar variante overhead'
+            },
+            {
+              n: 'Curl bíceps en polea baja',
+              g: 'brazos',
+              reps: '10–15',
+              rest: '60–90 s',
+              sets: [1, 1]
+            }
+          ]
+        }
+      ]
+
+      let state = {
+        exercises: load(LS.session, []),
+        history: load(LS.history, []),
+        body: load(LS.body, [])
+      }
+      let weekState = load(LS.week, { week: 1, deload: false })
+      let stallMap = {}
+      const td = (new Date().getDay() + 6) % 7
+      let dayIdx = td < 5 ? td : 0
+      const persistSession = () => saveL(LS.session, state.exercises)
+
+      /* ---------- utilidades de nombre / progreso ---------- */
+      const normName = (s) =>
+        String(s)
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/\(.*?\)/g, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+      const repsLabel = (d) =>
+        d.reps === 'al fallo' ? 'al fallo técnico' : d.reps + ' reps'
+      function repRange(e) {
+        if (!e.reps || e.reps === 'al fallo') return null
+        const m = String(e.reps).match(/(\d+)[^\d]+(\d+)/)
+        return m ? [+m[1], +m[2]] : null
+      }
+      function suggestFor(e) {
+        const rr = repRange(e)
+        if (!rr) return null
+        const done = e.sets.filter((s) => s.done && +s.reps > 0)
+        if (!done.length || done.length !== e.sets.length) return null
+        if (done.every((s) => +s.reps >= rr[1]))
+          return { t: 'up', msg: '▲ Subí ~2,5 kg la próxima' }
+        if (done.some((s) => +s.reps < rr[0]))
+          return { t: 'down', msg: '▼ Repetí o bajá la carga' }
+        return { t: 'ok', msg: '✓ En rango · mantené la carga' }
+      }
+      function lastSets(name) {
+        const k = normName(name)
+        for (const h of state.history) {
+          const e = h.exercises.find((x) => normName(x.name) === k)
+          if (e) return e.sets
+        }
+        return null
+      }
+      function stagnant() {
+        const occ = {}
+        ;[...state.history].reverse().forEach((h) =>
+          h.exercises.forEach((e) => {
+            const k = normName(e.name)
+            const score = Math.max(
+              0,
+              ...e.sets.map((s) => (+s.kg || 0) * 10 + (+s.reps || 0) / 100)
+            )
+            ;(occ[k] = occ[k] || []).push(score)
+          })
+        )
+        const out = {}
+        for (const k in occ) {
+          const a = occ[k]
+          if (a.length >= 3) {
+            const n = a.length
+            if (a[n - 1] <= a[n - 2] && a[n - 2] <= a[n - 3]) out[k] = true
+          }
+        }
+        return out
+      }
+      function parseRest(rest) {
+        if (!rest) return 0
+        const nums = [
+          ...String(rest).matchAll(/(\d+(?:[.,]\d+)?)\s*(s|seg|min)/gi)
+        ].map((m) => {
+          const v = parseFloat(m[1].replace(',', '.'))
+          return /m/i.test(m[2]) ? v * 60 : v
+        })
+        return nums.length ? Math.round(Math.max(...nums)) : 0
+      }
+
+      /* ---------- reloj ---------- */
+      function tick() {
+        const d = new Date()
+        $('#clock').textContent = d.toLocaleTimeString('es-ES', {
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+        $('#today').textContent = d.toLocaleDateString('es-ES', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        })
+      }
+      tick()
+      setInterval(tick, 15000)
+
+      /* ---------- stats ---------- */
+      function setNum(id, val) {
+        const el = $('#' + id),
+          from = parseFloat(el.dataset.v || '0'),
+          to = val
+        el.dataset.v = to
+        if (from === to) {
+          el.textContent = fmtN(to)
+          return
+        }
+        const t0 = performance.now(),
+          dur = 450
+        ;(function step(t) {
+          const p = Math.min(1, (t - t0) / dur),
+            e = 1 - Math.pow(1 - p, 3)
+          el.textContent = fmtN(from + (to - from) * e)
+          if (p < 1) requestAnimationFrame(step)
+        })(t0)
+      }
+      function updateStats() {
+        let v = 0,
+          sets = 0
+        state.exercises.forEach((e) =>
+          e.sets.forEach((s) => {
+            v += (+s.reps || 0) * (+s.kg || 0)
+            sets++
+          })
+        )
+        setNum('stVol', Math.round(v))
+        setNum('stSets', sets)
+        setNum('stEx', state.exercises.length)
+        setNum('stHist', state.history.length)
+        const last = [
+          ...state.history.map((h) => h.ts),
+          ...state.body.map((b) => b.ts)
+        ]
+          .sort()
+          .pop()
+        $('#stLast').textContent = last
+          ? new Date(last).toLocaleDateString('es-ES', {
+              day: 'numeric',
+              month: 'short'
+            })
+          : '—'
+      }
+
+      /* ---------- barra de progreso de sesión ---------- */
+      function updateSessionProgress() {
+        let total = 0,
+          done = 0,
+          volDone = 0
+        state.exercises.forEach((e) =>
+          e.sets.forEach((s) => {
+            total++
+            if (s.done) {
+              done++
+              volDone += (+s.reps || 0) * (+s.kg || 0)
+            }
+          })
+        )
+        $('#sessProg').classList.toggle('hide', !state.exercises.length)
+        $('#spFill').style.width = total ? (done / total) * 100 + '%' : '0%'
+        $('#spText').innerHTML =
+          `<b>${done}/${total}</b> series · ${fmtN(Math.round(volDone))} kg completados`
+      }
+
+      /* ---------- temporizador de descanso ---------- */
+      const RING_C = 2 * Math.PI * 24
+      const Timer = {
+        total: 0,
+        left: 0,
+        iv: null,
+        paused: false,
+        start(sec, label) {
+          if (!sec) return
+          this.stop()
+          this.total = sec
+          this.left = sec
+          this.paused = false
+          $('#timerLabel').textContent = label
+          $('#timerPause').textContent = '❚❚'
+          $('#timer').classList.add('on')
+          this.render()
+          this.iv = setInterval(() => {
+            if (this.paused) return
+            this.left--
+            this.render()
+            if (this.left <= 0) this.finish()
+          }, 1000)
+        },
+        render() {
+          const m = Math.floor(Math.max(0, this.left) / 60),
+            s = Math.max(0, this.left) % 60
+          $('#timerTime').textContent = `${m}:${String(s).padStart(2, '0')}`
+          $('#timerRing').style.strokeDashoffset =
+            RING_C * (1 - Math.max(0, this.left) / this.total)
+        },
+        finish() {
+          clearInterval(this.iv)
+          this.iv = null
+          $('#timer').classList.add('done')
+          $('#timerTime').textContent = '¡Listo!'
+          beep()
+          if (navigator.vibrate) navigator.vibrate([120, 60, 120, 60, 200])
+        },
+        stop() {
+          clearInterval(this.iv)
+          this.iv = null
+          $('#timer').classList.remove('on', 'done')
+        },
+        toggle() {
+          if (!this.iv && !$('#timer').classList.contains('on')) return
+          this.paused = !this.paused
+          $('#timerPause').textContent = this.paused ? '▶' : '❚❚'
+        },
+        add15() {
+          this.left += 15
+          this.total = Math.max(this.total, this.left)
+          $('#timer').classList.remove('done')
+          if (!this.iv) {
+            this.iv = setInterval(() => {
+              if (this.paused) return
+              this.left--
+              this.render()
+              if (this.left <= 0) this.finish()
+            }, 1000)
+          }
+          this.render()
+        }
+      }
+      $('#timerAdd').addEventListener('click', () => Timer.add15())
+      $('#timerPause').addEventListener('click', () => Timer.toggle())
+      $('#timerClose').addEventListener('click', () => Timer.stop())
+      function beep() {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)()
+          ;[
+            [880, 0],
+            [1174, 0.2]
+          ].forEach(([f, d]) => {
+            const o = ctx.createOscillator(),
+              g = ctx.createGain()
+            o.connect(g)
+            g.connect(ctx.destination)
+            o.type = 'sine'
+            o.frequency.value = f
+            g.gain.setValueAtTime(0.16, ctx.currentTime + d)
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              ctx.currentTime + d + 0.55
+            )
+            o.start(ctx.currentTime + d)
+            o.stop(ctx.currentTime + d + 0.55)
+          })
+        } catch (e) {}
+      }
+
+      /* ---------- rutina UI ---------- */
+      function activeSets(d) {
+        let a = d.sets.filter((w) => w <= weekState.week)
+        if (weekState.deload) a = a.slice(0, Math.ceil(a.length / 2))
+        return a
+      }
+      function refreshStall() {
+        stallMap = stagnant()
+        const names = new Set()
+        ROUTINE.forEach((day) =>
+          day.ex.forEach((d) => {
+            if (stallMap[normName(d.n)]) names.add(d.n)
+          })
+        )
+        $('#stallBanner').classList.toggle('hide', !names.size)
+        if (names.size)
+          $('#stallList').innerHTML = [...names]
+            .map((n) => `<b>${esc(n)}</b>`)
+            .join(', ')
+      }
+      function renderRoutine() {
+        const day = ROUTINE[dayIdx],
+          wk = weekState.week
+        $('#dayTabs').innerHTML = ROUTINE.map(
+          (d, i) =>
+            `<button class="day-tab ${i === dayIdx ? 'active' : ''}" data-di="${i}" style="--dc:${d.side}">
+      <b>${d.short}</b><span>${d.title.replace('Tren ', '')}</span></button>`
+        ).join('')
+        $('#dayTitle').innerHTML =
+          `<b>${day.day}</b> ${day.title} · <span style="color:${day.side}">${day.focus}</span>` +
+          (weekState.deload ? ` <span class="badge-deload">DELOAD</span>` : '')
+        $('#rtList').innerHTML = day.ex
+          .map((d, i) => {
+            const c = GCOLORS[d.g] || '#8ba0a8'
+            const act = d.sets.filter((w) => w <= wk)
+            const locked = d.sets.find((w) => w > wk)
+            const isStall = !!stallMap[normName(d.n)]
+            let sets = `<b>${act.length}</b> series`
+            if (locked)
+              sets += ` <i>S${d.sets.indexOf(locked) + 1} desde sem ${locked}</i>`
+            return `<div class="rt-row" style="--gc:${c}">
+      <span class="rt-idx">${i + 1}</span>
+      <div class="rt-info"><b>${esc(d.n)}</b>${d.note ? `<i>▸ ${esc(d.note)}</i>` : ''}${isStall ? '<i class="stall-i">⚠ 2+ sesiones sin progreso — revisá deload</i>' : ''}</div>
+      <span class="tag" style="--gc:${c}">${GROUPS[d.g]}</span>
+      <span class="rt-meta">${repsLabel(d)} · ⏱ ${d.rest}</span>
+      <span class="rt-sets">${sets}</span>
+      <button class="rt-add" data-i="${i}">+ sesión</button></div>`
+          })
+          .join('')
+        const total = day.ex.reduce((a, d) => a + activeSets(d).length, 0)
+        $('#dayHint').innerHTML =
+          `${day.ex.length} ejercicios · <b>${total}</b> series ${weekState.deload ? '(deload)' : ''} esta semana`
+        $('#wkNum').textContent = wk
+        $('#wkMinus').disabled = wk <= 1
+        $('#wkPlus').disabled = wk >= 6
+        $('#pips').innerHTML = [1, 2, 3, 4, 5, 6]
+          .map((i) => `<i class="${i <= wk ? 'on' : ''}"></i>`)
+          .join('')
+        $('#pips').classList.toggle('deload', weekState.deload)
+        $('#deload').checked = weekState.deload
+        $('#deloadBadge').classList.toggle('hide', !weekState.deload)
+      }
+      $('#dayTabs').addEventListener('click', (e) => {
+        const t = e.target.closest('.day-tab')
+        if (!t) return
+        dayIdx = +t.dataset.di
+        renderRoutine()
+      })
+      $('#wkMinus').addEventListener('click', () => {
+        weekState.week = Math.max(1, weekState.week - 1)
+        saveL(LS.week, weekState)
+        renderRoutine()
+      })
+      $('#wkPlus').addEventListener('click', () => {
+        weekState.week = Math.min(6, weekState.week + 1)
+        saveL(LS.week, weekState)
+        renderRoutine()
+      })
+      $('#deload').addEventListener('change', (e) => {
+        weekState.deload = e.target.checked
+        saveL(LS.week, weekState)
+        renderRoutine()
+        toast(
+          weekState.deload
+            ? 'DELOAD activo: se cargan ~50% de series'
+            : 'DELOAD desactivado'
+        )
+      })
+      $('#stallDeload').addEventListener('click', () => {
+        weekState.deload = true
+        saveL(LS.week, weekState)
+        renderRoutine()
+        toast('DELOAD activado — descargá y volvé más fuerte')
+      })
+
+      function buildOne(d, prefill = true) {
+        const sets = activeSets(d).map(() => ({
+          reps: '',
+          kg: '',
+          done: false
+        }))
+        if (prefill) {
+          const last = lastSets(d.n)
+          if (last)
+            sets.forEach((s, i) => {
+              if (last[i]) {
+                s.reps = last[i].reps ?? ''
+                s.kg = last[i].kg ?? ''
+              }
+            })
+        }
+        return {
+          id: uid(),
+          name: d.n,
+          group: d.g,
+          reps: d.reps,
+          rest: d.rest,
+          note: d.note,
+          sets
+        }
+      }
+      $('#rtList').addEventListener('click', (e) => {
+        const b = e.target.closest('.rt-add')
+        if (!b) return
+        const d = ROUTINE[dayIdx].ex[+b.dataset.i]
+        state.exercises.push(buildOne(d))
+        persistSession()
+        renderExercises()
+        updateStats()
+        toast(`"${d.n}" añadido a la sesión`)
+      })
+      $('#loadDay').addEventListener('click', () => {
+        if (
+          state.exercises.length &&
+          !confirm(
+            'Esto reemplaza la sesión actual por el día seleccionado. ¿Continuar?'
+          )
+        )
+          return
+        const day = ROUTINE[dayIdx]
+        state.exercises = day.ex.map((d) => buildOne(d))
+        persistSession()
+        renderExercises()
+        updateStats()
+        const had = day.ex.some((d) => lastSets(d.n))
+        toast(`${day.day} cargado${had ? ' · con tus últimas cargas' : ''} 💪`)
+        const p = $('#sessionPanel')
+        p.classList.remove('flash')
+        void p.offsetWidth
+        p.classList.add('flash')
+        p.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
+
+      /* ---------- ejercicios de sesión ---------- */
+      const barSVG =
+        '<svg width="46" height="23" viewBox="0 0 48 24"><rect x="1" y="8" width="4" height="8" fill="#8ba0a8"/><rect x="6" y="4.5" width="4.5" height="15" fill="#8ba0a8"/><rect x="11.5" y="10.5" width="25" height="3" fill="#5a6c74"/><rect x="37.5" y="4.5" width="4.5" height="15" fill="#8ba0a8"/><rect x="43" y="8" width="4" height="8" fill="#8ba0a8"/></svg>'
+      const trashSVG =
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2m1 0-1 14H8L7 6"/></svg>'
+      const loadSVG =
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 2.6-6.4M3 4v5h5"/></svg>'
+      const checkSVG =
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M4 12l5 5L20 6"/></svg>'
+
+      function setRowHTML(eid, s, si) {
+        return `<div class="set-row ${s.done ? 'done' : ''}">
+  <button class="set-check" data-eid="${eid}" data-sid="${si}" title="Marcar serie completada" aria-pressed="${!!s.done}">${checkSVG}</button>
+  <span class="set-num">${si + 1}</span>
+  <input type="number" min="0" step="1" value="${s.reps ?? ''}" placeholder="0" data-eid="${eid}" data-sid="${si}" data-f="reps" aria-label="Repeticiones serie ${si + 1}">
+  <input type="number" min="0" step="0.5" value="${s.kg ?? ''}" placeholder="0.0" data-eid="${eid}" data-sid="${si}" data-f="kg" aria-label="Peso serie ${si + 1}">
+  <button class="icon-btn del-set" data-eid="${eid}" data-sid="${si}" title="Eliminar serie">${trashSVG}</button></div>`
+      }
+
+      function exCardHTML(e, i) {
+        const vol = e.sets.reduce(
+          (a, s) => a + (+s.reps || 0) * (+s.kg || 0),
+          0
+        )
+        const best = Math.max(0, ...e.sets.map((s) => +s.kg || 0))
+        const c = GCOLORS[e.group] || '#8ba0a8'
+        const meta =
+          e.reps || e.rest
+            ? `<span class="ex-meta">${e.reps ? repsLabel(e) : ''}${e.rest ? ' · ⏱ ' + e.rest : ''}</span>`
+            : ''
+        const sug = suggestFor(e)
+        return `<article class="ex-card" data-card="${e.id}" style="--gc:${c}">
+    <header class="ex-head">
+      <span class="ex-idx">${String(i + 1).padStart(2, '0')}</span>
+      <h3 class="ex-name">${esc(e.name) || 'Ejercicio'}</h3>
+      <span class="tag" style="--gc:${c}">${GROUPS[e.group] || e.group}</span>
+      ${meta}
+      <span class="ex-vol">vol <b>${fmtN(Math.round(vol))}</b> kg</span>
+      <button class="icon-btn del-ex" data-eid="${e.id}" title="Eliminar ejercicio">${trashSVG}</button>
+    </header>
+    ${e.note ? `<p class="ex-note">▸ ${esc(e.note)}</p>` : ''}
+    <div class="sets">
+      <div class="sets-head"><span></span><span>Serie</span><span>Reps</span><span>Peso (kg)</span><span></span></div>
+      ${e.sets.map((s, si) => setRowHTML(e.id, s, si)).join('')}
+    </div>
+    <footer class="ex-foot">
+      <button class="add-set" data-eid="${e.id}">+ Añadir serie</button>
+      <span class="prog ${sug ? '' : 'hide'}" ${sug ? `data-t="${sug.t}"` : ''}>${sug ? sug.msg : ''}</span>
+      <span class="best ${best ? '' : 'hide'}">Mejor serie: <b>${fmtN(best, 1)} kg</b></span>
+    </footer></article>`
+      }
+
+      function renderExercises() {
+        const box = $('#exList')
+        if (!state.exercises.length) {
+          box.innerHTML = `<div class="empty">${barSVG}
+      <p><b>Sin ejercicios todavía.</b><br>Cargá tu día de la rutina o añadí uno manual arriba.</p>
+      <button class="link-btn" id="sampleEx">Cargar el día de hoy de la rutina</button></div>`
+          updateSessionProgress()
+          return
+        }
+        box.innerHTML = state.exercises.map((e, i) => exCardHTML(e, i)).join('')
+        updateSessionProgress()
+      }
+
+      function updateProgChip(ex) {
+        const card = document.querySelector(`.ex-card[data-card="${ex.id}"]`)
+        if (!card) return
+        const chip = card.querySelector('.prog'),
+          s = suggestFor(ex)
+        if (!s) {
+          chip.classList.add('hide')
+          return
+        }
+        chip.classList.remove('hide')
+        chip.dataset.t = s.t
+        chip.textContent = s.msg
+      }
+
+      function addExercise() {
+        const name = $('#exName').value.trim()
+        if (!name) {
+          toast('Escribe el nombre del ejercicio', 'warn')
+          $('#exName').focus()
+          return
+        }
+        const ex = {
+          id: uid(),
+          name,
+          group: $('#exGroup').value,
+          sets: [{ reps: '', kg: '', done: false }]
+        }
+        const last = lastSets(name)
+        if (last && last[0]) {
+          ex.sets[0].reps = last[0].reps ?? ''
+          ex.sets[0].kg = last[0].kg ?? ''
+        }
+        state.exercises.push(ex)
+        $('#exName').value = ''
+        persistSession()
+        renderExercises()
+        updateStats()
+        $('#exName').focus()
+      }
+      $('#addEx').addEventListener('click', addExercise)
+      $('#exName').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') addExercise()
+      })
+
+      $('#exList').addEventListener('input', (e) => {
+        const inp = e.target
+        if (!inp.dataset.f) return
+        const ex = state.exercises.find((x) => x.id === inp.dataset.eid)
+        if (!ex) return
+        const set = ex.sets[+inp.dataset.sid]
+        set[inp.dataset.f] = inp.value === '' ? '' : +inp.value
+        persistSession()
+        updateStats()
+        updateSessionProgress()
+        updateProgChip(ex)
+        const card = inp.closest('.ex-card')
+        const vol = ex.sets.reduce(
+          (a, s) => a + (+s.reps || 0) * (+s.kg || 0),
+          0
+        )
+        card.querySelector('.ex-vol b').textContent = fmtN(Math.round(vol))
+        const best = Math.max(0, ...ex.sets.map((s) => +s.kg || 0))
+        const bEl = card.querySelector('.best b')
+        bEl.textContent = fmtN(best, 1) + ' kg'
+        bEl.parentElement.classList.toggle('hide', !best)
+      })
+
+      $('#exList').addEventListener('click', (e) => {
+        const b = e.target.closest('button')
+        if (!b) return
+        if (b.id === 'sampleEx') {
+          state.exercises = ROUTINE[dayIdx].ex.map((d) => buildOne(d))
+          persistSession()
+          renderExercises()
+          updateStats()
+          toast(`${ROUTINE[dayIdx].day} cargado en la sesión`)
+          return
+        }
+        const eid = b.dataset.eid
+        const ex = state.exercises.find((x) => x.id === eid)
+        if (b.classList.contains('set-check')) {
+          const si = +b.dataset.sid,
+            set = ex.sets[si]
+          set.done = !set.done
+          persistSession()
+          const row = b.closest('.set-row')
+          row.classList.toggle('done', set.done)
+          b.setAttribute('aria-pressed', set.done)
+          updateSessionProgress()
+          updateProgChip(ex)
+          if (set.done && ex.rest) {
+            Timer.start(parseRest(ex.rest), `${ex.name} · Serie ${si + 1}`)
+          }
+        } else if (b.classList.contains('add-set')) {
+          ex.sets.push({ reps: '', kg: '', done: false })
+          persistSession()
+          renderExercises()
+          updateStats()
+          document
+            .querySelector(
+              `.ex-card[data-card="${eid}"] .set-row:last-of-type input`
+            )
+            ?.focus()
+        } else if (b.classList.contains('del-set')) {
+          ex.sets.splice(+b.dataset.sid, 1)
+          persistSession()
+          renderExercises()
+          updateStats()
+        } else if (b.classList.contains('del-ex')) {
+          state.exercises = state.exercises.filter((x) => x.id !== eid)
+          persistSession()
+          renderExercises()
+          updateStats()
+          toast('Ejercicio eliminado')
+        }
+      })
+
+      /* ---------- guardar / limpiar / copiar sesión ---------- */
+      function focusOf(exs) {
+        const c = {}
+        exs.forEach((e) => (c[e.group] = (c[e.group] || 0) + e.sets.length))
+        return Object.entries(c).sort((a, b) => b[1] - a[1])[0]?.[0]
+      }
+      $('#saveSession').addEventListener('click', () => {
+        const valid = state.exercises.filter(
+          (e) => e.name.trim() && e.sets.length
+        )
+        if (!valid.length) {
+          toast('Añade al menos un ejercicio con una serie', 'warn')
+          return
+        }
+        const clean = JSON.parse(JSON.stringify(valid)).map((e) => ({
+          ...e,
+          sets: e.sets.map((s) => ({
+            reps: +s.reps || 0,
+            kg: +s.kg || 0,
+            done: !!s.done
+          })),
+          sug: suggestFor(e)
+        }))
+        const vol = clean.reduce(
+          (a, e) => a + e.sets.reduce((x, s) => x + s.reps * s.kg, 0),
+          0
+        )
+        const focus = focusOf(clean)
+        state.history.unshift({
+          id: uid(),
+          ts: new Date().toISOString(),
+          volume: vol,
+          focus,
+          exercises: clean
+        })
+        saveL(LS.history, state.history)
+        state.exercises = []
+        persistSession()
+        refreshStall()
+        renderRoutine()
+        renderExercises()
+        renderHistory()
+        updateStats()
+        toast(`Sesión guardada · enfoque: ${GROUPS[focus] || 'general'} 💪`)
+      })
+      $('#clearSession').addEventListener('click', () => {
+        if (state.exercises.length && !confirm('¿Vaciar la sesión actual?'))
+          return
+        state.exercises = []
+        persistSession()
+        renderExercises()
+        updateStats()
+      })
+      $('#copySession').addEventListener('click', () => {
+        if (!state.exercises.length) {
+          toast('No hay sesión que copiar', 'warn')
+          return
+        }
+        const d = new Date(),
+          focus = GROUPS[focusOf(state.exercises)] || ''
+        let T = 0,
+          D = 0,
+          V = 0
+        const body = state.exercises
+          .map((e, i) => {
+            const sets = e.sets
+              .map((s, si) => {
+                T++
+                if (s.done) {
+                  D++
+                  V += (+s.reps || 0) * (+s.kg || 0)
+                }
+                const has =
+                  (s.reps !== '' && s.reps != null) ||
+                  (s.kg !== '' && s.kg != null)
+                return `- S${si + 1}: ${has ? `${s.kg !== '' && s.kg != null ? fmtN(+s.kg, 1) + ' kg' : '—'} × ${s.reps !== '' && s.reps != null ? s.reps : '—'}${s.done ? ' ✔' : ''}` : '_ kg × _ reps'}`
+              })
+              .join('\n')
+            return `${i + 1}. ${e.name}${e.reps && e.reps !== 'al fallo' ? ` (${e.reps} reps)` : ''}${e.rest ? ` — ⏱ ${e.rest}` : ''}\n${sets}`
+          })
+          .join('\n\n')
+        const txt = `🏋️ SESIÓN — ${d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}\n${focus ? `Enfoque: ${focus} · ` : ''}RIR 2–3\n\n${body}\n\n*Volumen completado:* ${fmtN(Math.round(V))} kg · ${D}/${T} series`
+        const done = () => toast('Sesión copiada al portapapeles')
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard
+            .writeText(txt)
+            .then(done)
+            .catch(() => fallbackCopy(txt, done))
+        } else fallbackCopy(txt, done)
+      })
+      function fallbackCopy(txt, cb) {
+        const ta = document.createElement('textarea')
+        ta.value = txt
+        ta.style.position = 'fixed'
+        ta.style.opacity = '0'
+        document.body.append(ta)
+        ta.select()
+        try {
+          document.execCommand('copy')
+          cb()
+        } catch (e) {
+          toast('No se pudo copiar', 'warn')
+        }
+        ta.remove()
+      }
+
+      /* ---------- historial ---------- */
+      function renderHistory() {
+        const box = $('#historyList')
+        if (!state.history.length) {
+          box.innerHTML = `<div class="empty"><p>Aquí se acumulan tus sesiones guardadas.<br><b>El hierro no miente.</b></p></div>`
+          return
+        }
+        box.innerHTML = state.history
+          .map((h) => {
+            const d = new Date(h.ts),
+              sets = h.exercises.reduce((a, e) => a + e.sets.length, 0)
+            return `<article class="hist-item">
+      <button class="hist-head" data-hid="${h.id}" aria-expanded="false">
+        <span class="hist-date"><b>${d.toLocaleDateString('es-ES', { weekday: 'short' })}</b>${d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+        <span class="tag" style="--gc:${GCOLORS[h.focus] || '#8ba0a8'}">${GROUPS[h.focus] || 'General'}</span>
+        <span class="hist-meta">${h.exercises.length} ej · ${sets} series · <b>${fmtN(Math.round(h.volume))} kg</b></span>
+        <span class="chev">▾</span>
+      </button>
+      <div class="hist-body">
+        ${h.exercises.map((e) => `<div class="hist-ex"><span>${esc(e.name)}${e.sug ? `<em class="sug sug-${e.sug.t}">${e.sug.msg}</em>` : ''}</span><span class="muted">${e.sets.map((s) => `${s.reps}×${fmtN(s.kg, 1)}${s.done ? '✔' : ''}`).join(' · ')}</span></div>`).join('')}
+        <button class="del-hist" data-hid="${h.id}">Eliminar sesión</button>
+      </div></article>`
+          })
+          .join('')
+      }
+      $('#historyList').addEventListener('click', (e) => {
+        const head = e.target.closest('.hist-head')
+        if (head) {
+          const it = head.closest('.hist-item')
+          it.classList.toggle('open')
+          head.setAttribute('aria-expanded', it.classList.contains('open'))
+          return
+        }
+        const del = e.target.closest('.del-hist')
+        if (del) {
+          state.history = state.history.filter((h) => h.id !== del.dataset.hid)
+          saveL(LS.history, state.history)
+          refreshStall()
+          renderRoutine()
+          renderHistory()
+          updateStats()
+          toast('Sesión eliminada')
+        }
+      })
+
+      /* ---------- antropometría ---------- */
+      $('#measGrid').innerHTML = MEASURES.map(
+        ([k, l]) => `<label class="meas"><span>${l}</span>
+  <div class="meas-in"><input type="number" step="0.1" min="0" id="m_${k}" placeholder="0.0"><em>cm</em></div></label>`
+      ).join('')
+      const num = (sel) => {
+        const v = parseFloat($(sel).value)
+        return isNaN(v) ? null : v
+      }
+      $('#saveBody').addEventListener('click', () => {
+        const rec = {
+          id: uid(),
+          ts: new Date().toISOString(),
+          peso: num('#peso'),
+          altura: num('#altura'),
+          m: {}
+        }
+        MEASURES.forEach(([k]) => (rec.m[k] = num('#m_' + k)))
+        if (
+          rec.peso == null &&
+          rec.altura == null &&
+          !Object.values(rec.m).some((v) => v != null)
+        ) {
+          toast('Escribe al menos un valor', 'warn')
+          return
+        }
+        state.body.push(rec)
+        state.body.sort((a, b) => a.ts - b.ts)
+        saveL(LS.body, state.body)
+        renderBody()
+        updateStats()
+        toast('Registro antropométrico guardado')
+      })
+      function lastDelta(key) {
+        const arr = state.body.filter((r) =>
+          key === 'peso' ? r.peso != null : r.m?.[key] != null
+        )
+        if (arr.length < 2) return null
+        const a = arr[arr.length - 1],
+          b = arr[arr.length - 2]
+        return (
+          (key === 'peso' ? a.peso : a.m[key]) -
+          (key === 'peso' ? b.peso : b.m[key])
+        )
+      }
+      function renderDeltas() {
+        const KEYS = [
+          ['peso', 'Peso'],
+          ['cintura', 'Cintura'],
+          ['cadera', 'Cadera'],
+          ['brazo', 'Brazo'],
+          ['muslo', 'Muslo']
+        ]
+        const chips = KEYS.map(([k, l]) => {
+          const d = lastDelta(k)
+          if (d == null) return ''
+          const cls = d > 0 ? 'up' : d < 0 ? 'down' : '',
+            arrow = d > 0 ? '▲' : d < 0 ? '▼' : '='
+          return `<span class="delta">${l} <b class="${cls}">${arrow} ${fmtN(Math.abs(d), 1)}</b></span>`
+        }).join('')
+        const box = $('#deltas')
+        box.innerHTML = chips
+        box.style.display = chips ? 'flex' : 'none'
+      }
+      function renderChart() {
+        const pts = state.body.filter((r) => r.peso != null).slice(-14)
+        const svg = $('#chart'),
+          empty = $('#chartEmpty')
+        if (!pts.length) {
+          svg.innerHTML = ''
+          empty.style.display = 'block'
+          $('#chartRange').textContent = ''
+          return
+        }
+        empty.style.display = 'none'
+        const W = 320,
+          H = 110,
+          P = 10,
+          vals = pts.map((p) => p.peso)
+        const min = Math.min(...vals),
+          max = Math.max(...vals),
+          span = max - min || 1
+        const X = (i) =>
+          pts.length === 1 ? W / 2 : P + (i * (W - 2 * P)) / (pts.length - 1)
+        const Y = (v) => H - P - ((v - min) / span) * (H - 2 * P)
+        $('#chartRange').textContent = `${fmtN(min, 1)}–${fmtN(max, 1)} kg`
+        const defs = `<defs><linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#c9f24b" stop-opacity=".3"/><stop offset="1" stop-color="#c9f24b" stop-opacity="0"/></linearGradient></defs>`
+        if (pts.length === 1) {
+          svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
+          svg.innerHTML =
+            defs +
+            `<circle cx="${W / 2}" cy="${Y(pts[0].peso)}" r="3.5" class="ch-dot"/>
+      <text x="${W / 2 - 6}" y="${Y(pts[0].peso) - 8}" class="ch-lab">${fmtN(pts[0].peso, 1)}</text>`
+          return
+        }
+        const path = pts
+          .map(
+            (p, i) =>
+              `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(p.peso).toFixed(1)}`
+          )
+          .join(' ')
+        const area =
+          path +
+          ` L${X(pts.length - 1).toFixed(1)},${H - P} L${X(0).toFixed(1)},${H - P} Z`
+        svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
+        svg.innerHTML =
+          defs +
+          `<path d="${area}" class="ch-area"/><path d="${path}" class="ch-line" pathLength="1"/>` +
+          pts
+            .map(
+              (p, i) =>
+                `<circle cx="${X(i).toFixed(1)}" cy="${Y(p.peso).toFixed(1)}" r="2.6" class="ch-dot"/>`
+            )
+            .join('') +
+          `<text x="${(X(pts.length - 1) - 4).toFixed(1)}" y="${(Y(pts[pts.length - 1].peso) - 7).toFixed(1)}" class="ch-lab">${fmtN(pts[pts.length - 1].peso, 1)}</text>`
+        const line = svg.querySelector('.ch-line')
+        line.style.strokeDasharray = 1
+        line.style.strokeDashoffset = 1
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            line.style.transition = 'stroke-dashoffset 1s ease'
+            line.style.strokeDashoffset = 0
+          })
+        )
+      }
+      function renderBody() {
+        renderChart()
+        renderDeltas()
+        const box = $('#bodyList'),
+          recs = [...state.body].reverse()
+        if (!recs.length) {
+          box.innerHTML = `<div class="empty"><p>Sin registros aún.<br>Anota tu peso y medidas para seguir tu evolución.</p></div>`
+          return
+        }
+        box.innerHTML = recs
+          .map((r) => {
+            const d = new Date(r.ts),
+              nM = Object.values(r.m || {}).filter((v) => v != null).length
+            return `<div class="body-rec">
+      <span class="br-date">${d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: '2-digit' })}</span>
+      <span class="br-main">${r.peso != null ? `<b>${fmtN(r.peso, 1)}</b> kg` : '<span>sin peso</span>'}${r.altura != null ? `<span>${fmtN(r.altura)} cm</span>` : ''}${nM ? `<span>· ${nM} medidas</span>` : ''}</span>
+      <span class="br-actions">
+        <button class="icon-btn" data-act="load" data-id="${r.id}" title="Cargar en el formulario">${loadSVG}</button>
+        <button class="icon-btn" data-act="del" data-id="${r.id}" title="Eliminar registro">${trashSVG}</button>
+      </span></div>`
+          })
+          .join('')
+      }
+      $('#bodyList').addEventListener('click', (e) => {
+        const b = e.target.closest('button')
+        if (!b) return
+        const r = state.body.find((x) => x.id === b.dataset.id)
+        if (!r) return
+        if (b.dataset.act === 'load') {
+          $('#peso').value = r.peso ?? ''
+          $('#altura').value = r.altura ?? ''
+          MEASURES.forEach(([k]) => {
+            $('#m_' + k).value = r.m?.[k] ?? ''
+          })
+          toast('Registro cargado en el formulario')
+        } else if (b.dataset.act === 'del') {
+          state.body = state.body.filter((x) => x.id !== r.id)
+          saveL(LS.body, state.body)
+          renderBody()
+          updateStats()
+          toast('Registro eliminado')
+        }
+      })
+
+      /* ---------- respaldo exportar / importar ---------- */
+      $('#exportBtn').addEventListener('click', () => {
+        const data = {
+          app: 'FORJA',
+          version: 2,
+          exportedAt: new Date().toISOString(),
+          week: weekState,
+          session: state.exercises,
+          history: state.history,
+          body: state.body
+        }
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+          type: 'application/json'
+        })
+        const a = document.createElement('a')
+        a.href = URL.createObjectURL(blob)
+        a.download = `forja-respaldo-${new Date().toISOString().slice(0, 10)}.json`
+        a.click()
+        URL.revokeObjectURL(a.href)
+        toast('Respaldo descargado (.json)')
+      })
+      $('#importBtn').addEventListener('click', () => $('#importFile').click())
+      $('#importFile').addEventListener('change', (e) => {
+        const f = e.target.files[0]
+        if (!f) return
+        const r = new FileReader()
+        r.onload = () => {
+          try {
+            const d = JSON.parse(r.result)
+            if (
+              !d ||
+              (d.history === undefined &&
+                d.body === undefined &&
+                d.session === undefined)
+            )
+              throw 0
+            if (
+              !confirm(
+                'Esto REEMPLAZA tus datos actuales con el respaldo importado. ¿Continuar?'
+              )
+            )
+              return
+            state.exercises = Array.isArray(d.session) ? d.session : []
+            state.history = Array.isArray(d.history) ? d.history : []
+            state.body = Array.isArray(d.body) ? d.body : []
+            if (d.week && d.week.week) weekState = d.week
+            saveL(LS.session, state.exercises)
+            saveL(LS.history, state.history)
+            saveL(LS.body, state.body)
+            saveL(LS.week, weekState)
+            renderAll()
+            toast('Respaldo importado ✔')
+          } catch (err) {
+            toast('Archivo de respaldo inválido', 'warn')
+          }
+        }
+        r.readAsText(f)
+        e.target.value = ''
+      })
+
+      /* ---------- varios ---------- */
+      function toast(msg, type = 'ok') {
+        const t = document.createElement('div')
+        t.className = 'toast ' + type
+        t.textContent = msg
+        $('#toasts').append(t)
+        requestAnimationFrame(() => t.classList.add('show'))
+        setTimeout(() => {
+          t.classList.remove('show')
+          setTimeout(() => t.remove(), 350)
+        }, 2600)
+      }
+      $('#wipe').addEventListener('click', () => {
+        if (
+          !confirm(
+            'Esto borrará TODOS tus datos (sesión, historial, antropometría y semana). ¿Seguro?'
+          )
+        )
+          return
+        Object.values(LS).forEach((k) => localStorage.removeItem(k))
+        state = { exercises: [], history: [], body: [] }
+        weekState = { week: 1, deload: false }
+        renderAll()
+        toast('Todos los datos fueron borrados', 'warn')
+      })
+      function renderAll() {
+        refreshStall()
+        renderRoutine()
+        renderExercises()
+        renderHistory()
+        renderBody()
+        updateStats()
+      }
+
+      /* ---------- PWA: botón instalar + service worker ---------- */
+      let deferredPrompt = null
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault()
+        deferredPrompt = e
+        $('#installBtn').classList.remove('hide')
+      })
+      $('#installBtn').addEventListener('click', async () => {
+        if (!deferredPrompt) return
+        deferredPrompt.prompt()
+        await deferredPrompt.userChoice
+        deferredPrompt = null
+        $('#installBtn').classList.add('hide')
+      })
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js').catch(() => {})
+        })
+      }
+
+      const io = new IntersectionObserver(
+        (es) =>
+          es.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('in')
+              io.unobserve(e.target)
+            }
+          }),
+        { threshold: 0.08 }
+      )
+      $$('.reveal:not(.in)').forEach((el) => io.observe(el))
+
+      renderAll()
+    </script>
+  </body>
+</html>
