@@ -40,6 +40,7 @@
         --teal: #3fd8c7;
         --red: #ff6b6b;
         --blue: #5db9ff;
+        --tabbar-h: 0px;
       }
       * {
         margin: 0;
@@ -1634,7 +1635,7 @@
       #timer {
         position: fixed;
         left: 22px;
-        bottom: 22px;
+        bottom: calc(22px + var(--tabbar-h));
         z-index: 99;
         display: flex;
         align-items: center;
@@ -1721,7 +1722,7 @@
         #timer {
           left: 12px;
           right: auto;
-          bottom: 12px;
+          bottom: calc(12px + var(--tabbar-h));
           gap: 10px;
           padding: 9px 12px;
           max-width: calc(100vw - 24px);
@@ -1753,8 +1754,11 @@
         display: none;
       }
       @media (max-width: 1020px) {
+        :root {
+          --tabbar-h: calc(72px + env(safe-area-inset-bottom));
+        }
         body {
-          padding-bottom: calc(64px + env(safe-area-inset-bottom));
+          padding-bottom: calc(var(--tabbar-h) + 10px);
         }
         .tabbar {
           position: fixed;
@@ -1774,20 +1778,20 @@
           border: none;
           color: var(--muted);
           cursor: pointer;
-          padding: 10px 0 8px;
+          padding: 15px 0 13px;
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 4px;
-          font: 700 10px 'Space Grotesk';
+          gap: 6px;
+          font: 700 11px 'Space Grotesk';
           letter-spacing: 0.2em;
           text-transform: uppercase;
           position: relative;
           transition: color 0.2s;
         }
         .tabbar-btn svg {
-          width: 22px;
-          height: 22px;
+          width: 24px;
+          height: 24px;
           transition: transform 0.2s;
         }
         .tabbar-btn::before {
@@ -1810,17 +1814,11 @@
         .tabbar-btn.active svg {
           transform: translateY(-2px);
         }
-        #timer {
-          bottom: calc(76px + env(safe-area-inset-bottom));
-        }
-        #toasts {
-          bottom: calc(76px + env(safe-area-inset-bottom));
-        }
       }
 
       #toasts {
         position: fixed;
-        bottom: 22px;
+        bottom: calc(22px + var(--tabbar-h));
         right: 22px;
         z-index: 100;
         display: flex;
