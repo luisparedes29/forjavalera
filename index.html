@@ -2134,7 +2134,7 @@
         <section class="panel reveal d1" style="--acc: var(--blue)">
           <h2>
             <span class="n">01/</span> Rutina · Bloque actual
-            <span class="rir">RIR objetivo 2–3</span>
+            <span class="rir">RIR objetivo 1–2</span>
           </h2>
           <div class="routine-bar">
             <div class="day-tabs" id="dayTabs"></div>
@@ -2185,34 +2185,45 @@
             <summary>▸ Notas del bloque</summary>
             <ul>
               <li>
-                <b>RIR 2–3:</b> guardar 2–3 reps antes del fallo en todas las
-                series.
+                <b>RIR 1–2:</b> guardar 1–2 reps antes del fallo. Los compuestos
+                pesados (sentadilla, press de banca, peso muerto rumano) se
+                quedan en RIR 2; los aislamientos y las máquinas pueden llegar a
+                RIR 1 con seguridad.
               </li>
               <li>
-                <b>Descansos:</b> 60–90 s alcanza para el estímulo de
-                hipertrofia en aislamiento. En compuestos pesados (sentadilla,
-                press de banca, peso muerto rumano) subir a 2–3 min — el
-                objetivo es mantener rendimiento y técnica. Prensa, press
-                militar, hip thrust y remos quedan en 2 min.
+                <b>Segundo toque:</b> cada grupo muscular recibe un segundo
+                estímulo semanal (espalda, pecho, isquios, bíceps, tríceps,
+                deltoides lateral y posterior). El face pull pasa de 1 a 2 veces
+                por semana.
               </li>
               <li>
-                <b>Progresión:</b> la S3 de los básicos aparece en la semana 3 y
-                la de los aislamientos en la semana 5 — así progresa en volumen
-                el bloque. Si dos semanas seguidas no subís carga ni reps, es
-                señal de que toca deload o de que la recuperación
+                <b>Descansos:</b> 2.5–3 min en los tres grandes (sentadilla,
+                press de banca, peso muerto rumano); 2 min en el resto de
+                compuestos; 60–90 s en aislamiento. El objetivo es mantener
+                rendimiento y técnica, no acumular fatiga.
+              </li>
+              <li>
+                <b>Progresión:</b> las series son fijas — el progreso viene de
+                subir carga o reps semana a semana. Si dos semanas seguidas no
+                subís nada, es señal de que toca deload o de que la recuperación
                 (sueño/nutrición) no está acompañando.
+              </li>
+              <li>
+                <b>Estiramiento:</b> varios ejercicios cargan el músculo en
+                posición estirada (extensión de cuádriceps, curl de isquios
+                sentado, tríceps overhead) — la evidencia reciente asocia el
+                trabajo en longitud larga con mayor hipertrofia.
               </li>
               <li>
                 <b>Deload:</b> cada 5–6 semanas, reducir volumen a ~50% (menos
                 series, mismo peso o levemente inferior) antes de iniciar un
                 nuevo bloque.
               </li>
+              <!-- ← CAMBIO: Lunes ahora también tiene 7 ejercicios -->
               <li>
-                <b>Miércoles:</b> si la sesión se siente muy cargada de fatiga
-                acumulada, se puede mover al jueves y correr la semana un día.
-                Ningún ejercicio impone carga axial lumbar directa (todo es
-                sentado, banco o con apoyo); si aparece molestia lumbar puntual,
-                conviene revisar técnica.
+                <b>Lunes y Viernes:</b> son los días más largos (7 ejercicios
+                cada uno). Si alguno se siente muy cargado de fatiga acumulada,
+                se puede mover un día y correr la semana.
               </li>
             </ul>
           </details>
@@ -2510,6 +2521,8 @@
 
       /* ---------- RUTINA (sets = semana mínima de cada serie) ---------- */
       const ROUTINE = [
+        /* ← CAMBIO: Lunes v2.0 — 7 ejercicios, deltoides posterior y medial
+           con trabajo directo adicional                                  */
         {
           id: 'lun',
           day: 'Lunes',
@@ -2519,39 +2532,60 @@
           side: '#ff6b6b',
           ex: [
             {
-              n: 'Jalón al pecho polea alta',
+              n: 'Jalón al pecho en polea alta',
               g: 'espalda',
               reps: '6–10',
-              rest: '90 s – 2 min',
-              sets: [1, 1, 3]
+              rest: '2 min',
+              sets: [1, 1, 1],
+              note: 'RIR 2 · dorsal ancho · tracción vertical'
             },
             {
               n: 'Remo con barra o máquina',
               g: 'espalda',
               reps: '6–10',
-              rest: '90 s – 2 min',
-              sets: [1, 1, 3]
+              rest: '2 min',
+              sets: [1, 1, 1],
+              note: 'RIR 2 · trapecio medio y romboides · retracción escapular'
             },
             {
-              n: 'Pullover en polea alta',
-              g: 'espalda',
+              n: 'Face pull en polea alta',
+              g: 'hombros',
               reps: '12–15',
               rest: '60–90 s',
-              sets: [1, 1]
+              sets: [1, 1, 1],
+              note: 'RIR 2 · rotación externa al final · peso moderado-bajo · salud articular'
             },
             {
-              n: 'Curl de bíceps con barra',
-              g: 'brazos',
+              n: 'Peck deck invertido',
+              g: 'hombros',
               reps: '10–12',
               rest: '60–90 s',
-              sets: [1, 1, 5]
+              sets: [1, 1, 1],
+              note: 'RIR 1–2 · deltoides posterior aislado · pausa 1 s en máxima contracción'
+            },
+            {
+              n: 'Elevaciones laterales (mancuernas)',
+              g: 'hombros',
+              reps: '12–15',
+              rest: '60 s',
+              sets: [1, 1],
+              note: 'RIR 1 · deltoides medial · reclutamiento puro sin trapecio superior'
+            },
+            {
+              n: 'Curl de bíceps con barra EZ',
+              g: 'brazos',
+              reps: '8–12',
+              rest: '90 s',
+              sets: [1, 1, 1],
+              note: 'RIR 1–2 · bíceps (cabeza corta y larga) + braquial'
             },
             {
               n: 'Curl martillo con mancuernas',
               g: 'brazos',
               reps: '10–15',
               rest: '60–90 s',
-              sets: [1, 1]
+              sets: [1, 1],
+              note: 'RIR 1–2 · braquial y braquiorradial · agarre neutro'
             }
           ]
         },
@@ -2567,38 +2601,49 @@
               n: 'Sentadilla libre o Hack',
               g: 'piernas',
               reps: '6–10',
-              rest: '2–3 min',
-              sets: [1, 1, 3]
+              rest: '2.5–3 min',
+              sets: [1, 1, 1],
+              note: 'RIR 2 · carga axial · máximo reclutamiento sistémico'
             },
             {
-              n: 'Prensa de piernas',
+              n: 'Sentadilla búlgara con mancuernas',
               g: 'piernas',
               reps: '8–12',
               rest: '2 min',
-              sets: [1, 1, 3]
+              sets: [1, 1, 1],
+              note: 'RIR 1–2 · torso vertical · énfasis cuádriceps'
             },
             {
               n: 'Extensión de cuádriceps',
               g: 'piernas',
               reps: '12–15',
               rest: '60–90 s',
-              sets: [1, 1, 5]
+              sets: [1, 1, 1],
+              note: 'RIR 1 · recto femoral en posición estirada'
+            },
+            {
+              n: 'Curl de isquios sentado',
+              g: 'piernas',
+              reps: '10–15',
+              rest: '90 s',
+              sets: [1, 1],
+              note: 'RIR 1–2 · sentado > tumbado · segundo toque semanal'
             },
             {
               n: 'Elevación de talones de pie',
               g: 'piernas',
-              reps: '12–15',
+              reps: '10–15',
               rest: '60–90 s',
-              sets: [1, 1, 5],
-              note: 'Pausa 1 s abajo'
+              sets: [1, 1, 1],
+              note: 'RIR 1 · pausa 1 s abajo · gastrocnemio'
             },
             {
-              n: 'Plancha abdominal (plank)',
+              n: 'Crunch abdominal en polea',
               g: 'core',
-              reps: 'al fallo',
-              rest: '45–60 s',
-              sets: [1, 1, 5],
-              note: 'Al fallo técnico · anotar segundos en "reps"'
+              reps: '12–20',
+              rest: '60 s',
+              sets: [1, 1, 1],
+              note: 'RIR 1–2 · de rodillas · carga progresiva'
             }
           ]
         },
@@ -2611,48 +2656,52 @@
           side: '#ff6b6b',
           ex: [
             {
-              n: 'Press de banca (barra/mancuerna)',
+              n: 'Press de banca con barra',
               g: 'pecho',
               reps: '6–10',
-              rest: '2–3 min',
-              sets: [1, 1, 3]
+              rest: '2.5–3 min',
+              sets: [1, 1, 1],
+              note: 'RIR 2 · máxima tensión mecánica'
             },
             {
-              n: 'Press de pecho en máquina',
+              n: 'Press inclinado con mancuernas (30°)',
               g: 'pecho',
               reps: '8–12',
-              rest: '90 s – 2 min',
-              sets: [1, 1, 3],
-              note: 'Guiada · sin estabilizadores · más cerca del fallo con seguridad'
-            },
-            {
-              n: 'Press militar sentado (mancuerna)',
-              g: 'hombros',
-              reps: '8–12',
               rest: '2 min',
-              sets: [1, 1, 3]
+              sets: [1, 1, 1],
+              note: 'RIR 1–2 · énfasis cabeza clavicular (pecho superior)'
             },
             {
               n: 'Aperturas (Pec-Deck o poleas)',
               g: 'pecho',
               reps: '12–15',
               rest: '60–90 s',
-              sets: [1, 1, 5]
+              sets: [1, 1, 1],
+              note: 'RIR 1 · máximo estiramiento · aislamiento puro'
             },
             {
-              n: 'Elevaciones laterales (mancuerna)',
+              n: 'Press militar sentado (mancuernas)',
+              g: 'hombros',
+              reps: '8–12',
+              rest: '2 min',
+              sets: [1, 1, 1],
+              note: 'RIR 2 · sentado elimina impulso lumbar'
+            },
+            {
+              n: 'Elevaciones laterales (mancuernas)',
               g: 'hombros',
               reps: '12–15',
-              rest: '60–90 s',
-              sets: [1, 1, 5]
+              rest: '60 s',
+              sets: [1, 1, 1],
+              note: 'RIR 1 · deltoides medial'
             },
             {
-              n: 'Extensión tríceps en polea',
+              n: 'Extensión tríceps overhead en polea',
               g: 'brazos',
               reps: '10–15',
               rest: '60–90 s',
-              sets: [1, 1, 5],
-              note: 'Priorizar variante overhead / detrás de la cabeza'
+              sets: [1, 1, 1],
+              note: 'RIR 1 · cabeza larga estirada · ~1.4x más hipertrofia que pushdown'
             }
           ]
         },
@@ -2668,38 +2717,49 @@
               n: 'Peso muerto rumano',
               g: 'piernas',
               reps: '6–10',
-              rest: '2–3 min',
-              sets: [1, 1, 3]
+              rest: '2.5–3 min',
+              sets: [1, 1, 1],
+              note: 'RIR 2 · bisagra de cadera · isquios en posición estirada'
             },
             {
-              n: 'Hip thrust o zancada búlgara',
+              n: 'Hip thrust con barra',
               g: 'gluteos',
               reps: '8–12',
               rest: '2 min',
-              sets: [1, 1, 3],
-              note: 'Complemento de glúteo / cadena posterior'
+              sets: [1, 1, 1],
+              note: 'RIR 1–2 · glúteo en acortamiento máximo · complementa al RDL'
             },
             {
               n: 'Curl de isquios sentado',
               g: 'piernas',
               reps: '10–15',
-              rest: '60–90 s',
-              sets: [1, 1, 5],
-              note: 'Sentado > tumbado: isquios en posición más larga'
+              rest: '90 s',
+              sets: [1, 1, 1],
+              note: 'RIR 1 · cadera flexionada · segundo toque semanal'
+            },
+            {
+              n: 'Prensa de piernas',
+              g: 'piernas',
+              reps: '10–12',
+              rest: '2 min',
+              sets: [1, 1],
+              note: 'RIR 1–2 · pies altos y anchos · cadena posterior y aductores'
             },
             {
               n: 'Elevación de talones sentado',
               g: 'piernas',
               reps: '12–15',
               rest: '60–90 s',
-              sets: [1, 1, 5]
+              sets: [1, 1, 1],
+              note: 'RIR 1 · sóleo · rodilla flexionada'
             },
             {
-              n: 'Crunch abdominal en polea',
-              g: 'core',
-              reps: '15–20',
-              rest: '60–90 s',
-              sets: [1, 1]
+              n: 'Back extension lastrada',
+              g: 'espalda',
+              reps: '10–15',
+              rest: '90 s',
+              sets: [1, 1],
+              note: 'RIR 2 · erectores espinales · rango completo'
             }
           ]
         },
@@ -2708,7 +2768,7 @@
           day: 'Viernes',
           short: 'VIE',
           title: 'Tren Superior 3',
-          focus: 'Equilibrado',
+          focus: 'Mixto · 2º toque',
           side: '#ff6b6b',
           ex: [
             {
@@ -2716,43 +2776,56 @@
               g: 'espalda',
               reps: '8–12',
               rest: '90 s – 2 min',
-              sets: [1, 1, 3]
+              sets: [1, 1, 1],
+              note: 'RIR 1–2 · tracción horizontal · segundo toque de espalda'
             },
             {
-              n: 'Press inclinado (mancuernas)',
+              n: 'Jalón agarre neutro estrecho',
+              g: 'espalda',
+              reps: '10–15',
+              rest: '90 s',
+              sets: [1, 1],
+              note: 'RIR 1–2 · fibras ilíacas · segundo toque vertical'
+            },
+            {
+              n: 'Press de pecho en máquina',
               g: 'pecho',
               reps: '8–12',
               rest: '90 s – 2 min',
-              sets: [1, 1, 3]
-            },
-            {
-              n: 'Face pull en polea alta',
-              g: 'hombros',
-              reps: '12–15',
-              rest: '60–90 s',
-              sets: [1, 1, 5]
+              sets: [1, 1, 1],
+              note: 'RIR 1 · convergente · segundo toque de pecho'
             },
             {
               n: 'Elevaciones laterales en polea',
               g: 'hombros',
               reps: '12–15',
-              rest: '60–90 s',
-              sets: [1, 1, 5]
+              rest: '60 s',
+              sets: [1, 1, 1],
+              note: 'RIR 1 · unilateral · tensión constante'
             },
             {
-              n: 'Extensión tríceps copa',
+              n: 'Face pull en polea alta',
+              g: 'hombros',
+              reps: '12–15',
+              rest: '60 s',
+              sets: [1, 1],
+              note: 'RIR 1–2 · deltoides posterior · 5 series semanales'
+            },
+            {
+              n: 'Extensión tríceps en polea (pushdown)',
               g: 'brazos',
               reps: '10–15',
               rest: '60–90 s',
-              sets: [1, 1],
-              note: 'Priorizar variante overhead'
+              sets: [1, 1, 1],
+              note: 'RIR 1 · énfasis en acortamiento · complementa al overhead'
             },
             {
               n: 'Curl bíceps en polea baja',
               g: 'brazos',
               reps: '10–15',
               rest: '60–90 s',
-              sets: [1, 1]
+              sets: [1, 1, 1],
+              note: 'RIR 1 · tensión constante · segundo toque de bíceps'
             }
           ]
         }
@@ -3486,7 +3559,7 @@
             return `${i + 1}. ${e.name}${e.reps && e.reps !== 'al fallo' ? ` (${e.reps} reps)` : ''}${e.rest ? ` — ⏱ ${e.rest}` : ''}\n${sets}`
           })
           .join('\n\n')
-        const txt = `🏋️ SESIÓN — ${d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}\n${focus ? `Enfoque: ${focus} · ` : ''}RIR 2–3\n\n${body}\n\n*Volumen completado:* ${fmtN(Math.round(V))} kg · ${D}/${T} series`
+        const txt = `🏋️ SESIÓN — ${d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}\n${focus ? `Enfoque: ${focus} · ` : ''}RIR 1–2\n\n${body}\n\n*Volumen completado:* ${fmtN(Math.round(V))} kg · ${D}/${T} series`
         const done = () => toast('Sesión copiada al portapapeles')
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard
