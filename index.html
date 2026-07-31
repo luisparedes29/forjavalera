@@ -124,6 +124,7 @@
       .tabs,
       main,
       .cuerpo-main,
+      .progreso-main,
       footer,
       .stats {
         position: relative;
@@ -334,6 +335,18 @@
       .stats-cuerpo .stat:nth-child(4) b {
         color: var(--blue);
       }
+      .stats-progreso .stat:nth-child(1) b {
+        color: var(--volt);
+      }
+      .stats-progreso .stat:nth-child(2) b {
+        color: var(--teal);
+      }
+      .stats-progreso .stat:nth-child(3) b {
+        color: var(--blue);
+      }
+      .stats-progreso .stat:nth-child(4) b {
+        color: var(--orange);
+      }
       #stDelta {
         color: var(--muted);
       }
@@ -371,9 +384,18 @@
         max-width: 1340px;
         margin: 0 auto;
       }
+      .progreso-main {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 22px;
+        padding: 20px 28px 56px;
+        max-width: 1340px;
+        margin: 0 auto;
+      }
       @media (max-width: 1020px) {
         main,
-        .cuerpo-main {
+        .cuerpo-main,
+        .progreso-main {
           grid-template-columns: 1fr;
         }
       }
@@ -1711,6 +1733,219 @@
         text-align: center;
       }
 
+      /* ---------- vista progreso ---------- */
+      .vol-legend {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 11px;
+        color: var(--muted);
+        margin: -4px 0 15px;
+        line-height: 1.5;
+      }
+      .vol-legend i {
+        width: 18px;
+        height: 11px;
+        flex: none;
+        background: rgba(63, 216, 199, 0.14);
+        border: 1px solid rgba(63, 216, 199, 0.4);
+        display: inline-block;
+      }
+      .vol-row {
+        padding: 13px 14px;
+        margin-bottom: 10px;
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--gc);
+        background: var(--panel2);
+        transition: 0.2s;
+        animation: pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+      }
+      .vol-row:hover {
+        transform: translateX(4px);
+        border-color: var(--gc);
+      }
+      .vol-top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 9px;
+        flex-wrap: wrap;
+      }
+      .vol-name {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .vol-name i {
+        width: 9px;
+        height: 9px;
+        display: inline-block;
+        flex: none;
+      }
+      .vol-status {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 3px 9px;
+        transform: skewX(-8deg);
+        border: 1px solid;
+      }
+      .vol-status.ok {
+        color: var(--teal);
+        border-color: rgba(63, 216, 199, 0.45);
+        background: rgba(63, 216, 199, 0.08);
+      }
+      .vol-status.low {
+        color: var(--orange);
+        border-color: rgba(255, 122, 47, 0.45);
+        background: rgba(255, 122, 47, 0.08);
+      }
+      .vol-status.high {
+        color: var(--red);
+        border-color: rgba(255, 107, 107, 0.45);
+        background: rgba(255, 107, 107, 0.08);
+      }
+      .vol-status.none {
+        color: var(--muted);
+        border-color: var(--line);
+      }
+      .vol-num {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .vol-num b {
+        font-family: Anton;
+        font-weight: 400;
+        font-size: 18px;
+        color: var(--ink);
+      }
+      .vol-track {
+        position: relative;
+        height: 12px;
+        background: var(--field);
+        border: 1px solid var(--line);
+        overflow: hidden;
+      }
+      .vol-zone {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        background: rgba(63, 216, 199, 0.13);
+        border-left: 1px solid rgba(63, 216, 199, 0.4);
+        border-right: 1px solid rgba(63, 216, 199, 0.4);
+      }
+      .vol-fill {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        transition: width 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+      }
+      .vol-fill.ok {
+        background: linear-gradient(90deg, var(--teal), var(--volt));
+      }
+      .vol-fill.low {
+        background: var(--orange);
+      }
+      .vol-fill.high {
+        background: var(--red);
+      }
+      .vol-fill.none {
+        background: var(--line);
+      }
+      .vol-sub {
+        margin-top: 7px;
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.02em;
+      }
+
+      .prog-ctl {
+        display: flex;
+        gap: 10px;
+        align-items: stretch;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .prog-ctl select {
+        flex: 1;
+        min-width: 180px;
+      }
+      .seg {
+        display: inline-flex;
+        border: 1px solid var(--line);
+        flex: none;
+      }
+      .seg button {
+        background: var(--panel2);
+        border: none;
+        border-right: 1px solid var(--line);
+        color: var(--muted);
+        cursor: pointer;
+        font: 700 10px 'Space Grotesk';
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 9px 13px;
+        transition: 0.15s;
+      }
+      .seg button:last-child {
+        border-right: none;
+      }
+      .seg button:hover {
+        color: var(--ink);
+      }
+      .seg button.on {
+        background: var(--volt);
+        color: #101408;
+      }
+      .prog-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      @media (max-width: 480px) {
+        .prog-stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      .prog-stat {
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+      }
+      .prog-stat span {
+        font-size: 9px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 3px;
+      }
+      .prog-stat b {
+        font-family: Anton;
+        font-weight: 400;
+        font-size: 19px;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+      .prog-delta.up {
+        color: var(--volt) !important;
+      }
+      .prog-delta.down {
+        color: var(--orange) !important;
+      }
+      #progChart {
+        width: 100%;
+        height: 150px;
+        display: block;
+      }
+
       /* ---------- temporizador ---------- */
       #timer {
         position: fixed;
@@ -1856,7 +2091,7 @@
           bottom: 0;
           z-index: 60;
           display: grid;
-          grid-template-columns: 1fr 1fr;
+          grid-template-columns: 1fr 1fr 1fr;
           background: rgba(14, 19, 22, 0.94);
           backdrop-filter: blur(10px);
           border-top: 1px solid var(--line);
@@ -1872,8 +2107,8 @@
           flex-direction: column;
           align-items: center;
           gap: 6px;
-          font: 700 11px 'Space Grotesk';
-          letter-spacing: 0.2em;
+          font: 700 10px 'Space Grotesk';
+          letter-spacing: 0.14em;
           text-transform: uppercase;
           position: relative;
           transition: color 0.2s;
@@ -1978,6 +2213,9 @@
         .cuerpo-main {
           padding: 16px 16px 40px;
         }
+        .progreso-main {
+          padding: 16px 16px 40px;
+        }
         footer {
           padding: 16px 16px 24px;
         }
@@ -2024,6 +2262,18 @@
         }
         .stats-cuerpo .stat:nth-child(4) {
           border-top-color: var(--blue);
+        }
+        .stats-progreso .stat:nth-child(1) {
+          border-top-color: var(--volt);
+        }
+        .stats-progreso .stat:nth-child(2) {
+          border-top-color: var(--teal);
+        }
+        .stats-progreso .stat:nth-child(3) {
+          border-top-color: var(--blue);
+        }
+        .stats-progreso .stat:nth-child(4) {
+          border-top-color: var(--orange);
         }
         #statsHierro .stat:last-child {
           grid-column: 1/-1;
@@ -2108,6 +2358,20 @@
           <path d="M12 15l2.2-2.2" />
         </svg>
         Cuerpo
+      </button>
+      <button class="tab" data-view="progreso" role="tab" aria-selected="false">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M3 17l6-6 4 4 8-8" />
+          <path d="M17 7h4v4" />
+        </svg>
+        Progreso
       </button>
     </nav>
 
@@ -2219,7 +2483,6 @@
                 series, mismo peso o levemente inferior) antes de iniciar un
                 nuevo bloque.
               </li>
-              <!-- ← CAMBIO: Lunes ahora también tiene 7 ejercicios -->
               <li>
                 <b>Lunes y Viernes:</b> son los días más largos (7 ejercicios
                 cada uno). Si alguno se siente muy cargado de fatiga acumulada,
@@ -2367,6 +2630,71 @@
       </div>
     </div>
 
+    <!-- ============ VISTA PROGRESO ============ -->
+    <div id="view-progreso" class="view">
+      <section class="stats stats-progreso">
+        <div class="stat">
+          <b id="pgSets" data-v="0">0</b><span>series esta semana</span>
+        </div>
+        <div class="stat">
+          <b id="pgInRange">0/7</b><span>grupos en rango</span>
+        </div>
+        <div class="stat">
+          <b id="pgEx" data-v="0">0</b><span>ejercicios</span>
+        </div>
+        <div class="stat">
+          <b id="pgVol" data-v="0">0</b><span>kg esta semana</span>
+        </div>
+      </section>
+
+      <div class="progreso-main">
+        <!-- 01 VOLUMEN SEMANAL -->
+        <section class="panel" style="--acc: var(--teal)">
+          <h2><span class="n">01/</span> Volumen semanal</h2>
+          <p class="vol-legend">
+            <i></i>
+            <span
+              >zona = objetivo recomendado · series efectivas de los últimos 7
+              días</span
+            >
+          </p>
+          <div id="volList"></div>
+        </section>
+
+        <!-- 02 PROGRESIÓN -->
+        <section class="panel" style="--acc: var(--volt)">
+          <h2><span class="n">02/</span> Progresión por ejercicio</h2>
+          <div class="prog-ctl">
+            <select id="progEx" aria-label="Elegir ejercicio"></select>
+            <div class="seg" id="progSeg">
+              <button data-m="kg" class="on">Kg</button>
+              <button data-m="e1rm">e1RM</button>
+              <button data-m="vol">Vol</button>
+            </div>
+          </div>
+          <div class="prog-stats">
+            <div class="prog-stat"><span>PR</span><b id="progPr">—</b></div>
+            <div class="prog-stat">
+              <span>Última</span><b id="progLast">—</b>
+            </div>
+            <div class="prog-stat">
+              <span>Cambio</span><b id="progDelta" class="prog-delta">—</b>
+            </div>
+            <div class="prog-stat">
+              <span>Sesiones</span><b id="progSess">0</b>
+            </div>
+          </div>
+          <div class="chart-box">
+            <h3 id="progChartTitle">Mejor kg <span id="progRange"></span></h3>
+            <svg id="progChart" preserveAspectRatio="none"></svg>
+            <p class="chart-empty" id="progEmpty">
+              Guardá sesiones con este ejercicio para ver su progresión.
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
+
     <footer>
       <svg width="30" height="16" viewBox="0 0 48 24" aria-hidden="true">
         <rect x="1" y="8" width="4" height="8" fill="#c9f24b" />
@@ -2427,6 +2755,25 @@
           <path d="M12 15l2.2-2.2" />
         </svg>
         <span>Cuerpo</span>
+      </button>
+      <button
+        class="tabbar-btn"
+        data-view="progreso"
+        role="tab"
+        aria-selected="false"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M3 17l6-6 4 4 8-8" />
+          <path d="M17 7h4v4" />
+        </svg>
+        <span>Progreso</span>
       </button>
     </nav>
 
@@ -2507,6 +2854,17 @@
         core: '#b78bff',
         cardio: '#ff7a2f'
       }
+      /* Rangos recomendados de series efectivas por semana (evidencia: 10–20
+         para grupos grandes; menos para los que reciben trabajo indirecto). */
+      const SET_GUIDE = {
+        pecho: { min: 10, max: 20 },
+        espalda: { min: 10, max: 20 },
+        hombros: { min: 8, max: 16 },
+        brazos: { min: 8, max: 14 },
+        piernas: { min: 10, max: 20 },
+        gluteos: { min: 8, max: 16 },
+        core: { min: 6, max: 12 }
+      }
       const MEASURES = [
         ['cuello', 'Cuello'],
         ['hombros', 'Hombros'],
@@ -2521,8 +2879,6 @@
 
       /* ---------- RUTINA (sets = semana mínima de cada serie) ---------- */
       const ROUTINE = [
-        /* ← CAMBIO: Lunes v2.0 — 7 ejercicios, deltoides posterior y medial
-           con trabajo directo adicional                                  */
         {
           id: 'lun',
           day: 'Lunes',
@@ -2842,9 +3198,9 @@
       let dayIdx = td < 5 ? td : 0
       const persistSession = () => saveL(LS.session, state.exercises)
 
-      /* ---------- navegación Hierro / Cuerpo ---------- */
+      /* ---------- navegación Hierro / Cuerpo / Progreso ---------- */
       function switchView(name, push) {
-        name = name === 'cuerpo' ? 'cuerpo' : 'hierro'
+        name = ['cuerpo', 'progreso'].includes(name) ? name : 'hierro'
         $$('.view').forEach((v) =>
           v.classList.toggle('active', v.id === 'view-' + name)
         )
@@ -3520,6 +3876,7 @@
         renderRoutine()
         renderExercises()
         renderHistory()
+        renderProgreso()
         updateStats()
         toast(`Sesión guardada · enfoque: ${GROUPS[focus] || 'general'} 💪`)
       })
@@ -3624,6 +3981,7 @@
           refreshStall()
           renderRoutine()
           renderHistory()
+          renderProgreso()
           updateStats()
           toast('Sesión eliminada')
         }
@@ -3836,6 +4194,256 @@
         }
       })
 
+      /* ---------- progreso: volumen semanal + progresión ---------- */
+      let progMetric = 'kg'
+      let progSelected = null
+      const PROG_METRIC = {
+        kg: { lab: 'Mejor kg', unit: 'kg' },
+        e1rm: { lab: 'e1RM estimado', unit: 'kg' },
+        vol: { lab: 'Volumen', unit: 'kg' }
+      }
+      // Serie efectiva: marcada como hecha O con reps cargadas.
+      const isEff = (s) => s.done || +s.reps > 0
+      function weeklyVolume() {
+        const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000
+        const out = {}
+        state.history.forEach((h) => {
+          if (new Date(h.ts).getTime() < weekAgo) return
+          h.exercises.forEach((e) => {
+            const g = e.group
+            if (!out[g]) out[g] = { sets: 0, volume: 0, ex: new Set() }
+            e.sets.forEach((s) => {
+              if (isEff(s)) {
+                out[g].sets++
+                out[g].volume += (+s.reps || 0) * (+s.kg || 0)
+              }
+            })
+            out[g].ex.add(normName(e.name))
+          })
+        })
+        return out
+      }
+      function allExerciseNames() {
+        const seen = new Map()
+        state.history.forEach((h) => {
+          h.exercises.forEach((e) => {
+            const k = normName(e.name)
+            if (!seen.has(k)) seen.set(k, { disp: e.name, ts: h.ts })
+          })
+        })
+        return [...seen.entries()].sort((a, b) => (b[1].ts < a[1].ts ? -1 : 1))
+      }
+      function exerciseSeries(name) {
+        const k = normName(name)
+        const out = []
+        ;[...state.history].reverse().forEach((h) => {
+          const e = h.exercises.find((x) => normName(x.name) === k)
+          if (!e) return
+          let bestKg = 0,
+            bestE = 0,
+            vol = 0
+          e.sets.forEach((s) => {
+            const kg = +s.kg || 0,
+              reps = +s.reps || 0
+            vol += kg * reps
+            if (kg > bestKg) bestKg = kg
+            const e1 = kg * (1 + reps / 30) // fórmula de Epley
+            if (e1 > bestE) bestE = e1
+          })
+          if (bestKg > 0 || vol > 0)
+            out.push({ ts: h.ts, kg: bestKg, e1rm: bestE, vol })
+        })
+        return out
+      }
+      function updateProgresoStats() {
+        const wv = weeklyVolume()
+        const groups = Object.keys(SET_GUIDE)
+        let totalSets = 0,
+          totalVol = 0,
+          inRange = 0
+        groups.forEach((g) => {
+          const d = wv[g]
+          const s = d ? d.sets : 0
+          totalSets += s
+          totalVol += d ? d.volume : 0
+          if (s >= SET_GUIDE[g].min && s <= SET_GUIDE[g].max) inRange++
+        })
+        setNum('pgSets', totalSets)
+        $('#pgInRange').textContent = `${inRange}/${groups.length}`
+        const exs = new Set()
+        state.history.forEach((h) =>
+          h.exercises.forEach((e) => exs.add(normName(e.name)))
+        )
+        setNum('pgEx', exs.size)
+        setNum('pgVol', Math.round(totalVol))
+      }
+      function renderVolume() {
+        const box = $('#volList')
+        if (!state.history.length) {
+          box.innerHTML = `<div class="empty"><p>Guardá tus sesiones para ver el volumen por grupo muscular.<br><b>El volumen semanal es la clave de la hipertrofia.</b></p></div>`
+          return
+        }
+        const wv = weeklyVolume()
+        const SCALE = 24
+        box.innerHTML = Object.keys(SET_GUIDE)
+          .map((g) => {
+            const d = wv[g] || { sets: 0, volume: 0, ex: new Set() }
+            const guide = SET_GUIDE[g]
+            const sets = d.sets
+            const c = GCOLORS[g]
+            let status, cls
+            if (sets === 0) {
+              status = 'sin trabajo'
+              cls = 'none'
+            } else if (sets < guide.min) {
+              status = 'bajo'
+              cls = 'low'
+            } else if (sets > guide.max) {
+              status = 'alto'
+              cls = 'high'
+            } else {
+              status = 'en rango'
+              cls = 'ok'
+            }
+            const zoneL = (guide.min / SCALE) * 100
+            const zoneW = ((guide.max - guide.min) / SCALE) * 100
+            const fillW = (Math.min(sets, SCALE) / SCALE) * 100
+            return `<div class="vol-row" style="--gc:${c}">
+      <div class="vol-top">
+        <span class="vol-name"><i style="background:${c}"></i>${GROUPS[g]}</span>
+        <span class="vol-status ${cls}">${status}</span>
+        <span class="vol-num"><b>${sets}</b> series</span>
+      </div>
+      <div class="vol-track">
+        <span class="vol-zone" style="left:${zoneL}%;width:${zoneW}%"></span>
+        <span class="vol-fill ${cls}" style="width:${fillW}%"></span>
+      </div>
+      <div class="vol-sub">objetivo ${guide.min}–${guide.max} series · ${fmtN(Math.round(d.volume))} kg · ${d.ex.size} ej</div>
+    </div>`
+          })
+          .join('')
+      }
+      function renderProgSelect() {
+        const names = allExerciseNames()
+        const sel = $('#progEx')
+        if (!names.length) {
+          sel.innerHTML = '<option value="">Sin ejercicios aún</option>'
+          sel.disabled = true
+          progSelected = null
+          return
+        }
+        sel.disabled = false
+        sel.innerHTML = names
+          .map(([k, o]) => `<option value="${esc(k)}">${esc(o.disp)}</option>`)
+          .join('')
+        if (!progSelected || !names.some(([k]) => k === progSelected))
+          progSelected = names[0][0]
+        sel.value = progSelected
+      }
+      function renderProgChart() {
+        const svg = $('#progChart'),
+          empty = $('#progEmpty'),
+          M = PROG_METRIC[progMetric]
+        const series = progSelected ? exerciseSeries(progSelected) : []
+        const md = (v) =>
+          progMetric === 'vol' ? fmtN(Math.round(v)) : fmtN(v, 1)
+        if (!series.length) {
+          svg.innerHTML = ''
+          empty.style.display = 'block'
+          $('#progChartTitle').innerHTML =
+            `${M.lab} <span id="progRange"></span>`
+          $('#progPr').textContent = '—'
+          $('#progLast').textContent = '—'
+          $('#progDelta').textContent = '—'
+          $('#progDelta').className = 'prog-delta'
+          $('#progSess').textContent = '0'
+          return
+        }
+        empty.style.display = 'none'
+        const vals = series.map((p) => p[progMetric])
+        const pr = Math.max(...vals),
+          last = vals[vals.length - 1],
+          first = vals[0],
+          delta = last - first
+        $('#progPr').textContent = md(pr)
+        $('#progLast').textContent = md(last)
+        const dEl = $('#progDelta')
+        dEl.textContent =
+          (delta > 0 ? '▲ ' : delta < 0 ? '▼ ' : '= ') + md(Math.abs(delta))
+        dEl.className =
+          'prog-delta ' + (delta > 0 ? 'up' : delta < 0 ? 'down' : '')
+        $('#progSess').textContent = series.length
+
+        const W = 320,
+          H = 150,
+          P = 12
+        const min = Math.min(...vals),
+          max = Math.max(...vals),
+          span = max - min || 1
+        const X = (i) =>
+          series.length === 1
+            ? W / 2
+            : P + (i * (W - 2 * P)) / (series.length - 1)
+        const Y = (v) => H - P - ((v - min) / span) * (H - 2 * P)
+        $('#progChartTitle').innerHTML =
+          `${M.lab} <span id="progRange">${md(min)}–${md(max)} ${M.unit}</span>`
+        const defs = `<defs><linearGradient id="gProg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#c9f24b" stop-opacity=".28"/><stop offset="1" stop-color="#c9f24b" stop-opacity="0"/></linearGradient></defs>`
+        svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
+        if (series.length === 1) {
+          svg.innerHTML =
+            defs +
+            `<circle cx="${W / 2}" cy="${Y(vals[0])}" r="3.5" class="ch-dot"/>
+      <text x="${W / 2 - 6}" y="${Y(vals[0]) - 8}" class="ch-lab">${md(vals[0])}</text>`
+          return
+        }
+        const path = series
+          .map(
+            (p, i) =>
+              `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(p[progMetric]).toFixed(1)}`
+          )
+          .join(' ')
+        const area =
+          path +
+          ` L${X(series.length - 1).toFixed(1)},${H - P} L${X(0).toFixed(1)},${H - P} Z`
+        svg.innerHTML =
+          defs +
+          `<path d="${area}" fill="url(#gProg)"/><path d="${path}" class="ch-line" pathLength="1"/>` +
+          series
+            .map(
+              (p, i) =>
+                `<circle cx="${X(i).toFixed(1)}" cy="${Y(p[progMetric]).toFixed(1)}" r="2.6" class="ch-dot"/>`
+            )
+            .join('') +
+          `<text x="${(X(series.length - 1) - 4).toFixed(1)}" y="${(Y(last) - 7).toFixed(1)}" class="ch-lab">${md(last)}</text>`
+        const line = svg.querySelector('.ch-line')
+        line.style.strokeDasharray = 1
+        line.style.strokeDashoffset = 1
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            line.style.transition = 'stroke-dashoffset 1s ease'
+            line.style.strokeDashoffset = 0
+          })
+        )
+      }
+      function renderProgreso() {
+        updateProgresoStats()
+        renderVolume()
+        renderProgSelect()
+        renderProgChart()
+      }
+      $('#progEx').addEventListener('change', (e) => {
+        progSelected = e.target.value
+        renderProgChart()
+      })
+      $('#progSeg').addEventListener('click', (e) => {
+        const b = e.target.closest('button[data-m]')
+        if (!b) return
+        progMetric = b.dataset.m
+        $$('#progSeg button').forEach((x) => x.classList.toggle('on', x === b))
+        renderProgChart()
+      })
+
       /* ---------- respaldo exportar / importar ---------- */
       $('#exportBtn').addEventListener('click', () => {
         const data = {
@@ -3927,6 +4535,7 @@
         renderExercises()
         renderHistory()
         renderBody()
+        renderProgreso()
         updateStats()
       }
 
