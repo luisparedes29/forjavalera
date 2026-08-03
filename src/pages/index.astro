@@ -1,0 +1,72 @@
+---
+import Base from '../layouts/Base.astro'
+import TopBar from '../components/shared/TopBar'
+import NavTabs from '../components/shared/NavTabs'
+import NavTabbar from '../components/shared/NavTabbar'
+import ViewManager from '../components/ViewManager'
+import Timer from '../components/shared/Timer'
+import Toasts from '../components/shared/Toasts'
+import FooterBar from '../components/shared/FooterBar'
+---
+
+<Base>
+  <div class="tape"></div>
+
+  <header class="top">
+    <a class="brand" href="#">
+      <svg class="barbell" viewBox="0 0 48 24" aria-hidden="true">
+        <rect x="1" y="8" width="4" height="8" fill="#c9f24b" />
+        <rect x="6" y="4.5" width="4.5" height="15" fill="#c9f24b" />
+        <rect x="11.5" y="10.5" width="25" height="3" fill="#8ba0a8" />
+        <rect x="37.5" y="4.5" width="4.5" height="15" fill="#c9f24b" />
+        <rect x="43" y="8" width="4" height="8" fill="#c9f24b" />
+      </svg>
+      <span>
+        <h1>FOR<span>JA</span></h1>
+        <small>cuaderno de fuerza</small>
+      </span>
+    </a>
+    <TopBar client:load />
+  </header>
+
+  <!-- tabs desktop -->
+  <NavTabs client:load />
+
+  <!-- vistas -->
+  <ViewManager client:load />
+
+  <footer>
+    <svg width="30" height="16" viewBox="0 0 48 24" aria-hidden="true">
+      <rect x="1" y="8" width="4" height="8" fill="#c9f24b" />
+      <rect x="6" y="4.5" width="4.5" height="15" fill="#c9f24b" />
+      <rect x="11.5" y="10.5" width="25" height="3" fill="#8ba0a8" />
+      <rect x="37.5" y="4.5" width="4.5" height="15" fill="#c9f24b" />
+      <rect x="43" y="8" width="4" height="8" fill="#c9f24b" />
+    </svg>
+    <span>FORJA — tus datos viven solo en este navegador.</span>
+    <FooterBar client:load />
+    <span class="right">Hecho para levantar pesado</span>
+  </footer>
+
+  <!-- tabbar mobile -->
+  <NavTabbar client:load />
+
+  <!-- timer + toasts -->
+  <Timer client:load />
+  <Toasts client:load />
+
+  <!-- Fase 4: registro del service worker (PWA). Solo en build/preview; en dev se limpia el SW viejo -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      if (import.meta.env.PROD) {
+        addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {})
+        })
+      } else {
+        navigator.serviceWorker.getRegistrations().then((regs) => {
+          regs.forEach((r) => r.unregister())
+        })
+      }
+    }
+  </script>
+</Base>
