@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/lib/**/*.ts", "src/data/**/*.ts", "src/store/**/*.ts"],
+  "exclude": []
+}
