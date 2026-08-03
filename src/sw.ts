@@ -8,6 +8,9 @@ declare const self: ServiceWorkerGlobalScope & {
   __WB_MANIFEST: Array<string | { url: string; revision?: string }>
 }
 
+// Silencia rechazos de promesas no controlados (p. ej. cache.put de URLs de extensiones)
+self.addEventListener('unhandledrejection', (e) => e.preventDefault())
+
 // El token self.__WB_MANIFEST se reemplaza en el build
 // con el manifiesto de precache generado por workbox-build.injectManifest.
 precacheAndRoute(self.__WB_MANIFEST)

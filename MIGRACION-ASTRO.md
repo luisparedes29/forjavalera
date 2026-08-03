@@ -170,7 +170,13 @@ no se ejecuta en el pipeline de Astro 7 (Vite 8/Rolldown). **Solución adoptada*
     no `is:inline`); en dev hace `getRegistrations().unregister()` para limpiar SW viejos
     del origen (provenientes de preview). `sw.ts`: rutas guardadas con `url.startsWith('http')`
     + `sameOrigin` + try/catch (evita `cache.put` de URLs `chrome-extension://`).
-  - `<meta name="mobile-web-app-capable">` agregado junto al de Apple.
+  - **SW: ruido de extensiones (`chrome-extension` en `cache.put`)**: se agrega
+    `self.addEventListener('unhandledrejection', e => e.preventDefault())` en `sw.ts` para
+    silenciar rechazos de SWs viejos/extensiones (el nuevo SW ya excluye esas URLs).
+  - `<meta mobile-web-app-capable>` agregado y se **eliminó** `<meta apple-mobile-web-app-capable>`
+    (deprecated); quedan `status-bar-style` + `mobile-web-app-capable`.
+  - **`netlify.toml`** creado: `publish = "dist"` + header `Permissions-Policy` limpio
+    (elimina los warnings de features desconocidos del header por defecto de Netlify).
   - **Parpadeo de Hierro al F5 (Opción D-lite)**: el SSR no conoce el hash → renderiza el
     default (`hierro`) y el cambio post-hidratación se ve un frame. Fix: `<script is:inline>`
     en `Base.astro` (lee el hash y setea `document.documentElement.dataset.view` antes del
