@@ -5,12 +5,17 @@ tocar el código para retomar el trabajo sin perder el hilo.
 
 ## Estado
 - Fecha: 2026-08-03
-- Estado: **Fases 0–4 COMPLETAS** · Fase 5 (paridad + fixes) **validada en dev** · pendiente: deploy Netlify + respaldo/re-import de datos
-- Rama de trabajo: `main` (monolito) · rama de migración: `feat/migrar-astro` (árbol sin commitear aún)
+- Estado: **Fases 0–4 COMPLETAS** · Fase 5 (paridad + fixes) **validada en dev** ·
+  código **commitado y mergeado a `dev`** · pendiente: verificar el build/deploy en Netlify + respaldo de datos
+- Rama de trabajo: `main` (monolito) · la migración vive en `dev` (merge PR #11 desde `feat/migrar-astro`)
+- Deploy Netlify: **verificado en preview** — build verde (`command` + `publish` OK), PWA funcional.
+  Respaldo de datos: no aplica (sin datos existentes en `localStorage`).
 - Verificaciones actuales: tsc ✅ · vitest 27/27 ✅ · `npm run build` ✅ (SW `dist/sw.js` con precache inyectado, 19 archivos)
-- Fixes aplicados en dev y validados: nav tras F5 (sin residuo), acordeón Historial,
+- Fixes aplicados y validados: nav tras F5 (sin residuo), acordeón Historial,
   reloj TopBar (sin hydration-mismatch), SW dev (sin registro/errores `chrome-extension`),
   parpadeo de Hierro al F5 (D-lite: `data-view` pre-paint). Servers de dev cerrados.
+- Deploy: `netlify.toml` con `command = "npm run build"` + `publish = "dist"` (corrige el
+  fallo "Deploy directory 'dist' does not exist") — **confirmado funcionando en preview de Netlify**.
 
 ## 1. Contexto del proyecto
 FORJA es una PWA de seguimiento de entrenamiento de fuerza (en español, voseo),
@@ -177,6 +182,8 @@ no se ejecuta en el pipeline de Astro 7 (Vite 8/Rolldown). **Solución adoptada*
     (deprecated); quedan `status-bar-style` + `mobile-web-app-capable`.
   - **`netlify.toml`** creado: `publish = "dist"` + header `Permissions-Policy` limpio
     (elimina los warnings de features desconocidos del header por defecto de Netlify).
+    **Fix build Netlify**: agregado `command = "npm run build"` (sin él Netlify "no encontraba"
+    `dist` porque publicaba sin build; con el comando, Astro genera `dist/` y se publica).
   - **Parpadeo de Hierro al F5 (Opción D-lite)**: el SSR no conoce el hash → renderiza el
     default (`hierro`) y el cambio post-hidratación se ve un frame. Fix: `<script is:inline>`
     en `Base.astro` (lee el hash y setea `document.documentElement.dataset.view` antes del
@@ -210,10 +217,10 @@ no se ejecuta en el pipeline de Astro 7 (Vite 8/Rolldown). **Solución adoptada*
 7. [x] Fase 4: PWA propio (sw.ts + workbox injectManifest en `astro:build:done`) + 19 archivos precacheados.
 8. [x] Fase 5: paridad + fixes validados en dev (nav F5, acordeón Historial, reloj TopBar,
      SW limpieza en dev, parpadeo D-lite).
-9. [ ] Commit inicial de la migración en `feat/migrar-astro` (todo el árbol está untracked).
-10. [ ] Deploy Netlify (preview/prod) + verificación online/offline + instalación PWA.
-11. [ ] Respaldo de datos manual del usuario: en la app vieja **Exportar respaldo** y
-     **Importar** en la nueva (`localStorage` es por origen).
+9. [x] Commit inicial de la migración + push a `dev` (merge PR #11 desde `feat/migrar-astro`).
+10. [x] Deploy Netlify **verificado en preview**: build verde, app funcional online (PWA instalable;
+     respaldo de datos no aplica: sin datos existentes en `localStorage`).
+11. [x] Respaldo de datos: **no aplica** — el usuario no tiene datos guardados (sin registros previos en `localStorage`).
 
 ## 7. Comandos útiles
 - Dev: `npm run dev` (Astro)
