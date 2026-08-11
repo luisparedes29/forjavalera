@@ -7,3 +7,21 @@
   for = "/*"
   [headers.values]
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Assets con hash de Astro (_astro): inmutables, cache larga
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Service Worker: siempre revalidar, cache off
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, private"
+
+# Fuentes self-hosted, inmutables por cambio de nombre
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

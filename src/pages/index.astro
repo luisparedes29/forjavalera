@@ -33,7 +33,7 @@ import FooterBar from '../components/shared/FooterBar'
   <NavTabs client:load />
 
   <!-- vistas -->
-  <ViewManager client:load />
+  <ViewManager client:idle />
 
   <footer>
     <svg width="30" height="16" viewBox="0 0 48 24" aria-hidden="true">
@@ -44,16 +44,16 @@ import FooterBar from '../components/shared/FooterBar'
       <rect x="43" y="8" width="4" height="8" fill="#c9f24b" />
     </svg>
     <span>FORJA — tus datos viven solo en este navegador.</span>
-    <FooterBar client:load />
+    <FooterBar client:idle />
     <span class="right">Hecho para levantar pesado</span>
   </footer>
 
   <!-- tabbar mobile -->
-  <NavTabbar client:load />
+  <NavTabbar client:visible />
 
   <!-- timer + toasts -->
-  <Timer client:load />
-  <Toasts client:load />
+  <Timer client:idle />
+  <Toasts client:idle />
 
   <!-- Fase 4: registro del service worker (PWA). Solo en build/preview; en dev se limpia el SW viejo -->
   <script>

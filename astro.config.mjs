@@ -30,7 +30,7 @@ function pwa() {
             swDest: 'dist/sw.js',
             injectionPoint: 'self.__WB_MANIFEST',
             globDirectory: 'dist',
-            globPatterns: ['**/*.{js,css,html,svg,ico,webmanifest,png}'],
+            globPatterns: ['**/*.{js,css,html,svg,ico,webmanifest,png,woff2,json}'],
             globIgnores: ['**/.sw.bundle.js'],
             maximumFileSizeToCacheInBytes: 5 * 1024 * 1024
           })
