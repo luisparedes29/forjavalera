@@ -4,9 +4,9 @@
 > antes de tocar el código. Complementa a `MIGRACION-ASTRO.md` (migración monolito→Astro).
 
 ## Estado
-- Fecha: 2026-08-03 · Última actualización: tras Tarea 1 (README).
-- **Punto de corte acordado**: se ejecutó la Tarea 1 (README) y se actualiza el plan.
-  **Quedan Tareas 2–4 pendientes de confirmación del usuario** ("seguimos o no").
+- Fecha: 2026-08-03 · Última actualización: tras Tarea 2.
+- **Punto de corte**: Tarea 1 (README) y Tarea 2 (merge dev→main) hechas.
+  **Quedan Tareas 3–4 pendientes de confirmación del usuario** ("seguimos o no").
 
 ## Contexto — hallazgos de la auditoría (3 agentes en paralelo)
 - **Por qué ~25 requests en la preview**: 14 chunks JS (7 islas + renderer React `client.js`
@@ -31,27 +31,54 @@
       modelo de datos (`forja_*` + backup v3 + nota por-origen), deploy, contexto histórico.
 - [x] Actualizar este plan.
 
-## Tarea 2 — Merge dev→main + deploy V1 (producción)
+## Tarea 2 — Merge dev→main + deploy V1 (producción) ✅ COMPLETADA (por el usuario)
 > Netlify deploya producción desde `main` (`origin/HEAD → origin/main`). Hoy `main` es el monolito.
-1. [ ] Commitear pendientes (`MIGRACION-ASTRO.md`, `PLAN-V1.md`, `README.md`) + `git fetch`.
-2. [ ] Decidir vía: **PR GitHub** (recomendado) vs merge local.
-3. [ ] Resolver los 4 conflictos **borrando** los legacy (`index.html sw.js manifest.json icon.svg`)
-      del resultado del merge (y opcional: borrarlos también de `dev` para converger).
-4. [ ] Merge a `main` → Netlify (prod) rebuild automático (`command`+`publish` ya configurados).
-5. [ ] Verificar `https://forja.netlify.app`: PWA, offline, instalación, sin legacy.
+- [x] Merge `dev → main` realizado por el usuario (2026-08-03), incluida la resolución
+      de los legacy (`index.html sw.js manifest.json icon.svg`) y el deploy de producción.
 
 ## Tarea 3 — Optimizaciones Astro (paquete 1 — seguro/barato)
-1. [ ] **Self-host Google Fonts**: bajar `Anton` + `Space Grotesk` (woff2, OFL) a
+1. [x] **Self-host Google Fonts**: bajar `Anton` + `Space Grotesk` (woff2, OFL) a
       `public/fonts/`, `@font-face` en `global.css`, quitar css2 + 2 preconnects de `Base.astro`.
       → −3 requests, fonts offline, sin terceros. (riesgo bajo)
-2. [ ] **SW precache**: ampliar `globPatterns` de la integración `pwa()` a `woff2`/`json`
+      - Anton 18,6 KB + Space Grotesk 22,3 KB (latin, mismo binario para 400–700) en `public/fonts/`.
+      - Auditoría 3.1: inicialmente RECHAZADA (referencia a Google Fonts en `index.html` raíz,
+        artefacto Vite muerto). **Fix**: eliminado `index.html` raíz → cero referencias en el repo.
+        `tsc` ✔ · vitest 27/27 ✔ · build OK (19 archivos precache) ✔ · `dist/index.html` limpio ✔.
+        Observación pendiente→ subtarea 3.2 (woff2 no está en `globPatterns`).
+2. [x] **SW precache**: ampliar `globPatterns` de la integración `pwa()` a `woff2`/`json`
       → fonts y `manifest.json` precacheados (offline en 2ª visita).
-3. [ ] **Directivas de islas** (`index.astro`): `Timer`/`Toasts`/`FooterBar` → `client:idle`;
+      - `globPatterns` ahora `**/*.{js,css,html,svg,ico,webmanifest,png,woff2,json}` → build OK,
+        **22 archivos** en precaché (19 previos + 2 woff2 + manifest.json), verificado en `dist/sw.js`.
+      - Auditoría 3.2: ✅ APROBADA (precache contiene fonts+manifest, sin `.sw.bundle.js`; tsc ✔ · vitest 27/27 ✔).
+3. [x] **Directivas de islas** (`index.astro`): `Timer`/`Toasts`/`FooterBar` → `client:idle`;
       `NavTabbar` → `client:visible`; `ViewManager` → `client:idle`.
-4. [ ] **Refactor P1**: `viewFromHash()` único compartido (hoy en `Base.astro`, `ViewManager`,
+      - `TopBar` y `NavTabs` quedan en `client:load` (reloj + tabs visibles al instante).
+      - Verificado: `subscribeToasts` re-emite la cola al suscribirse → no se pierden toasts;
+        D-lite (data-view) cubre el hueco pre-hidratación de `ViewManager`.
+      - Auditoría 3.3: ✅ APROBADA (tsc ✔ · vitest 27/27 ✔ · build OK · chunks 14 sanos; sin flash de
+        vista, sin toasts perdidos; bonus: NavTabbar no hidrata en desktop — oculto por CSS).
+4. [x] **Refactor P1**: `viewFromHash()` único compartido (hoy en `Base.astro`, `ViewManager`,
       `appStore`); guard SSR en `src/lib/storage.ts`; `TABS` compartido en `src/components/shared/`.
-5. [ ] **netlify.toml**: cabeceras de cache (`/_astro/*` immutable, `/sw.js` no-store, `/fonts/*` 1y).
-6. [ ] **Validar**: `tsc` + `vitest` (27/27) + `npm run build` + prueba en dev/preview/Netlify.
+      - Nuevo `src/lib/view.ts` (`viewFromHash`): usado por `ViewManager`; `Base.astro` conserva
+        su script pre-paint inline (no puede importar módulos; espejo documentado con comentario).
+      - `storage.ts`: guard `typeof window === 'undefined'` en `load`/`saveL`.
+      - `TABS` extraído a `src/components/shared/tabs.tsx`; `NavTabs` y `NavTabbar` lo importan.
+      - Validado localmente: tsc ✔ · vitest 27/27 ✔ · build OK (23 archivos precache).
+      - Auditoría 3.4: ✅ APROBADA (helper sin ciclo runtime, TABS byte-idéntico y compartido en un solo
+        chunk, guard SSR ok; tsc ✔ · vitest 27/27 ✔ · build OK).
+5. [x] **netlify.toml**: cabeceras de cache (`/_astro/*` immutable, `/sw.js` no-store, `/fonts/*` 1y).
+      - Aplicado: `/_astro/*` → `public, max-age=31536000, immutable`; `/sw.js` → `no-cache, private`;
+        `/fonts/*` → `public, max-age=31536000, immutable` (Permissions-Policy sigue en `/*`).
+      - Auditoría 3.5: ✅ APROBADA (TOML válido, orden de reglas correcto; sin configs contradictorias;
+        tsc ✔ · vitest 27/27 ✔ · build OK). Observaciones menores: fonts sin hash + `immutable`
+        (riesgo solo si cambia el binario sin renombrar) y `/manifest.json` sin regla propia (no crítico).
+6. [x] **Validar**: `tsc` + `vitest` (27/27) + `npm run build` + prueba en dev/preview/Netlify.
+      - tsc ✔ · vitest 27/27 ✔ · build OK (23 archivos precache).
+      - Smoke test preview: `/`, `/sw.js`, `/manifest.json`, `/fonts/*` → 200; sin referencias a
+        googleapis/gstatic en el HTML; CSS compilado referencia `/fonts/anton-latin.woff2`.
+      - Auditoría 3.6: ✅ APROBADA (ver informe del auditor). Paquete 1 completo: tsc ✔ · vitest 27/27 ✔ ·
+        build OK (23 archivos precache) · preview 200 en `/`, `/manifest.json`, `/sw.js` · 7 islands
+        (4 idle / 1 visible / 2 load) · hash-nav íntegra · 0 referencias a terceros.
 - Resultado esperado: ~24 → ~15 requests; fonts offline; sin dependencia de Google.
 
 ## Tarea 4 — Paquete 2 (opcional, moderado)

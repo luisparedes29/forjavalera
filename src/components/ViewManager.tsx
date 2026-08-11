@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
-import { useAppStore, type ViewId } from '../store/appStore'
+import { useAppStore } from '../store/appStore'
+import { viewFromHash } from '../lib/view'
 import useReveal from '../hooks/useReveal'
 import HierroView from './hierro/HierroView'
 import CuerpoView from './cuerpo/CuerpoView'
@@ -11,9 +12,7 @@ export default function ViewManager() {
 
   useEffect(() => {
     const fromHash = (): void => {
-      const h = window.location.hash.slice(1)
-      const v: ViewId = h === 'cuerpo' || h === 'progreso' ? h : 'hierro'
-      useAppStore.getState().setView(v, false)
+      useAppStore.getState().setView(viewFromHash(window.location.hash), false)
     }
     fromHash()
     window.addEventListener('hashchange', fromHash)

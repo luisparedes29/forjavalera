@@ -6,12 +6,15 @@ export const LS = {
 } as const
 
 export const load = <T>(k: string, fb: T): T => {
+  if (typeof window === 'undefined') return fb
   try {
-    return (JSON.parse(localStorage.getItem(k) as string) as T) ?? fb
+    return (JSON.parse(window.localStorage.getItem(k) as string) as T) ?? fb
   } catch (e) {
     return fb
   }
 }
 
-export const saveL = (k: string, v: unknown): void =>
-  localStorage.setItem(k, JSON.stringify(v))
+export const saveL = (k: string, v: unknown): void => {
+  if (typeof window === 'undefined') return
+  window.localStorage.setItem(k, JSON.stringify(v))
+}
