@@ -14,11 +14,12 @@ sin cuentas, sin red: tus datos viven **solo en este navegador** (`localStorage`
   estancamiento; historial colapsable.
 - **Cuerpo** — Registro antropométrico (peso, altura y 9 medidas), deltas y gráfico de
   peso dibujado en SVG.
-- **Progreso** —Volumen semanal por grupo muscular vs. rango recomendado (`SET_GUIDE`) y
+- **Progreso** —Volumen semanal por grupo muscular vs. rango recomendado (`SET_GUIDE`) — ventana: semana lun–dom y
   progresión por ejercicio (kg / e1RM Epley / volumen) con PR y deltas.
 
-Además: **instalable (PWA)** y funciona **sin conexión** (Service Worker con Workbox),
-con **respaldo export/import** (formato v3).
+Además: **instalable (PWA)** y funciona **sin conexión** (Service Worker con Workbox,
+fuentes Anton + Space Grotesk self-hosted, sin Google Fonts), con **respaldo export/import**
+(formato v3).
 
 ## Stack
 
@@ -48,11 +49,11 @@ src/
   components/
     hierro/  cuerpo/  progreso/  shared/   # vistas y componentes
   store/appStore.ts      # estado global (Zustand)
-  lib/                   # logic, storage, backup, types, toast, audio
+  lib/                   # logic, view, storage, backup, types, toast, audio
   data/routine.ts        # rutina, grupos musculares, SET_GUIDE
   sw.ts                  # service worker (workbox precache + runtime)
   styles/global.css
-public/                  # manifest, iconos, favicons
+public/                  # manifest, iconos, favicons, fonts/ (self-hosted)
 ```
 
 ## Modelo de datos
@@ -70,7 +71,8 @@ El respaldo exportado usa el formato **v3**:
 `{ app: 'FORJA', version: 3, exportedAt, week, session, history, body }`.
 
 > ⚠️ `localStorage` es **por origen**: si cambia el dominio, **exportá un respaldo** en la
-> app anterior e **importalo** en la nueva para no perder datos.
+> app anterior e **importalo** en la nueva para no perder datos. Si ya usás la app en el
+> teléfono, hacé un respaldo v3 **antes** de una actualización que cambie la URL.
 
 ## Deploy
 

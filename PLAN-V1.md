@@ -4,9 +4,15 @@
 > antes de tocar el código. Complementa a `MIGRACION-ASTRO.md` (migración monolito→Astro).
 
 ## Estado
-- Fecha: 2026-08-03 · Última actualización: tras Tarea 2.
-- **Punto de corte**: Tarea 1 (README) y Tarea 2 (merge dev→main) hechas.
-  **Quedan Tareas 3–4 pendientes de confirmación del usuario** ("seguimos o no").
+- Fecha: 2026-08-03 · Última actualización: tras Tarea 3 (paquete 1).
+- **Hecho**: Tareas 1 (README), 2 (merge dev→main, por el usuario) y 3 (optimizaciones,
+  commiteada en `dev` local `acde33c`, **push pendiente**).
+- **En curso**: Tarea 5 — volumen semanal lun–dom (spec: docs/superpowers/specs/2026-08-10-volumen-semanal-lun-dom-design.md).
+- **Pendiente**: push de `dev` → merge a `main` (lo hace el usuario) → deploy producción +
+  verificación en el teléfono; **respaldo v3 antes del deploy** (el usuario SÍ tiene datos
+  de la semana pasada en el teléfono, en la URL vieja); Tarea 4 opcional.
+- **Regla acordada**: tareas por confirmación del usuario; tras cada bloque se actualiza
+  este archivo.
 
 ## Contexto — hallazgos de la auditoría (3 agentes en paralelo)
 - **Por qué ~25 requests en la preview**: 14 chunks JS (7 islas + renderer React `client.js`
@@ -80,6 +86,12 @@
         build OK (23 archivos precache) · preview 200 en `/`, `/manifest.json`, `/sw.js` · 7 islands
         (4 idle / 1 visible / 2 load) · hash-nav íntegra · 0 referencias a terceros.
 - Resultado esperado: ~24 → ~15 requests; fonts offline; sin dependencia de Google.
+  Medición real de requests pendiente de hacer en deploy (preview local: fonts 100% propias).
+
+## Tarea 3 — cierre
+- Commit `acde33c` en `dev` (local): 15 archivos, −4.686 líneas (+168) — incluye la
+  eliminación del monolito `index.html` raíz. `preview.log` (ruido local) sin trackear.
+- No incluido en el paquete (intencional): swap React→Preact (iniciativa separada).
 
 ## Tarea 4 — Paquete 2 (opcional, moderado)
 - [ ] `vite.build.rollupOptions.manualChunks` para fusionar ~9 chunks pequeños
@@ -90,5 +102,10 @@
 ---
 
 ## Validación general
-- Siempre: `npx tsc --noEmit -p tsconfig.check.json` · `npm test` (27/27) · `npm run build` (SW 19+ archivos).
+- Siempre: `npx tsc --noEmit -p tsconfig.check.json` · `npm test` (27/27) · `npm run build` (SW ~23 archivos).
 - Manual: `npm run dev` (nav, F5, offline en preview) y preview Netlify.
+
+---
+
+## Tarea 5 — Volumen semanal lun–dom (spec: docs/superpowers/specs/2026-08-10-volumen-semanal-lun-dom-design.md)
+1. [x] T5-1 Lógica: `mondayOf()` + `weeklyVolume` con ventana lun–dom local (32 tests, portables a cualquier huso).
