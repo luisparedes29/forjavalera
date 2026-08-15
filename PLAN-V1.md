@@ -109,3 +109,6 @@
 
 ## Tarea 5 — Volumen semanal lun–dom (spec: docs/superpowers/specs/2026-08-10-volumen-semanal-lun-dom-design.md)
 1. [x] T5-1 Lógica: `mondayOf()` + `weeklyVolume` con ventana lun–dom local (32 tests, portables a cualquier huso).
+2. [x] T5-2 UI: leyenda "(lun–dom)" + rango "semana del X al Y" (es-AR, post-mount anti-mismatch) — auditoría APROBADA (SSR sin rango; warning hydration = extensión BIS, no del código).
+3. [x] T5-3 Docs: PLAN-V1, MIGRACION-ASTRO, README — auditoría APROBADA (sin "ventana 7 días" en contexto actual, UTF-8 válido).
+- **Cierre (2026-08-10)**: auditor final APROBADO (6/6 requisitos, 32 tests, tsc + build OK, portabilidad verificada en Asia/Tokyo y UTC-4). Commits `281a361`, `a8c6c55`, `9254030`, `c5621ca`. Plan de implementación: `docs/superpowers/plans/2026-08-10-volumen-semanal-lun-dom.md`.
