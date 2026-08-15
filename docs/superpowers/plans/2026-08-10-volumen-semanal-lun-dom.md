@@ -4,7 +4,7 @@
 
 **Goal:** Cambiar el Volumen semanal de ventana móvil de 7 días a semana calendario (lun–dom, hora local), mostrar el rango de la semana en el panel y actualizar tests y docs.
 
-**Architecture:** `weeklyVolume()` en `src/lib/logic.ts` filtra por `ts >= mondayOf(now)` donde `mondayOf` es un helper nuevo (lunes 00:00 hora local). La UI (`src/components/progreso/ProgresoView.tsx`) ajusta la leyenda y muestra el rango con `Intl.DateTimeFormat` es-AR renderizado post-mount (evita hydration mismatch). Tests con `process.env.TZ` pinneado para determinismo.
+**Architecture:** `weeklyVolume()` en `src/lib/logic.ts` filtra por `ts >= mondayOf(now)` donde `mondayOf` es un helper nuevo (lunes 00:00 hora local del dispositivo). La UI (`src/components/progreso/ProgresoView.tsx`) ajusta la leyenda y muestra el rango con `Intl.DateTimeFormat('es-AR', ...)` renderizado post-mount (evita hydration mismatch). Tests portables a cualquier TZ: fixtures con el constructor local de `Date`, sin pin de `process.env.TZ`.
 
 **Tech Stack:** Astro 7 · React 19 · Zustand · TypeScript · Vitest · Windows/PowerShell.
 
@@ -12,8 +12,12 @@
 
 - Node ≥ 22.12 · PowerShell: **NO** usar `&&`; encadenar con `;` o `if ($?)`.
 - Tests: `npm test` (vitest). Typecheck: `npx tsc --noEmit -p tsconfig.check.json`. Build: `npm run build` (debe loguear "[forja-pwa] sw.js generado con N archivos").
-- Frontera de semana: **lunes 00:00 hora local del dispositivo** (NO UTC).
-- Tests de fechas: pin `process.env.TZ = 'America/Argentina/Buenos_Aires'`.
+- Frontera de semana: **lunes 00:00 hora local del dispositivo** (NO UTC). La app debe
+  funcionar igual para usuarios en CUALQUIER huso: `mondayOf` usa solo `Date` local.
+- Tests de fechas: **portables a cualquier TZ, sin pin** — fixtures con el constructor
+  local (`new Date(2026, 7, 3, 12, 0, 0)` para `now`; sesiones con
+  `new Date(y, m, d, h, min).toISOString()` porque `hist()` recibe ISO-UTC). 2026-08-03 es
+  lunes en todo calendario local. NO usar `process.env.TZ`.
 - Copy UI en español rioplatense (voseo). No agregar comentarios al código.
 - NO tocar: `localStorage`/claves `forja_*`, `exerciseSeries`, `allExerciseNames`, `forja_week`, `SET_GUIDE`.
 - Commits en español, estilo del repo (`feat:`, `test:`, `docs:`). Sin push salvo orden explícita.
@@ -34,12 +38,8 @@
 
 - [ ] **Step 1: Escribir los tests que fallan**
 
-En `src/lib/test/logic.test.ts`:
-1. Tras los `import`, agregar el pin de TZ (evita requerir tipos de Node en tsc):
-```ts
-;(process.env as { TZ?: string }).TZ = 'America/Argentina/Buenos_Aires'
-```
-2. Reemplazar TODO el bloque actual:
+En `src/lib/test/logic.test.ts` (no se agrega ningún pin de TZ; las fixtures son portables):
+1. Reemplazar TODO el bloque actual:
 ```ts
 describe('weeklyVolume', () => {
   const now = new Date('2026-08-03T12:00:00Z').getTime()
@@ -66,30 +66,33 @@ por estos dos bloques nuevos:
 ```ts
 describe('mondayOf', () => {
   it('devuelve el lunes 00:00 local de la semana de now', () => {
-    const now = new Date('2026-08-03T12:00:00-03:00').getTime()
-    expect(mondayOf(now)).toBe(new Date('2026-08-03T00:00:00-03:00').getTime())
+    const now = new Date(2026, 7, 3, 12, 0, 0).getTime()
+    expect(mondayOf(now)).toBe(new Date(2026, 7, 3, 0, 0, 0).getTime())
   })
 
   it('si now es domingo, devuelve el lunes anterior', () => {
-    const now = new Date('2026-08-09T23:59:59-03:00').getTime()
-    expect(mondayOf(now)).toBe(new Date('2026-08-03T00:00:00-03:00').getTime())
+    const now = new Date(2026, 7, 9, 23, 59, 59).getTime()
+    expect(mondayOf(now)).toBe(new Date(2026, 7, 3, 0, 0, 0).getTime())
   })
 })
 
 describe('weeklyVolume (semana calendario lun-dom local)', () => {
-  // now = lunes 2026-08-03 12:00 local (AR, UTC-3)
-  const now = new Date('2026-08-03T12:00:00-03:00').getTime()
+  const now = new Date(2026, 7, 3, 12, 0, 0).getTime()
 
   it('excluye sesiones de la semana anterior aunque esten a menos de 7 dias', () => {
     const h: SessionHistory[] = [
-      hist('2026-08-01T10:00:00-03:00', [{ name: 'Press banca', sets: [set(10, 100, true)] }])
+      hist(new Date(2026, 7, 1, 10, 0, 0).toISOString(), [
+        { name: 'Press banca', sets: [set(10, 100, true)] }
+      ])
     ]
     expect(weeklyVolume(h, now)['pecho']).toBeUndefined()
   })
 
   it('incluye sesiones desde el lunes 00:00 local inclusive', () => {
     const h: SessionHistory[] = [
-      hist('2026-08-03T00:00:00-03:00', [{ name: 'Press banca', sets: [set(10, 100, true)] }])
+      hist(new Date(2026, 7, 3, 0, 0, 0).toISOString(), [
+        { name: 'Press banca', sets: [set(10, 100, true)] }
+      ])
     ]
     expect(weeklyVolume(h, now)['pecho']).toEqual({
       sets: 1,
@@ -100,14 +103,16 @@ describe('weeklyVolume (semana calendario lun-dom local)', () => {
 
   it('excluye el domingo 23:59:59 de la semana previa', () => {
     const h: SessionHistory[] = [
-      hist('2026-08-02T23:59:59-03:00', [{ name: 'Press banca', sets: [set(10, 100, true)] }])
+      hist(new Date(2026, 7, 2, 23, 59, 59).toISOString(), [
+        { name: 'Press banca', sets: [set(10, 100, true)] }
+      ])
     ]
     expect(weeklyVolume(h, now)['pecho']).toBeUndefined()
   })
 
   it('acumula sesiones de la misma semana', () => {
     const h: SessionHistory[] = [
-      hist('2026-08-04T10:00:00-03:00', [
+      hist(new Date(2026, 7, 4, 10, 0, 0).toISOString(), [
         { name: 'Press banca', sets: [set(10, 100, true), set(0, 0, false)] }
       ])
     ]
@@ -119,7 +124,7 @@ describe('weeklyVolume (semana calendario lun-dom local)', () => {
   })
 })
 ```
-3. Agregar `mondayOf` al import existente de `../logic`.
+2. Agregar `mondayOf` al import existente de `../logic`.
 
 - [ ] **Step 2: Correr los tests y confirmar que fallan**
 
@@ -157,7 +162,7 @@ if (new Date(h.ts).getTime() < weekStart) return
 
 - [ ] **Step 4: Correr tests, typecheck y build**
 
-Run: `npm test` → Expected: PASS (27 previos + 2 `mondayOf` + 4 `weeklyVolume` = 33).
+Run: `npm test` → Expected: PASS (27 previos − 1 reemplazado + 2 `mondayOf` + 4 `weeklyVolume` = 32).
 Run: `npx tsc --noEmit -p tsconfig.check.json` → Expected: sin errores.
 Run: `npm run build` → Expected: OK (24+ archivos en precaché).
 
@@ -166,7 +171,7 @@ Run: `npm run build` → Expected: OK (24+ archivos en precaché).
 Agregar al final de `PLAN-V1.md` la sección:
 ```markdown
 ## Tarea 5 — Volumen semanal lun–dom (spec: docs/superpowers/specs/2026-08-10-volumen-semanal-lun-dom-design.md)
-1. [x] T5-1 Lógica: `mondayOf()` + `weeklyVolume` con ventana lun–dom local (33 tests).
+1. [x] T5-1 Lógica: `mondayOf()` + `weeklyVolume` con ventana lun–dom local (32 tests).
 ```
 > IMPORTANTE: `PLAN-V1.md`, `MIGRACION-ASTRO.md` y `README.md` tienen modificaciones
 > previas SIN commitear (sesión anterior del usuario). NO incluirlas en commits de
@@ -177,7 +182,7 @@ Run: `git add src/lib/logic.ts src/lib/test/logic.test.ts; git commit -m "feat: 
 
 - [ ] **Step 6: Auditoría T5-1**
 
-Lanzar subagente `general` (NO edita): verifica diff de `logic.ts` (frontera local, no UTC), los tests nuevos (casos de frontera inclusiva lunes 00:00 / exclusión domingo previo), corre `npx tsc --noEmit -p tsconfig.check.json`, `npm test` (33) y `npm run build`. Reporta PASS/FAIL → marcar resultado en `PLAN-V1.md`.
+Lanzar subagente `general` (NO edita): verifica diff de `logic.ts` (frontera local, no UTC), los tests nuevos (casos de frontera inclusiva lunes 00:00 / exclusión domingo previo), corre `npx tsc --noEmit -p tsconfig.check.json`, `npm test` (32) y `npm run build`. Reporta PASS/FAIL → marcar resultado en `PLAN-V1.md`.
 
 ---
 
@@ -248,6 +253,14 @@ En la sección `## Estado`, tras la línea `- **Hecho**: Tareas 1 (README), 2 (m
 ```
 Cuando la Tarea 5 cierre, mover esa línea a "Hecho" (o eliminarla si ya no aplica).
 
+Agregar al final del archivo la sección con el marcado de la Tarea 5 (incluye T5-1, que quedó
+de la Task 1 — commit `281a361`, auditoría APROBADA, portabilidad verificada en Asia/Tokyo y Venezuela):
+```markdown
+## Tarea 5 — Volumen semanal lun–dom (spec: docs/superpowers/specs/2026-08-10-volumen-semanal-lun-dom-design.md)
+1. [x] T5-1 Lógica: `mondayOf()` + `weeklyVolume` con ventana lun–dom local (32 tests, portables a cualquier huso).
+```
+(T5-2 y T5-3 se completan con sus auditorías; el auditor de cada task anota el resultado aquí.)
+
 - [ ] **Step 2: Actualizar MIGRACION-ASTRO.md**
 
 En `## 3` la fila (línea 84) `| weeklyVolume, exerciseSeries (e1RM), updateProgreso* | 4207–4279 | src/lib/logic.ts |`, reemplazar por:
@@ -278,7 +291,7 @@ Subagente `general`: verifica que los 3 docs estén consistentes (sin referencia
 - [ ] **Step 1: Validación completa**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json`
-Run: `npm test` → Expected: 33 passed.
+Run: `npm test` → Expected: 32 passed.
 Run: `npm run build` → Expected: OK, `[forja-pwa] sw.js generado con N archivos`.
 
 - [ ] **Step 2: Smoke test de preview**

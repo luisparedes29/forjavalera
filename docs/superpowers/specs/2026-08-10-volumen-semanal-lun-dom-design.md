@@ -60,7 +60,12 @@ del lunes 00:00) es correcto y no requiere conversión.
 
 ### 4.2 Tests — `src/lib/test/logic.test.ts`
 
-- Pin al inicio del archivo: `process.env.TZ = 'America/Argentina/Buenos_Aires'` (Node ≥ 22 lo respeta; hace determinista la aritmética local).
+- **Portables a cualquier TZ, sin pin**: las fixtures se construyen con el constructor
+  local (`new Date(2026, 7, 3, 12, 0, 0)` para `now`; sesiones con
+  `new Date(y, m, d, h, min).toISOString()` porque `hist()` recibe ISO-UTC). El instante
+  resultante se interpreta en la TZ del runner — exactamente la semántica de producción
+  (frontera local del dispositivo). 2026-08-03 es lunes en todo calendario local, así los
+  casos valen en cualquier huso. NO se usa `process.env.TZ`.
 - Unit test de `mondayOf`: con `now` conocido, verifica lunes 00:00 local.
 - `weeklyVolume` — casos de frontera (base `now` = lunes 2026-08-03 12:00 local):
   1. Sesión sábado 2026-08-01 → **excluida** (invierte el golden actual).
@@ -68,6 +73,7 @@ del lunes 00:00) es correcto y no requiere conversión.
   3. Sesión domingo 23:59:59 local previo (2026-08-02) → **excluida**.
   4. Sesión martes de la misma semana (2026-08-04) → **incluida** y acumula en el grupo.
 - El golden actual se reemplaza por el caso 4 (misma expectativa `sets/volume/ex`).
+- Total esperado: 32 tests (27 − 1 bloque reemplazado + 2 `mondayOf` + 4 `weeklyVolume`).
 
 ### 4.3 UI — `src/components/progreso/ProgresoView.tsx`
 
