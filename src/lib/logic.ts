@@ -83,6 +83,14 @@ export function focusOf(
 
 export const isEff = (s: SetData): boolean => s.done || Number(s.reps) > 0
 
+export function mondayOf(now: number): number {
+  const d = new Date(now)
+  const day = (d.getDay() + 6) % 7
+  d.setDate(d.getDate() - day)
+  d.setHours(0, 0, 0, 0)
+  return d.getTime()
+}
+
 export function lastDelta(
   body: Array<{ peso?: number | null; m?: Record<string, number | null | undefined> }>,
   key: string
@@ -101,11 +109,11 @@ export function weeklyVolume(
   history: SessionHistory[],
   now: number = Date.now()
 ): Record<string, { sets: number; volume: number; ex: Set<string> }> {
-  const weekAgo = now - 7 * 24 * 60 * 60 * 1000
+  const weekStart = mondayOf(now)
   const out: Record<string, { sets: number; volume: number; ex: Set<string> }> =
     {}
   history.forEach((h) => {
-    if (new Date(h.ts).getTime() < weekAgo) return
+    if (new Date(h.ts).getTime() < weekStart) return
     h.exercises.forEach((e) => {
       const g = e.group
       if (!out[g]) out[g] = { sets: 0, volume: 0, ex: new Set<string>() }

@@ -5,6 +5,7 @@ import {
   focusOf,
   isEff,
   lastSets,
+  mondayOf,
   parseRest,
   repRange,
   stagnant,
@@ -164,20 +165,59 @@ describe('focusOf', () => {
   })
 })
 
-describe('weeklyVolume', () => {
-  const now = new Date('2026-08-03T12:00:00Z').getTime()
+describe('mondayOf', () => {
+  it('devuelve el lunes 00:00 local de la semana de now', () => {
+    const now = new Date(2026, 7, 3, 12, 0, 0).getTime()
+    expect(mondayOf(now)).toBe(new Date(2026, 7, 3, 0, 0, 0).getTime())
+  })
 
-  it('cuenta solo series efectivas de la última semana y agrupa por grupo', () => {
+  it('si now es domingo, devuelve el lunes anterior', () => {
+    const now = new Date(2026, 7, 9, 23, 59, 59).getTime()
+    expect(mondayOf(now)).toBe(new Date(2026, 7, 3, 0, 0, 0).getTime())
+  })
+})
+
+describe('weeklyVolume (semana calendario lun-dom local)', () => {
+  const now = new Date(2026, 7, 3, 12, 0, 0).getTime()
+
+  it('excluye sesiones de la semana anterior aunque esten a menos de 7 dias', () => {
     const h: SessionHistory[] = [
-      hist('2026-08-01T10:00:00Z', [
-        { name: 'Press banca', sets: [set(10, 100, true), set(0, 0, false)] }
-      ]),
-      hist('2026-07-01T10:00:00Z', [
+      hist(new Date(2026, 7, 1, 10, 0, 0).toISOString(), [
         { name: 'Press banca', sets: [set(10, 100, true)] }
       ])
     ]
-    const out = weeklyVolume(h, now)
-    expect(out['pecho']).toEqual({
+    expect(weeklyVolume(h, now)['pecho']).toBeUndefined()
+  })
+
+  it('incluye sesiones desde el lunes 00:00 local inclusive', () => {
+    const h: SessionHistory[] = [
+      hist(new Date(2026, 7, 3, 0, 0, 0).toISOString(), [
+        { name: 'Press banca', sets: [set(10, 100, true)] }
+      ])
+    ]
+    expect(weeklyVolume(h, now)['pecho']).toEqual({
+      sets: 1,
+      volume: 1000,
+      ex: new Set(['press banca'])
+    })
+  })
+
+  it('excluye el domingo 23:59:59 de la semana previa', () => {
+    const h: SessionHistory[] = [
+      hist(new Date(2026, 7, 2, 23, 59, 59).toISOString(), [
+        { name: 'Press banca', sets: [set(10, 100, true)] }
+      ])
+    ]
+    expect(weeklyVolume(h, now)['pecho']).toBeUndefined()
+  })
+
+  it('acumula sesiones de la misma semana', () => {
+    const h: SessionHistory[] = [
+      hist(new Date(2026, 7, 4, 10, 0, 0).toISOString(), [
+        { name: 'Press banca', sets: [set(10, 100, true), set(0, 0, false)] }
+      ])
+    ]
+    expect(weeklyVolume(h, now)['pecho']).toEqual({
       sets: 1,
       volume: 1000,
       ex: new Set(['press banca'])

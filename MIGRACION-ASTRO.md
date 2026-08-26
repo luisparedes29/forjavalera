@@ -6,11 +6,18 @@ tocar el código para retomar el trabajo sin perder el hilo.
 ## Estado
 - Fecha: 2026-08-03
 - Estado: **Fases 0–4 COMPLETAS** · Fase 5 (paridad + fixes) **validada en dev** ·
-  código **commitado y mergeado a `dev`** · pendiente: verificar el build/deploy en Netlify + respaldo de datos
-- Rama de trabajo: `main` (monolito) · la migración vive en `dev` (merge PR #11 desde `feat/migrar-astro`)
+  código **mergeado a `dev`** (PR #11 y PR #12) · merge `dev → main` hecho por el usuario
+- Rama de trabajo: `main` (producción, Astro) · `dev` (desarrollo, Astro) · la migración vivió en `feat/migrar-astro` (cerrada)
 - Deploy Netlify: **verificado en preview** — build verde (`command` + `publish` OK), PWA funcional.
-  Respaldo de datos: no aplica (sin datos existentes en `localStorage`).
-- Verificaciones actuales: tsc ✅ · vitest 27/27 ✅ · `npm run build` ✅ (SW `dist/sw.js` con precache inyectado, 19 archivos)
+- **Dato actualizado**: el usuario SÍ tiene datos de entrenamiento (semana pasada) en su
+  **teléfono**, en la URL vieja. Antes del deploy final: **exportar respaldo v3** desde el
+  teléfono y verificarlo; tras el deploy, comprobar que la app nueva los lee (o importarlos).
+- Verificaciones actuales: tsc ✅ · vitest 27/27 ✅ · `npm run build` ✅ (SW `dist/sw.js` con precache inyectado, 23 archivos)
+- Post-migración (paquete 1 de optimizaciones, commit `acde33c` en `dev`): fonts self-hosted
+  (Anton + Space Grotesk en `public/fonts/`, sin Google Fonts), precache SW ampliado a
+  woff2/json, directivas de islas `client:idle/visible`, refactor (`viewFromHash`, guard SSR,
+  `TABS` compartido) y cabeceras de cache en `netlify.toml`. Detalle en `PLAN-V1.md`.
+- Decisión post-migración: volumen semanal = semana calendario (lun–dom, hora local) en vez de ventana móvil de 7 días (spec: docs/superpowers/).
 - Fixes aplicados y validados: nav tras F5 (sin residuo), acordeón Historial,
   reloj TopBar (sin hydration-mismatch), SW dev (sin registro/errores `chrome-extension`),
   parpadeo de Hierro al F5 (D-lite: `data-view` pre-paint). Servers de dev cerrados.
@@ -75,7 +82,7 @@ Todo el código vive en `index.html`:
 | `renderHistory` | 3945–3988 | `src/components/hierro/Historial.tsx` |
 | `saveBody`, `lastDelta`, `renderDeltas`, `renderChart` | 3995–4123 | `src/components/cuerpo/*` |
 | `renderBody` | 4124–4195 | `src/components/cuerpo/BodyList.tsx` |
-| `weeklyVolume`, `exerciseSeries` (e1RM), `updateProgreso*` | 4207–4279 | `src/lib/logic.ts` |
+| `weeklyVolume`, `exerciseSeries` (e1RM), `updateProgreso*` | 4207–4279 | `src/lib/logic.ts` · weeklyVolume: ventana **semana calendario lun–dom local** |
 | `renderVolume` | 4280–4325 | `src/components/progreso/Volumen.tsx` |
 | `renderProgSelect`, `renderProgChart` | 4326–4445 | `src/components/progreso/Progresion.tsx` |
 | export/import respaldo, wipe | 4447–4531 | `src/lib/backup.ts` |
@@ -109,7 +116,7 @@ Importante preservar el formato byte a byte (compatibilidad con respaldos viejos
   - `suggestFor`: up / down / ok según rangos de reps.
   - `parseRest`: `"2 min"`, `"60–90 s"`, `"2.5-3 min"`.
   - `stagnant`: 3 sesiones sin mejora.
-  - `exerciseSeries` e1RM (Epley) y `weeklyVolume` (ventana 7 días).
+  - `exerciseSeries` e1RM (Epley) y `weeklyVolume` (ventana: semana calendario lun–dom, hora local).
 - Correr `npx vitest run` y dejar verde.
 
 ### Fase 2 — Store global (Zustand) + persistencia
@@ -220,7 +227,10 @@ no se ejecuta en el pipeline de Astro 7 (Vite 8/Rolldown). **Solución adoptada*
 9. [x] Commit inicial de la migración + push a `dev` (merge PR #11 desde `feat/migrar-astro`).
 10. [x] Deploy Netlify **verificado en preview**: build verde, app funcional online (PWA instalable;
      respaldo de datos no aplica: sin datos existentes en `localStorage`).
-11. [x] Respaldo de datos: **no aplica** — el usuario no tiene datos guardados (sin registros previos en `localStorage`).
+11. [x] Respaldo de datos: en su momento "no aplica" (sin datos en el navegador de la PC).
+      **Actualización**: el usuario tiene datos de entrenamiento en el **teléfono** (URL vieja).
+      Antes del deploy final: exportar respaldo v3 desde el teléfono y guardarlo; tras el deploy,
+      verificar que la app nueva los muestra (mismo origen) o importarlos si cambió el origen.
 
 ## 7. Comandos útiles
 - Dev: `npm run dev` (Astro)

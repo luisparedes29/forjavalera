@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { GCOLORS, GROUPS, PROG_METRIC, SET_GUIDE } from '../../data/routine'
-import { allExerciseNames, exerciseSeries, weeklyVolume } from '../../lib/logic'
+import { allExerciseNames, exerciseSeries, mondayOf, weeklyVolume } from '../../lib/logic'
 import { fmtN } from '../../lib/util'
 import { useAppStore } from '../../store/appStore'
 import ChartLine from '../shared/ChartLine'
@@ -13,6 +13,14 @@ export default function ProgresoView() {
 
   const [metric, setMetric] = useState<Metric>('kg')
   const [selected, setSelected] = useState<string | null>(null)
+  const [weekRange, setWeekRange] = useState<string | null>(null)
+  useEffect(() => {
+    const fmt = new Intl.DateTimeFormat('es-AR', { day: 'numeric', month: 'short' })
+    const startMs = mondayOf(Date.now())
+    const start = new Date(startMs)
+    const end = new Date(startMs + 6 * 24 * 60 * 60 * 1000)
+    setWeekRange(`semana del ${fmt.format(start)} al ${fmt.format(end)}`)
+  }, [])
 
   const wv = useMemo(() => weeklyVolume(history), [history])
 
@@ -84,8 +92,8 @@ export default function ProgresoView() {
           <p className="vol-legend">
             <i></i>
             <span>
-              zona = objetivo recomendado · series efectivas de los últimos 7
-              días
+              zona = objetivo recomendado · series efectivas de la semana (lun–dom)
+              {weekRange ? ` · ${weekRange}` : ''}
             </span>
           </p>
           <div id="volList">
