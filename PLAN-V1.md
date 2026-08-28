@@ -5,9 +5,9 @@
 
 ## Estado
 - Fecha: 2026-08-03 · Última actualización: tras Tarea 3 (paquete 1).
-- **Hecho**: Tareas 1 (README), 2 (merge dev→main, por el usuario) y 3 (optimizaciones,
-  commiteada en `dev` local `acde33c`, **push pendiente**).
-- **En curso**: Tarea 5 — volumen semanal lun–dom (spec: docs/superpowers/specs/2026-08-10-volumen-semanal-lun-dom-design.md).
+- **Hecho**: Tareas 1 (README), 2 (merge dev→main, por el usuario), 3 (optimizaciones,
+  commiteada en `dev` local `acde33c`, **push pendiente**), 5 (volumen semanal lun–dom, `ae072c6`) y 6 (rutina pullover + curl inclinado, `570b8ab`/`616fa4b`).
+- **En curso**: — (Tarea 6 cerrada, auditor final APROBADO).
 - **Pendiente**: push de `dev` → merge a `main` (lo hace el usuario) → deploy producción +
   verificación en el teléfono; **respaldo v3 antes del deploy** (el usuario SÍ tiene datos
   de la semana pasada en el teléfono, en la URL vieja); Tarea 4 opcional.
@@ -112,3 +112,9 @@
 2. [x] T5-2 UI: leyenda "(lun–dom)" + rango "semana del X al Y" (es-AR, post-mount anti-mismatch) — auditoría APROBADA (SSR sin rango; warning hydration = extensión BIS, no del código).
 3. [x] T5-3 Docs: PLAN-V1, MIGRACION-ASTRO, README — auditoría APROBADA (sin "ventana 7 días" en contexto actual, UTF-8 válido).
 - **Cierre (2026-08-10)**: auditor final APROBADO (6/6 requisitos, 32 tests, tsc + build OK, portabilidad verificada en Asia/Tokyo y UTC-4). Commits `281a361`, `a8c6c55`, `9254030`, `c5621ca`. Plan de implementación: `docs/superpowers/plans/2026-08-10-volumen-semanal-lun-dom.md`.
+- **Cierre docs (2026-08-10)**: `ae072c6` (marcado final en PLAN-V1.md).
+
+## Tarea 6 — Rutina: pullover en polea (lunes) + curl inclinado (viernes) (spec: docs/superpowers/specs/2026-08-28-rutina-pullover-curl-inclinado-design.md)
+1. [x] T6-1 Rutina: pullover en polea alta (lunes, tras remo antes de face pull) + curl inclinado (viernes) — `570b8ab` — auditoría APROBADA (orden LUN 8, VIE último, laterales intactos, tsc/test/build OK).
+- Plan: `docs/superpowers/plans/2026-08-28-rutina-pullover-curl-inclinado.md`.
+- **Cierre (2026-08-28)**: auditor final APROBADO (6/6 requisitos, 32 tests, tsc + build SW 23). Commits `570b8ab`, `616fa4b`.

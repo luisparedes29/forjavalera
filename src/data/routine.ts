@@ -85,6 +85,14 @@ export const ROUTINE: RoutineDay[] = [
         note: 'RIR 2 · trapecio medio y romboides · retracción escapular'
       },
       {
+        n: 'Pullover en polea alta',
+        g: 'espalda',
+        reps: '12–15',
+        rest: '90 s',
+        sets: [1, 1, 1],
+        note: 'RIR 1–2 · dorsal ancho en estiramiento · polea alta · tras remo, antes de face pull'
+      },
+      {
         n: 'Face pull en polea alta',
         g: 'hombros',
         reps: '12–15',
@@ -357,12 +365,12 @@ export const ROUTINE: RoutineDay[] = [
         note: 'RIR 1 · énfasis en acortamiento · complementa al overhead'
       },
       {
-        n: 'Curl bíceps en polea baja',
+        n: 'Curl de bíceps inclinado con mancuernas',
         g: 'brazos',
-        reps: '10–15',
-        rest: '60–90 s',
+        reps: '10–12',
+        rest: '90 s',
         sets: [1, 1, 1],
-        note: 'RIR 1 · tensión constante · segundo toque de bíceps'
+        note: 'RIR 1–2 · banco 45–60° · brazos atrás del hombro · cabeza larga estirada'
       }
     ]
   }
