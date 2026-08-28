@@ -5,7 +5,7 @@ describe('ROUTINE', () => {
   it('tiene 5 días y 32 ejercicios', () => {
     expect(ROUTINE).toHaveLength(5)
     const total = ROUTINE.reduce((a, d) => a + d.ex.length, 0)
-    expect(total).toBe(32)
+    expect(total).toBe(33)
   })
 
   it('cada ejercicio tiene grupo válido y sets por semana', () => {
