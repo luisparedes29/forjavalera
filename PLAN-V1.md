@@ -118,3 +118,7 @@
 1. [x] T6-1 Rutina: pullover en polea alta (lunes, tras remo antes de face pull) + curl inclinado (viernes) — `570b8ab` — auditoría APROBADA (orden LUN 8, VIE último, laterales intactos, tsc/test/build OK).
 - Plan: `docs/superpowers/plans/2026-08-28-rutina-pullover-curl-inclinado.md`.
 - **Cierre (2026-08-28)**: auditor final APROBADO (6/6 requisitos, 32 tests, tsc + build SW 23). Commits `570b8ab`, `616fa4b`.
+
+## Tarea 7 — Rutina: series 4 + predicador (lun) + pushdown (mié) (spec: docs/superpowers/specs/2026-08-28-rutina-series-4-y-nuevos-design.md)
+- Estado: spec aprobado. Plan: `docs/superpowers/plans/2026-08-28-rutina-series-4-y-nuevos.md`.
+- Scope: 4 series tríceps mié/vie + curl inclinado vie + curl EZ lun, martillo 2→3, + predicador (lun) + pushdown (mié).
