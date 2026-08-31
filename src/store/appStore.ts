@@ -1,7 +1,14 @@
 import { create } from 'zustand'
 import { LS, load, saveL } from '../lib/storage'
 import { focusOf, lastSets, suggestFor } from '../lib/logic'
-import { uid } from '../lib/util'
+import { normName, uid } from '../lib/util'
+
+function mapBrazosByName(n: string): string {
+  const k = normName(n)
+  if (/curl|predicador/.test(k)) return 'biceps'
+  if (/triceps|tríceps|pushdown|overhead/.test(k)) return 'triceps'
+  return 'brazos'
+}
 import type {
   BodyRecord,
   Exercise,
@@ -101,10 +108,11 @@ export const useAppStore = create<AppStore>()((set, get) => ({
         }
       })
     }
+    const g = r.g === 'brazos' ? mapBrazosByName(r.name) : r.g
     const ex: Exercise = {
       id: uid(),
       name: r.name,
-      group: r.g,
+      group: g,
       reps: r.reps,
       rest: r.rest,
       note: r.note,
@@ -182,15 +190,19 @@ export const useAppStore = create<AppStore>()((set, get) => ({
   commitSession: () => {
     const valid = get().exercises.filter((e) => e.name.trim() && e.sets.length)
     if (!valid.length) return
-    const clean: HistoryExercise[] = valid.map((e) => ({
-      ...e,
-      sets: e.sets.map((s) => ({
-        reps: Number(s.reps) || 0,
-        kg: Number(s.kg) || 0,
-        done: !!s.done
-      })),
-      sug: suggestFor(e)
-    }))
+    const clean: HistoryExercise[] = valid.map((e) => {
+      const g = e.group === 'brazos' ? mapBrazosByName(e.name) : e.group
+      return {
+        ...e,
+        group: g,
+        sets: e.sets.map((s) => ({
+          reps: Number(s.reps) || 0,
+          kg: Number(s.kg) || 0,
+          done: !!s.done
+        })),
+        sug: suggestFor(e)
+      }
+    })
     const volume = clean.reduce(
       (a, e) => a + e.sets.reduce((x, s) => x + Number(s.reps) * Number(s.kg), 0),
       0

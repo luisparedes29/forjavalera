@@ -1,6 +1,13 @@
 import type { SessionHistory, SetData, Suggest } from '../lib/types'
 import { normName } from '../lib/util'
 
+function mapBrazosByName(n: string): string {
+  const k = normName(n)
+  if (/curl|predicador/.test(k)) return 'biceps'
+  if (/triceps|tríceps|pushdown|overhead/.test(k)) return 'triceps'
+  return 'brazos'
+}
+
 export function repsLabel(d: { reps?: string }): string {
   return d.reps === 'al fallo' ? 'al fallo técnico' : `${d.reps} reps`
 }
@@ -74,10 +81,13 @@ export function parseRest(rest?: string | null): number {
 }
 
 export function focusOf(
-  exs: { group: string; sets: unknown[] }[]
+  exs: { group: string; name?: string; sets: unknown[] }[]
 ): string | undefined {
   const c: Record<string, number> = {}
-  exs.forEach((e) => (c[e.group] = (c[e.group] || 0) + e.sets.length))
+  exs.forEach((e) => {
+    const g = e.group === 'brazos' ? mapBrazosByName((e as { name?: string }).name ?? '') : e.group
+    c[g] = (c[g] || 0) + e.sets.length
+  })
   return Object.entries(c).sort((a, b) => b[1] - a[1])[0]?.[0]
 }
 
@@ -115,7 +125,7 @@ export function weeklyVolume(
   history.forEach((h) => {
     if (new Date(h.ts).getTime() < weekStart) return
     h.exercises.forEach((e) => {
-      const g = e.group
+      const g = e.group === 'brazos' ? mapBrazosByName(e.name) : e.group
       if (!out[g]) out[g] = { sets: 0, volume: 0, ex: new Set<string>() }
       e.sets.forEach((s) => {
         if (isEff(s)) {

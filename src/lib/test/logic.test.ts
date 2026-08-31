@@ -223,6 +223,23 @@ describe('weeklyVolume (semana calendario lun-dom local)', () => {
       ex: new Set(['press banca'])
     })
   })
+
+  it('separa brazos histórico en biceps/triceps por nombre', () => {
+    const h: SessionHistory[] = [
+      hist(new Date(2026, 7, 3, 10, 0, 0).toISOString(), [
+        { name: 'Curl de bíceps con barra EZ', sets: [set(10, 50, true)] }
+      ]),
+      hist(new Date(2026, 7, 3, 11, 0, 0).toISOString(), [
+        { name: 'Pushdown tríceps en polea', sets: [set(10, 50, true)] }
+      ])
+    ]
+    h[0].exercises[0].group = 'brazos'
+    h[1].exercises[0].group = 'brazos'
+    const out = weeklyVolume(h, now)
+    expect(out['biceps'].sets).toBe(1)
+    expect(out['triceps'].sets).toBe(1)
+    expect(out['brazos']).toBeUndefined()
+  })
 })
 
 describe('allExerciseNames', () => {
