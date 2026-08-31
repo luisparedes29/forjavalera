@@ -2,13 +2,6 @@ import { create } from 'zustand'
 import { LS, load, saveL } from '../lib/storage'
 import { focusOf, lastSets, suggestFor } from '../lib/logic'
 import { normName, uid } from '../lib/util'
-
-function mapBrazosByName(n: string): string {
-  const k = normName(n)
-  if (/curl|predicador/.test(k)) return 'biceps'
-  if (/triceps|tríceps|pushdown|overhead/.test(k)) return 'triceps'
-  return 'brazos'
-}
 import type {
   BodyRecord,
   Exercise,
@@ -18,6 +11,13 @@ import type {
   SetData,
   WeekState
 } from '../lib/types'
+
+function mapBrazosByName(n: string): string {
+  const k = normName(n)
+  if (/curl|predicador/.test(k)) return 'biceps'
+  if (/triceps|pushdown|overhead/.test(k)) return 'triceps'
+  return 'brazos'
+}
 
 export type ViewId = 'hierro' | 'cuerpo' | 'progreso'
 
