@@ -121,7 +121,7 @@ export const ROUTINE: RoutineDay[] = [
         g: 'brazos',
         reps: '8–12',
         rest: '90 s',
-        sets: [1, 1, 1, 1],
+        sets: [1, 1, 1],
         note: 'RIR 1–2 · bíceps (cabeza corta y larga) + braquial'
       },
       {
@@ -253,7 +253,7 @@ export const ROUTINE: RoutineDay[] = [
         g: 'brazos',
         reps: '10–15',
         rest: '60–90 s',
-        sets: [1, 1, 1, 1],
+        sets: [1, 1, 1],
         note: 'RIR 1 · cabeza larga estirada · ~1.4x más hipertrofia que pushdown'
       },
       {
