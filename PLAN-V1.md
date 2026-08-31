@@ -123,3 +123,7 @@
 1. [x] T7-1 Rutina: 5 series edits (tríceps mié/vie + curls incl. martillo 3) + predicador (lun) + pushdown (mié) — `61bcc8e` — auditoría APROBADA (LUN 9/MIÉ 7, laterales intactos, tsc/test/build OK).
 - Plan: `docs/superpowers/plans/2026-08-28-rutina-series-4-y-nuevos.md`.
 - **Cierre (2026-08-28)**: auditor final APROBADO (7/7 requisitos, 32 tests, tsc + build SW 23). Commits `61bcc8e`, `c4e6137`.
+
+## Tarea 8 — Rutina: ajuste EZ y overhead a 3 series (spec: docs/superpowers/specs/2026-08-28-rutina-ajuste-ez-overhead-design.md)
+- Estado: spec aprobado. Plan: `docs/superpowers/plans/2026-08-28-rutina-ajuste-ez-overhead.md`.
+- Scope: Lun EZ 4→3, Mié overhead 4→3 (brazos 25→23).
