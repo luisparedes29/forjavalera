@@ -4,7 +4,8 @@ export const GROUPS: Record<string, string> = {
   pecho: 'Pecho',
   espalda: 'Espalda',
   hombros: 'Hombros',
-  brazos: 'Brazos',
+  biceps: 'Bíceps',
+  triceps: 'Tríceps',
   piernas: 'Piernas',
   gluteos: 'Glúteos',
   core: 'Core',
@@ -15,7 +16,8 @@ export const GCOLORS: Record<string, string> = {
   pecho: '#ff6b6b',
   espalda: '#3fd8c7',
   hombros: '#5db9ff',
-  brazos: '#c9f24b',
+  biceps: '#c9f24b',
+  triceps: '#ff8c42',
   piernas: '#ffb02e',
   gluteos: '#ff8bd1',
   core: '#b78bff',
@@ -26,7 +28,8 @@ export const SET_GUIDE: Record<string, { min: number; max: number }> = {
   pecho: { min: 10, max: 20 },
   espalda: { min: 10, max: 20 },
   hombros: { min: 8, max: 16 },
-  brazos: { min: 8, max: 14 },
+  biceps: { min: 8, max: 14 },
+  triceps: { min: 8, max: 14 },
   piernas: { min: 10, max: 20 },
   gluteos: { min: 8, max: 16 },
   core: { min: 6, max: 12 }
@@ -118,7 +121,7 @@ export const ROUTINE: RoutineDay[] = [
       },
       {
         n: 'Curl de bíceps con barra EZ',
-        g: 'brazos',
+        g: 'biceps',
         reps: '8–12',
         rest: '90 s',
         sets: [1, 1, 1],
@@ -126,11 +129,19 @@ export const ROUTINE: RoutineDay[] = [
       },
       {
         n: 'Curl martillo con mancuernas',
-        g: 'brazos',
+        g: 'biceps',
         reps: '10–15',
         rest: '60–90 s',
-        sets: [1, 1],
+        sets: [1, 1, 1],
         note: 'RIR 1–2 · braquial y braquiorradial · agarre neutro'
+      },
+      {
+        n: 'Curl predicador (máquina o barra Z)',
+        g: 'biceps',
+        reps: '10–12',
+        rest: '90 s',
+        sets: [1, 1, 1],
+        note: 'RIR 1–2 · predicador · cabeza corta aislada · codo fijo'
       }
     ]
   },
@@ -242,11 +253,19 @@ export const ROUTINE: RoutineDay[] = [
       },
       {
         n: 'Extensión tríceps overhead en polea',
-        g: 'brazos',
+        g: 'triceps',
         reps: '10–15',
         rest: '60–90 s',
         sets: [1, 1, 1],
         note: 'RIR 1 · cabeza larga estirada · ~1.4x más hipertrofia que pushdown'
+      },
+      {
+        n: 'Pushdown tríceps en polea',
+        g: 'triceps',
+        reps: '10–15',
+        rest: '60–90 s',
+        sets: [1, 1, 1],
+        note: 'RIR 1 · énfasis en acortamiento · polea alta'
       }
     ]
   },
@@ -358,18 +377,18 @@ export const ROUTINE: RoutineDay[] = [
       },
       {
         n: 'Extensión tríceps en polea (pushdown)',
-        g: 'brazos',
+        g: 'triceps',
         reps: '10–15',
         rest: '60–90 s',
-        sets: [1, 1, 1],
+        sets: [1, 1, 1, 1],
         note: 'RIR 1 · énfasis en acortamiento · complementa al overhead'
       },
       {
         n: 'Curl de bíceps inclinado con mancuernas',
-        g: 'brazos',
+        g: 'biceps',
         reps: '10–12',
         rest: '90 s',
-        sets: [1, 1, 1],
+        sets: [1, 1, 1, 1],
         note: 'RIR 1–2 · banco 45–60° · brazos atrás del hombro · cabeza larga estirada'
       }
     ]
