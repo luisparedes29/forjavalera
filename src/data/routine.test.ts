@@ -9,6 +9,8 @@ describe('ROUTINE', () => {
   })
 
   it('cada ejercicio tiene grupo válido y sets por semana', () => {
+    expect(GROUPS['biceps']).toBe('Bíceps')
+    expect(GROUPS['triceps']).toBe('Tríceps')
     ROUTINE.forEach((d) => {
       expect(d.ex.length).toBeGreaterThan(0)
       d.ex.forEach((e) => {
@@ -31,8 +33,8 @@ describe('MEASURES', () => {
 })
 
 describe('SET_GUIDE', () => {
-  it('tiene 7 grupos con min ≤ max', () => {
-    expect(Object.keys(SET_GUIDE)).toHaveLength(7)
+  it('tiene 8 grupos con min ≤ max', () => {
+    expect(Object.keys(SET_GUIDE)).toHaveLength(8)
     Object.values(SET_GUIDE).forEach(({ min, max }) => {
       expect(min).toBeLessThanOrEqual(max)
     })
