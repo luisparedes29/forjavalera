@@ -120,5 +120,5 @@
 - **Cierre (2026-08-28)**: auditor final APROBADO (6/6 requisitos, 32 tests, tsc + build SW 23). Commits `570b8ab`, `616fa4b`.
 
 ## Tarea 7 — Rutina: series 4 + predicador (lun) + pushdown (mié) (spec: docs/superpowers/specs/2026-08-28-rutina-series-4-y-nuevos-design.md)
-- Estado: spec aprobado. Plan: `docs/superpowers/plans/2026-08-28-rutina-series-4-y-nuevos.md`.
-- Scope: 4 series tríceps mié/vie + curl inclinado vie + curl EZ lun, martillo 2→3, + predicador (lun) + pushdown (mié).
+1. [x] T7-1 Rutina: 5 series edits (tríceps mié/vie + curls incl. martillo 3) + predicador (lun) + pushdown (mié) — `61bcc8e` — auditoría APROBADA (LUN 9/MIÉ 7, laterales intactos, tsc/test/build OK).
+- Plan: `docs/superpowers/plans/2026-08-28-rutina-series-4-y-nuevos.md`.
