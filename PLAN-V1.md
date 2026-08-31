@@ -6,8 +6,8 @@
 ## Estado
 - Fecha: 2026-08-03 · Última actualización: tras Tarea 3 (paquete 1).
 - **Hecho**: Tareas 1 (README), 2 (merge dev→main, por el usuario), 3 (optimizaciones,
-  commiteada en `dev` local `acde33c`, **push pendiente**), 5 (volumen semanal lun–dom, `ae072c6`), 6 (rutina pullover + curl inclinado, `570b8ab`/`616fa4b`), 7 (series 4 + predicador/pushdown, `61bcc8e`/`c4e6137`) y 8 (ajuste EZ/overhead a 3, `2b186a0`).
-- **En curso**: — (Tarea 8 cerrada).
+  commiteada en `dev` local `acde33c`, **push pendiente**), 5 (volumen semanal lun–dom, `ae072c6`), 6 (rutina pullover + curl inclinado, `570b8ab`/`616fa4b`), 7 (series 4 + predicador/pushdown, `61bcc8e`/`c4e6137`), 8 (ajuste EZ/overhead a 3, `2b186a0`) y 9 (split brazos→bíceps/tríceps, `ee9c49d`/`7b0db2e`/`616e5c5`).
+- **En curso**: — (Tarea 9 cerrada, auditor final APROBADO).
 - **Pendiente**: push de `dev` → merge a `main` (lo hace el usuario) → deploy producción +
   verificación en el teléfono; **respaldo v3 antes del deploy** (el usuario SÍ tiene datos
   de la semana pasada en el teléfono, en la URL vieja); Tarea 4 opcional.
@@ -133,3 +133,4 @@
 1. [x] T9-1 Datos: GROUPS/GCOLORS/SET_GUIDE 8 claves + 7 retags (3 lun biceps, 2 mie triceps, 2 vie) — `ee9c49d` — auditoría APROBADA (35, laterales intactos).
 2. [x] T9-2 Lógica: dual-read `brazos→bíceps/tríceps` por nombre + migración al guardar — `7b0db2e`/`616e5c5` — auditoría APROBADA (33 tests, fix imports ordenados, DRY deferred).
 - Plan: `docs/superpowers/plans/2026-08-28-rutina-biceps-triceps.md`.
+- **Cierre (2026-08-28)**: auditor final APROBADO (9/9 requisitos, 33 tests, tsc + build SW 23). Commits `ee9c49d`, `7b0db2e`, `616e5c5`, `6909dbd`.
