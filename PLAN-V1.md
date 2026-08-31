@@ -6,8 +6,8 @@
 ## Estado
 - Fecha: 2026-08-03 · Última actualización: tras Tarea 3 (paquete 1).
 - **Hecho**: Tareas 1 (README), 2 (merge dev→main, por el usuario), 3 (optimizaciones,
-  commiteada en `dev` local `acde33c`, **push pendiente**), 5 (volumen semanal lun–dom, `ae072c6`) y 6 (rutina pullover + curl inclinado, `570b8ab`/`616fa4b`).
-- **En curso**: — (Tarea 6 cerrada, auditor final APROBADO).
+  commiteada en `dev` local `acde33c`, **push pendiente**), 5 (volumen semanal lun–dom, `ae072c6`), 6 (rutina pullover + curl inclinado, `570b8ab`/`616fa4b`) y 7 (series 4 + predicador/pushdown, `61bcc8e`/`c4e6137`).
+- **En curso**: — (Tarea 7 cerrada, auditor final APROBADO).
 - **Pendiente**: push de `dev` → merge a `main` (lo hace el usuario) → deploy producción +
   verificación en el teléfono; **respaldo v3 antes del deploy** (el usuario SÍ tiene datos
   de la semana pasada en el teléfono, en la URL vieja); Tarea 4 opcional.
@@ -122,3 +122,4 @@
 ## Tarea 7 — Rutina: series 4 + predicador (lun) + pushdown (mié) (spec: docs/superpowers/specs/2026-08-28-rutina-series-4-y-nuevos-design.md)
 1. [x] T7-1 Rutina: 5 series edits (tríceps mié/vie + curls incl. martillo 3) + predicador (lun) + pushdown (mié) — `61bcc8e` — auditoría APROBADA (LUN 9/MIÉ 7, laterales intactos, tsc/test/build OK).
 - Plan: `docs/superpowers/plans/2026-08-28-rutina-series-4-y-nuevos.md`.
+- **Cierre (2026-08-28)**: auditor final APROBADO (7/7 requisitos, 32 tests, tsc + build SW 23). Commits `61bcc8e`, `c4e6137`.
