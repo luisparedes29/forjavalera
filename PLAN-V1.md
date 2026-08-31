@@ -6,8 +6,8 @@
 ## Estado
 - Fecha: 2026-08-03 · Última actualización: tras Tarea 3 (paquete 1).
 - **Hecho**: Tareas 1 (README), 2 (merge dev→main, por el usuario), 3 (optimizaciones,
-  commiteada en `dev` local `acde33c`, **push pendiente**), 5 (volumen semanal lun–dom, `ae072c6`), 6 (rutina pullover + curl inclinado, `570b8ab`/`616fa4b`) y 7 (series 4 + predicador/pushdown, `61bcc8e`/`c4e6137`).
-- **En curso**: — (Tarea 7 cerrada, auditor final APROBADO).
+  commiteada en `dev` local `acde33c`, **push pendiente**), 5 (volumen semanal lun–dom, `ae072c6`), 6 (rutina pullover + curl inclinado, `570b8ab`/`616fa4b`), 7 (series 4 + predicador/pushdown, `61bcc8e`/`c4e6137`) y 8 (ajuste EZ/overhead a 3, `2b186a0`).
+- **En curso**: — (Tarea 8 cerrada).
 - **Pendiente**: push de `dev` → merge a `main` (lo hace el usuario) → deploy producción +
   verificación en el teléfono; **respaldo v3 antes del deploy** (el usuario SÍ tiene datos
   de la semana pasada en el teléfono, en la URL vieja); Tarea 4 opcional.
@@ -125,5 +125,6 @@
 - **Cierre (2026-08-28)**: auditor final APROBADO (7/7 requisitos, 32 tests, tsc + build SW 23). Commits `61bcc8e`, `c4e6137`.
 
 ## Tarea 8 — Rutina: ajuste EZ y overhead a 3 series (spec: docs/superpowers/specs/2026-08-28-rutina-ajuste-ez-overhead-design.md)
-- Estado: spec aprobado. Plan: `docs/superpowers/plans/2026-08-28-rutina-ajuste-ez-overhead.md`.
-- Scope: Lun EZ 4→3, Mié overhead 4→3 (brazos 25→23).
+1. [x] T8-1 Ajuste: Lun EZ 4→3 + Mié overhead 4→3 — `2b186a0` — brazos 25→23 (bíceps 14→13, tríceps 11→10).
+- Plan: `docs/superpowers/plans/2026-08-28-rutina-ajuste-ez-overhead.md`.
+- **Cierre (2026-08-28)**: ajuste verificado — tsc 0, 32 tests, build SW 23.
