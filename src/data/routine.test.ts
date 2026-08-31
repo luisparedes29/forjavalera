@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest'
 import { GROUPS, MEASURES, ROUTINE, SET_GUIDE } from '../data/routine'
 
 describe('ROUTINE', () => {
-  it('tiene 5 días y 32 ejercicios', () => {
+  it('tiene 5 días y 35 ejercicios', () => {
     expect(ROUTINE).toHaveLength(5)
     const total = ROUTINE.reduce((a, d) => a + d.ex.length, 0)
-    expect(total).toBe(33)
+    expect(total).toBe(35)
   })
 
   it('cada ejercicio tiene grupo válido y sets por semana', () => {

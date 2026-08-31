@@ -121,7 +121,7 @@ export const ROUTINE: RoutineDay[] = [
         g: 'brazos',
         reps: '8–12',
         rest: '90 s',
-        sets: [1, 1, 1],
+        sets: [1, 1, 1, 1],
         note: 'RIR 1–2 · bíceps (cabeza corta y larga) + braquial'
       },
       {
@@ -129,8 +129,16 @@ export const ROUTINE: RoutineDay[] = [
         g: 'brazos',
         reps: '10–15',
         rest: '60–90 s',
-        sets: [1, 1],
+        sets: [1, 1, 1],
         note: 'RIR 1–2 · braquial y braquiorradial · agarre neutro'
+      },
+      {
+        n: 'Curl predicador (máquina o barra Z)',
+        g: 'brazos',
+        reps: '10–12',
+        rest: '90 s',
+        sets: [1, 1, 1],
+        note: 'RIR 1–2 · predicador · cabeza corta aislada · codo fijo'
       }
     ]
   },
@@ -245,8 +253,16 @@ export const ROUTINE: RoutineDay[] = [
         g: 'brazos',
         reps: '10–15',
         rest: '60–90 s',
-        sets: [1, 1, 1],
+        sets: [1, 1, 1, 1],
         note: 'RIR 1 · cabeza larga estirada · ~1.4x más hipertrofia que pushdown'
+      },
+      {
+        n: 'Pushdown tríceps en polea',
+        g: 'brazos',
+        reps: '10–15',
+        rest: '60–90 s',
+        sets: [1, 1, 1],
+        note: 'RIR 1 · énfasis en acortamiento · polea alta'
       }
     ]
   },
@@ -361,7 +377,7 @@ export const ROUTINE: RoutineDay[] = [
         g: 'brazos',
         reps: '10–15',
         rest: '60–90 s',
-        sets: [1, 1, 1],
+        sets: [1, 1, 1, 1],
         note: 'RIR 1 · énfasis en acortamiento · complementa al overhead'
       },
       {
@@ -369,7 +385,7 @@ export const ROUTINE: RoutineDay[] = [
         g: 'brazos',
         reps: '10–12',
         rest: '90 s',
-        sets: [1, 1, 1],
+        sets: [1, 1, 1, 1],
         note: 'RIR 1–2 · banco 45–60° · brazos atrás del hombro · cabeza larga estirada'
       }
     ]
