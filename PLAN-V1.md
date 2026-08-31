@@ -131,5 +131,5 @@
 
 ## Tarea 9 — Rutina: separar brazos en bíceps/tríceps (spec: docs/superpowers/specs/2026-08-28-rutina-biceps-triceps-design.md)
 1. [x] T9-1 Datos: GROUPS/GCOLORS/SET_GUIDE 8 claves + 7 retags (3 lun biceps, 2 mie triceps, 2 vie) — `ee9c49d` — auditoría APROBADA (35, laterales intactos).
+2. [x] T9-2 Lógica: dual-read `brazos→bíceps/tríceps` por nombre + migración al guardar — `7b0db2e`/`616e5c5` — auditoría APROBADA (33 tests, fix imports ordenados, DRY deferred).
 - Plan: `docs/superpowers/plans/2026-08-28-rutina-biceps-triceps.md`.
-- Scope: GROUPS/GCOLORS/SET_GUIDE split + 7 ejercicios retag + dual-read brazos histórico.
