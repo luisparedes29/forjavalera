@@ -128,3 +128,7 @@
 1. [x] T8-1 Ajuste: Lun EZ 4→3 + Mié overhead 4→3 — `2b186a0` — brazos 25→23 (bíceps 14→13, tríceps 11→10).
 - Plan: `docs/superpowers/plans/2026-08-28-rutina-ajuste-ez-overhead.md`.
 - **Cierre (2026-08-28)**: ajuste verificado — tsc 0, 32 tests, build SW 23.
+
+## Tarea 9 — Rutina: separar brazos en bíceps/tríceps (spec: docs/superpowers/specs/2026-08-28-rutina-biceps-triceps-design.md)
+- Estado: spec aprobado (enfoque A, 8–14 ambos). Plan: `docs/superpowers/plans/2026-08-28-rutina-biceps-triceps.md`.
+- Scope: GROUPS/GCOLORS/SET_GUIDE split + 7 ejercicios retag + dual-read brazos histórico.
