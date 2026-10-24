@@ -60,8 +60,10 @@ interface AppStore {
   clearSession: () => void
   commitSession: () => void
   removeSession: (id: string) => void
+  replaceHistory: (history: SessionHistory[]) => void
   addBodyRecord: (rec: BodyRecord) => void
   removeBodyRecord: (id: string) => void
+  replaceBody: (body: BodyRecord[]) => void
   setWeek: (n: number) => void
   setDeload: (b: boolean) => void
   wipe: () => void
@@ -219,6 +221,11 @@ export const useAppStore = create<AppStore>()((set, get) => ({
     saveL(LS.history, get().history)
   },
 
+  replaceHistory: (history) => {
+    set({ history })
+    saveL(LS.history, history)
+  },
+
   addBodyRecord: (rec) => {
     const body = [...get().body, rec].sort((a, b) => a.ts.localeCompare(b.ts))
     set({ body })
@@ -228,6 +235,11 @@ export const useAppStore = create<AppStore>()((set, get) => ({
   removeBodyRecord: (id) => {
     set((s) => ({ body: s.body.filter((r) => r.id !== id) }))
     saveL(LS.body, get().body)
+  },
+
+  replaceBody: (body) => {
+    set({ body })
+    saveL(LS.body, body)
   },
 
   setWeek: (n) => {

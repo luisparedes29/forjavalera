@@ -272,8 +272,12 @@ export default function CuerpoView() {
                           className="icon-btn"
                           title="Eliminar registro"
                           onClick={() => {
+                            const prev = body
                             removeBodyRecord(r.id)
-                            toast('Registro eliminado')
+                            toast('Registro eliminado', 'warn', {
+                              label: 'Deshacer',
+                              run: () => useAppStore.getState().replaceBody(prev)
+                            })
                           }}
                         >
                           {trashSVG}

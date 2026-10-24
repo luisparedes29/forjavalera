@@ -137,9 +137,12 @@ export default function Sesion() {
   }
 
   const onClear = (): void => {
-    if (exercises.length && !confirm('¿Vaciar la sesión actual?')) return
+    const prev = exercises
     clearSession()
-    toast('Sesión vaciada')
+    toast('Sesión vaciada', 'warn', {
+      label: 'Deshacer',
+      run: () => useAppStore.getState().replaceExercises(prev)
+    })
   }
 
   const onCopy = (): void => {
@@ -293,8 +296,12 @@ export default function Sesion() {
                     className="icon-btn del-ex"
                     title="Eliminar ejercicio"
                     onClick={() => {
+                      const prev = useAppStore.getState().exercises
                       removeExerciseFromSession(e.id)
-                      toast('Ejercicio eliminado')
+                      toast('Ejercicio eliminado', 'warn', {
+                        label: 'Deshacer',
+                        run: () => useAppStore.getState().replaceExercises(prev)
+                      })
                     }}
                   >
                     {trashSVG}
@@ -356,7 +363,14 @@ export default function Sesion() {
                       <button
                         className="icon-btn del-set"
                         title="Eliminar serie"
-                        onClick={() => removeSetFromExercise(e.id, si)}
+                        onClick={() => {
+                          const prev = useAppStore.getState().exercises
+                          removeSetFromExercise(e.id, si)
+                          toast(`Serie ${si + 1} eliminada`, 'warn', {
+                            label: 'Deshacer',
+                            run: () => useAppStore.getState().replaceExercises(prev)
+                          })
+                        }}
                       >
                         {trashSVG}
                       </button>

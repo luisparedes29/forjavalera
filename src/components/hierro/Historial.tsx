@@ -96,8 +96,12 @@ export default function Historial() {
                 <button
                   className="del-hist"
                   onClick={() => {
+                    const prev = history
                     removeSession(h.id)
-                    toast('Sesión eliminada')
+                    toast('Sesión eliminada', 'warn', {
+                      label: 'Deshacer',
+                      run: () => useAppStore.getState().replaceHistory(prev)
+                    })
                   }}
                 >
                   Eliminar sesión

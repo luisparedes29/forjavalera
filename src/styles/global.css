@@ -2197,6 +2197,25 @@
       .toast.warn {
         border-left-color: var(--orange);
       }
+      .toast {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .toast-action {
+        background: none;
+        border: 1px solid var(--volt);
+        color: var(--volt);
+        cursor: pointer;
+        font: 700 11px 'Space Grotesk';
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0 10px;
+        flex: none;
+      }
       footer {
         border-top: 1px solid var(--line);
         padding: 18px 28px 28px;
