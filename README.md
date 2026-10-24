@@ -42,7 +42,7 @@ fuentes Anton + Space Grotesk self-hosted, sin Google Fonts), con **respaldo exp
 | `npm run dev` | Servidor de desarrollo (Astro) |
 | `npm run build` | Build estático → `dist/` |
 | `npm run preview` | Previsualizar el build |
-| `npm test` | Tests con Vitest (27 casos) |
+| `npm test` | Tests con Vitest (48 casos) |
 
 ## Estructura
 
