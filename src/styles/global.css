@@ -2154,12 +2154,14 @@
 
       #toasts {
         position: fixed;
-        bottom: calc(22px + var(--tabbar-h));
+        top: calc(84px + env(safe-area-inset-top, 0px));
         right: 22px;
-        z-index: 100;
+        z-index: 110;
         display: flex;
         flex-direction: column;
+        align-items: flex-end;
         gap: 8px;
+        pointer-events: none;
       }
       .toast {
         background: var(--panel2);
@@ -2172,6 +2174,18 @@
         transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1);
         box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.4);
         max-width: 320px;
+        pointer-events: auto;
+      }
+      @media (max-width: 1020px) {
+        #toasts {
+          top: calc(84px + env(safe-area-inset-top, 0px));
+          left: 12px;
+          right: 12px;
+          align-items: stretch;
+        }
+        .toast {
+          max-width: none;
+        }
       }
       .toast.show {
         transform: none;
