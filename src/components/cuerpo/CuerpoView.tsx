@@ -6,6 +6,7 @@ import { MEASURES, DELTA_UNITS } from '../../data/routine'
 import { lastDelta } from '../../lib/logic'
 import { fmtN, uid } from '../../lib/util'
 import { toast } from '../../lib/toast'
+import { formatDate } from '../../lib/date'
 import ChartLine from '../shared/ChartLine'
 
 const DELTA_KEYS: Array<[string, string]> = [
@@ -246,11 +247,7 @@ export default function CuerpoView() {
                         onClick={() => toggle(r.id)}
                       >
                         <span className="br-date">
-                          {new Date(r.ts).toLocaleDateString('es-ES', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: '2-digit'
-                          })}
+                          {formatDate(r.ts, { day: 'numeric', month: 'short', year: '2-digit' })}
                         </span>
                         <span className="br-main">
                           {r.peso != null ? <b>{fmtN(Number(r.peso), 1)}</b> : <span>sin peso</span>}

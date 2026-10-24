@@ -1,5 +1,6 @@
 import { useAppStore } from '../../store/appStore'
 import { completedSets, volumeOf } from '../../lib/logic'
+import { formatDate } from '../../lib/date'
 import AnimatedNumber from '../shared/AnimatedNumber'
 import Rutina from './Rutina'
 import Sesion from './Sesion'
@@ -46,12 +47,7 @@ export default function HierroView() {
         </div>
         <div className="stat">
           <b id="stLast">
-            {lastTs
-              ? new Date(lastTs).toLocaleDateString('es-ES', {
-                  day: 'numeric',
-                  month: 'short'
-                })
-              : '—'}
+            {lastTs ? formatDate(lastTs, { day: 'numeric', month: 'short' }) : '—'}
           </b>
           <span>último registro</span>
         </div>

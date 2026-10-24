@@ -5,6 +5,7 @@ import type { SessionHistory } from '../../lib/types'
 import { GCOLORS, GROUPS } from '../../data/routine'
 import { fmtN } from '../../lib/util'
 import { isCompletedSet, volumeOf } from '../../lib/logic'
+import { formatDate, formatWeekday } from '../../lib/date'
 import { toast } from '../../lib/toast'
 
 export default function Historial() {
@@ -42,8 +43,8 @@ export default function Historial() {
     <div id="historyList">
       {history.map((h) => {
         const d = new Date(h.ts)
-        const weekday = d.toLocaleDateString('es-ES', { weekday: 'short' })
-        const date = d.toLocaleDateString('es-ES', {
+        const weekday = formatWeekday(d)
+        const date = formatDate(d, {
           day: 'numeric',
           month: 'short',
           year: 'numeric'

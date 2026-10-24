@@ -214,7 +214,6 @@
       }
       .chip-date b {
         font-size: 13px;
-        text-transform: capitalize;
         font-weight: 600;
       }
       .chip-date span {
@@ -1366,7 +1365,6 @@
         background: rgba(255, 255, 255, 0.03);
       }
       .hist-date {
-        text-transform: capitalize;
         font-size: 13px;
       }
       .hist-date b {
@@ -1674,7 +1672,6 @@
       .br-date {
         font-size: 11px;
         color: var(--muted);
-        text-transform: capitalize;
         min-width: 78px;
       }
       .br-main {

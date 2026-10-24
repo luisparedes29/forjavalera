@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { formatLongDate } from '../../lib/date'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
@@ -41,14 +42,7 @@ export default function TopBar() {
       {deferred ? <button className="btn-install" id="installBtn" onClick={install}>⤓ Instalar app</button> : null}
       <div className="chip-date">
         <b id="today">
-          {now
-            ? now.toLocaleDateString('es-ES', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-              })
-            : ''}
+          {now ? formatLongDate(now) : ''}
         </b>
         <span>
           <span className="clock" id="clock">
