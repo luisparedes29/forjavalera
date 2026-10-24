@@ -1,4 +1,6 @@
 import { RING_C, useTimerStore } from '../../store/timerStore'
+import useTimerSync from '../../hooks/useTimerSync'
+import useWakeLock from '../../hooks/useWakeLock'
 
 export default function Timer() {
   const running = useTimerStore((s) => s.running)
@@ -7,9 +9,12 @@ export default function Timer() {
   const left = useTimerStore((s) => s.left)
   const paused = useTimerStore((s) => s.paused)
   const label = useTimerStore((s) => s.label)
-  const add15 = useTimerStore((s) => s.add15)
+  const add = useTimerStore((s) => s.add)
   const toggle = useTimerStore((s) => s.toggle)
   const stop = useTimerStore((s) => s.stop)
+
+  useTimerSync()
+  useWakeLock(running)
 
   const safe = Math.max(0, left)
   const m = Math.floor(safe / 60)
@@ -37,16 +42,29 @@ export default function Timer() {
       </svg>
       <div className="t-info">
         <b id="timerTime">{time}</b>
-        <span id="timerLabel">{label}</span>
+        <span id="timerLabel">{paused ? 'pausado' : label}</span>
       </div>
       <div className="t-btns">
-        <button id="timerAdd" onClick={add15}>
-          +15 s
+        <button type="button" onClick={() => add(-15)} aria-label="Restar 15 segundos">
+          −15
         </button>
-        <button id="timerPause" title="Pausar / reanudar" onClick={toggle}>
-          {paused ? '▶' : '❚❚'}
+        <button
+          id="timerPause"
+          type="button"
+          onClick={toggle}
+          aria-label={paused ? 'Reanudar' : 'Pausar'}
+        >
+          {paused ? '▶' : 'II'}
         </button>
-        <button id="timerClose" title="Cerrar" onClick={stop}>
+        <button
+          id="timerAdd"
+          type="button"
+          onClick={() => add(15)}
+          aria-label="Sumar 15 segundos"
+        >
+          +15
+        </button>
+        <button id="timerClose" type="button" onClick={stop} aria-label="Cerrar temporizador">
           ✕
         </button>
       </div>

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { beep, vibrate } from '../lib/audio'
+import { remainingAt } from '../lib/timer'
 
 export const RING_C = 2 * Math.PI * 24
 
@@ -10,14 +11,26 @@ interface TimerStore {
   left: number
   paused: boolean
   label: string
+  endsAt: number | null
   start: (sec: number, label: string) => void
   finish: () => void
   toggle: () => void
-  add15: () => void
+  add: (sec: number) => void
+  sync: () => void
   stop: () => void
 }
 
 let iv: ReturnType<typeof setInterval> | null = null
+
+const clearTicker = (): void => {
+  if (iv) clearInterval(iv)
+  iv = null
+}
+
+const ensureTicker = (): void => {
+  clearTicker()
+  iv = setInterval(() => useTimerStore.getState().sync(), 250)
+}
 
 export const useTimerStore = create<TimerStore>()((set, get) => ({
   running: false,
@@ -26,50 +39,74 @@ export const useTimerStore = create<TimerStore>()((set, get) => ({
   left: 0,
   paused: false,
   label: 'descanso',
+  endsAt: null,
 
   start: (sec, label) => {
     if (!sec) return
     get().stop()
-    set({ total: sec, left: sec, paused: false, label, running: true })
-    iv = setInterval(() => {
-      if (get().paused) return
-      set((s) => ({ left: s.left - 1 }))
-      if (get().left <= 0) get().finish()
-    }, 1000)
+    set({
+      total: sec,
+      left: sec,
+      paused: false,
+      done: false,
+      label,
+      running: true,
+      endsAt: Date.now() + sec * 1000
+    })
+    ensureTicker()
+  },
+
+  sync: () => {
+    const s = get()
+    if (!s.running || s.paused || s.done || s.endsAt === null) return
+    const left = remainingAt(s.endsAt, Date.now())
+    if (left <= 0) {
+      get().finish()
+      return
+    }
+    if (left !== s.left) set({ left })
   },
 
   finish: () => {
-    if (iv) clearInterval(iv)
-    iv = null
-    set({ running: false, done: true })
-    beep()
-    vibrate([120, 60, 120, 60, 200])
-  },
-
-  toggle: () => {
-    if (!get().running) return
-    set((s) => ({ paused: !s.paused }))
-  },
-
-  add15: () => {
-    set((s) => ({
-      left: s.left + 15,
-      total: Math.max(s.total, s.left + 15),
-      done: false
-    }))
-    if (!get().running) {
-      set({ running: true })
-      iv = setInterval(() => {
-        if (get().paused) return
-        set((s) => ({ left: s.left - 1 }))
-        if (get().left <= 0) get().finish()
-      }, 1000)
+    const s = get()
+    if (!s.running && !s.done && s.endsAt === null) return
+    clearTicker()
+    if (!s.done) {
+      set({ running: false, done: true, left: 0, endsAt: null, paused: false })
+      beep()
+      vibrate([120, 60, 120, 60, 200])
     }
   },
 
+  toggle: () => {
+    const s = get()
+    if (!s.running) return
+    if (s.paused) {
+      set({ paused: false, endsAt: Date.now() + s.left * 1000 })
+      return
+    }
+    const left = s.endsAt ? remainingAt(s.endsAt, Date.now()) : s.left
+    set({ paused: true, left, endsAt: null })
+  },
+
+  add: (sec) => {
+    const s = get()
+    const baseLeft = s.running && !s.done ? s.left : 0
+    const baseTotal = s.running && !s.done ? s.total : 0
+    const next = Math.max(1, baseLeft + sec)
+    set({
+      left: next,
+      total: Math.max(baseTotal, next),
+      done: false,
+      paused: false,
+      running: true,
+      endsAt: Date.now() + next * 1000
+    })
+    ensureTicker()
+  },
+
   stop: () => {
-    if (iv) clearInterval(iv)
-    iv = null
-    set({ running: false, done: false })
+    clearTicker()
+    set({ running: false, done: false, paused: false, endsAt: null })
   }
 }))
