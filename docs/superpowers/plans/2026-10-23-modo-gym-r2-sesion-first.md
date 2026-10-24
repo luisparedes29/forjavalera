@@ -163,11 +163,13 @@ export const TABS: Array<{ v: ViewId; label: string; icon: ReactNode }> = [
 ]
 ```
 
-`NavTabs` y `NavTabbar` no cambian: ya renderizan `TABS`.
+`NavTabs` y `NavTabbar` no cambian: ya renderizan `TABS`. En `src/styles/global.css`, dentro de `@media (max-width: 1020px)`, cambiar `.tabbar` de `grid-template-columns: 1fr 1fr 1fr` a `grid-template-columns: repeat(4, 1fr)` para que la cuarta pestaña no caiga en una segunda fila.
 
 - [ ] **Step 5: Partir la vista de hierro**
 
 Crear `src/components/hierro/Stats.tsx` moviendo el bloque `<section className="stats ...">` de `HierroView.tsx`, con los cálculos de R1 (`completedSets` y `volumeOf`) y el formateo de fecha de R1. Mantener el mismo markup y clases, cambiar el id a `statsPlan`.
+
+En `src/styles/global.css`, reemplazar los 11 selectores `#statsHierro` por `#statsPlan` (bloques en `:332-343` y `:2260-2304`). Sin eso, las stats de Plan pierden colores y layout móvil.
 
 Crear `src/components/hierro/PlanView.tsx`:
 
@@ -209,7 +211,7 @@ export default function RegistrarView() {
 ```
 
 En `Sesion.tsx`, cambiar el número del panel de `02/` a `01/`.
-En `Rutina.tsx` el panel queda en `01/` porque es la primera sección de Plan. El `scrollIntoView` y el `confirm` de `loadDay` se eliminan en la Task 6.
+En `Rutina.tsx` el panel queda en `01/` porque es la primera sección de Plan. En esta tarea, `loadDay` deja de hacer `scrollIntoView` sobre `#sessionPanel` (ese panel ahora vive en Registrar y está oculto desde Plan); el `confirm` se elimina en la Task 6 junto con el undo.
 
 Reemplazar `src/components/ViewManager.tsx`:
 
@@ -458,15 +460,32 @@ startSession: () => {
 },
 ```
 
+Agregar también la acción que permite restaurar un inicio previo desde un undo:
+
+```ts
+restoreSessionStart: (ts: number | null) => void
+```
+
+```ts
+restoreSessionStart: (ts) => {
+  set({ sessionStartedAt: ts })
+  if (ts) saveL(LS.sessionStart, ts)
+  else removeL(LS.sessionStart)
+},
+```
+
 Reglas de limpieza:
 
 - `addExercise`: llamar `get().startSession()` antes de agregar.
 - `toggleSetDone`: si la serie pasa de no completada a completada, llamar `get().startSession()` antes de actualizar.
+- `removeExerciseFromSession`: si `exercises` queda vacío, `set({ sessionStartedAt: null })` y `removeL(LS.sessionStart)`.
+- `removeSetFromExercise`: si ya no queda ninguna serie en `exercises`, `set({ sessionStartedAt: null })` y `removeL(LS.sessionStart)`.
 - `clearSession`: `set({ exercises: [], sessionStartedAt: null })`, `saveL(LS.session, [])` y `removeL(LS.sessionStart)`.
 - `commitSession`: después de guardar, `set({ history, exercises: [], sessionStartedAt: null })` y `removeL(LS.sessionStart)`.
 - `wipe`: `removeL(LS.sessionStart)` y `sessionStartedAt: null` en el `set`.
 - `restoreAll`: `removeL(LS.sessionStart)` y `sessionStartedAt: null` en el `set`.
 - `Rutina.loadDay`: después de `replaceExercises(...)`, llamar `useAppStore.getState().startSession()`.
+- Actualizar los tres undo de `Sesion.tsx` que creó R1 (borrar serie, borrar ejercicio, limpiar): capturar también `const prevStart = useAppStore.getState().sessionStartedAt` y, dentro de `run`, llamar `useAppStore.getState().restoreSessionStart(prevStart)` después de `replaceExercises(prev)`. Sin esto, deshacer una limpieza o el último borrado deja la sesión sin reloj.
 
 - [ ] **Step 5: Extraer el guardado compartido**
 
@@ -562,6 +581,7 @@ CSS en `src/styles/global.css`:
 }
 
 .session-header {
+  grid-column: 1 / -1;
   position: sticky;
   top: 6px;
   z-index: 39;
@@ -977,6 +997,8 @@ className={`set-row${s.done ? ' done' : ''}${
 Los inputs agregan `data-field="reps"` / `data-field="kg"` y
 `onFocus={() => setActive({ exId: e.id, si })}`.
 
+En el `onClick` de `.del-set`, limpiar la selección antes de borrar: `setActive(null)`. `si` es un índice y al borrar una serie se reindexan las siguientes; sin esto, la barra de herramientas puede quedar apuntando a otra fila.
+
 Después de la fila activa, renderizar:
 
 ```tsx
@@ -1031,8 +1053,11 @@ Implementar `repeatSet`:
 ```tsx
 const repeatSet = (e: Exercise, si: number): void => {
   const last = lastSets(history, e.name)
-  const src = e.sets[si - 1] ?? last?.[si] ?? last?.[0]
-  if (!src) {
+  const hasData = (s?: SetData): boolean =>
+    !!s && ((s.reps !== '' && s.reps != null) || (s.kg !== '' && s.kg != null))
+  const prevSet = e.sets[si - 1]
+  const src = hasData(prevSet) ? prevSet : last?.[si] ?? last?.[0]
+  if (!hasData(src)) {
     toast('No hay una serie anterior para repetir', 'warn')
     return
   }
@@ -1250,7 +1275,8 @@ Estado inicial:
 
 ```ts
 openPanel: false,
-setOpenPanel: (open) => set({ openPanel: open }),
+setOpenPanel: (open) =>
+  set((s) => ({ openPanel: open, done: open ? false : s.done })),
 ```
 
 En `start`: agregar `openPanel: false` al `set`.
@@ -1262,6 +1288,8 @@ Reemplazar `src/components/shared/Timer.tsx` por:
 
 ```tsx
 import { useMemo } from 'react'
+import useTimerSync from '../../hooks/useTimerSync'
+import useWakeLock from '../../hooks/useWakeLock'
 import { nextPending } from '../../lib/session'
 import { fmtN } from '../../lib/util'
 import { RING_C, useTimerStore } from '../../store/timerStore'
@@ -1283,6 +1311,9 @@ export default function Timer() {
   const toggle = useTimerStore((s) => s.toggle)
   const stop = useTimerStore((s) => s.stop)
   const exercises = useAppStore((s) => s.exercises)
+
+  useTimerSync()
+  useWakeLock(running)
 
   const next = useMemo(() => {
     for (const e of exercises) {
@@ -1454,7 +1485,7 @@ Agregar:
 @media (max-width: 640px) {
   #timer {
     left: 12px;
-    bottom: calc(12px + var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+    bottom: calc(12px + var(--tabbar-h));
   }
 }
 ```
@@ -1474,7 +1505,7 @@ Run: `git commit -m "feat: timer manual con presets y siguiente serie"`
 
 - [ ] **Step 6: Auditoría T11-5**
 
-Subagente `general` (NO edita): verifica presets 60/90/120/180, pausa real, ±15, cierre, etiqueta de siguiente serie, que el timer siga por `endsAt` y que no se solape con toasts/tabbar a 360/390/412 px; corre `tsc`/`npm test` (58)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
+Subagente `general` (NO edita): verifica presets 60/90/120/180, pausa real, ±15, cierre, etiqueta de siguiente serie, que al abrir el panel con `done=true` se reseteen los presets, que el timer siga por `endsAt` y que no se solape con toasts/tabbar a 360/390/412 px; corre `tsc`/`npm test` (58)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
 ---
 
@@ -1580,6 +1611,7 @@ En `Rutina.tsx`:
 const loadDay = (idx = dayIdx): void => {
   const target = ROUTINE[idx]
   const prev = exercises
+  const prevStart = useAppStore.getState().sessionStartedAt
   const activeFor = (d: RoutineExercise): number[] => {
     let a = d.sets.filter((w) => w <= wk)
     if (deload) a = a.slice(0, Math.ceil(a.length / 2))
@@ -1612,14 +1644,17 @@ const loadDay = (idx = dayIdx): void => {
     prev.length
       ? {
           label: 'Deshacer',
-          run: () => useAppStore.getState().replaceExercises(prev)
+          run: () => {
+            useAppStore.getState().replaceExercises(prev)
+            useAppStore.getState().restoreSessionStart(prevStart)
+          }
         }
       : undefined
   )
 }
 ```
 
-4. Eliminar el `confirm()` y el `scrollIntoView`.
+4. Eliminar el `confirm()`; el `scrollIntoView` ya se quitó en la Task 1.
 5. El botón `Cargar día completo en sesión` usa `onClick={() => loadDay()}`.
 
 - [ ] **Step 5: Banner de fin de semana**
@@ -1931,6 +1966,12 @@ Subagente `general` (NO edita): verifica que no queden `window.confirm`/`confirm
   actual. Es estado de UI: no entra en el respaldo v3 y se borra al guardar, vaciar,
   importar o borrar todos los datos.
 ```
+
+En la misma sección `## Fase 3 — Componentes React (islas)`, actualizar la lista de
+`src/components/hierro/`: quitar `HierroView.tsx` y listar `RegistrarView.tsx`, `PlanView.tsx`,
+`Stats.tsx` y `SessionHeader.tsx`. En la línea de la URL hash, documentar
+`#registrar/#plan/#cuerpo/#progreso` con `#hierro` como alias de `#registrar`. Sin esto, el
+auditor final de R2 encuentra una referencia a un archivo eliminado.
 
 - [ ] **Step 2: Marcar la Tarea 11 en PLAN-V1.md**
 

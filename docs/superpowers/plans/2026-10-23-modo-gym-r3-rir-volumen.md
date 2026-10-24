@@ -12,7 +12,7 @@
 
 - Node ≥ 22.12 · PowerShell: **NO** usar `&&`; encadenar con `;` o `if ($?)`.
 - Validación: `npx tsc --noEmit -p tsconfig.check.json` · `npm test` · `npm run build` (log `[forja-pwa] sw.js generado con N archivos`).
-- Estado de partida: R2 cerrado con **60 tests**. Al cerrar R3 deben pasar **66 tests**.
+- Estado de partida: R2 cerrado con **60 tests**. Al cerrar R3 deben pasar **67 tests**.
 - `tsconfig.check.json` solo incluye `src/lib/**/*.ts`, `src/data/**/*.ts`, `src/store/**/*.ts`. Los componentes se validan con `npm run build` y prueba manual.
 - Sin comentarios nuevos en el código. Copy en español rioplatense (voseo). Commits en español (`feat:`, `test:`, `docs:`).
 - No tocar las claves `forja_session`, `forja_session_start`, `forja_history`, `forja_body`, `forja_week` ni la versión 3 del respaldo.
@@ -33,6 +33,7 @@
 - Modify: `src/components/hierro/Sesion.tsx` (chips, badge, copy)
 - Modify: `src/components/hierro/Historial.tsx` (RIR en el detalle)
 - Modify: `src/styles/global.css`
+- New: `src/lib/test/backup.test.ts`
 
 **Interfaces:**
 - `SetData` gana `rir?: number | null` (`undefined`/`null` = sin RIR; valores `0`, `1`, `2`, `3`, donde `3` = “3 o más”).
@@ -91,6 +92,35 @@ sets: e.sets.map((s) => {
 ```
 
 No cambiar `buildBackup`: el spread de `sets` ya conserva `rir`.
+
+Crear `src/lib/test/backup.test.ts` como guardia de regresión del respaldo v3:
+
+```ts
+import { describe, expect, it } from 'vitest'
+import { buildBackup, parseBackup } from '../backup'
+import type { Exercise } from '../types'
+
+describe('respaldo con RIR', () => {
+  it('conserva rir sin cambiar la versión del respaldo', () => {
+    const session: Exercise[] = [
+      {
+        id: 'e1',
+        name: 'Press banca',
+        group: 'pecho',
+        reps: '6–10',
+        rest: '2 min',
+        sets: [{ reps: 10, kg: 100, done: true, rir: 2 }]
+      }
+    ]
+    const out = buildBackup({ week: 1, deload: false }, session, [], [])
+    expect(out.version).toBe(3)
+    expect(out.session[0].sets[0].rir).toBe(2)
+    expect(parseBackup(JSON.stringify(out)).session[0].sets[0].rir).toBe(2)
+  })
+})
+```
+
+Este test no tiene RED propio: `buildBackup` ya copia los sets con spread y el campo `rir` se agrega en esta misma tarea. Es una guardia contra regresiones del respaldo, no la fuente del comportamiento.
 
 - [ ] **Step 2: Crear los chips**
 
@@ -229,10 +259,10 @@ En `global.css`:
 }
 .rir-dot {
   position: absolute;
-  top: -5px;
-  right: -7px;
+  top: -6px;
+  right: -9px;
   font-style: normal;
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.2;
   font-weight: 700;
   color: var(--volt);
@@ -247,7 +277,7 @@ En `global.css`:
 }
 .hist-rir {
   font-style: normal;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--volt);
@@ -261,7 +291,7 @@ En `global.css`:
 - [ ] **Step 6: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
-Run: `npm test` → Expected: **60 passed** (sin tests nuevos).
+Run: `npm test` → Expected: **61 passed** (60 previos + 1 de respaldo con RIR).
 Run: `npm run build` → OK.
 
 Prueba manual: elegir RIR 0, 1, 2, 3+ y “—”; guardar la sesión; exportar el respaldo y verificar que `rir` viaja en el JSON; importarlo y verificar que se conserva. Verificar que RIR no bloquea Guardar.
@@ -271,7 +301,7 @@ Run: `git commit -m "feat: RIR opcional por serie"`
 
 - [ ] **Step 7: Auditoría T12-1**
 
-Subagente `general` (NO edita): verifica que `rir` sea opcional, que `setSetRir` persista en `forja_session`, que `commitSession` conserve el valor, que el respaldo v3 lo mantenga sin cambiar de versión, que RIR no bloquee guardar y que los chips midan 44 px; corre `tsc`/`npm test` (60)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
+Subagente `general` (NO edita): verifica que `rir` sea opcional, que `setSetRir` persista en `forja_session`, que `commitSession` conserve el valor, que el respaldo v3 lo mantenga sin cambiar de versión, que RIR no bloquee guardar, que el test de respaldo conserve `rir` sin cambiar la versión y que los chips midan 44 px; corre `tsc`/`npm test` (61)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
 ---
 
@@ -399,7 +429,7 @@ export function suggestFor(
 - [ ] **Step 4: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
-Run: `npm test` → Expected: **66 passed**.
+Run: `npm test` → Expected: **67 passed**.
 Run: `npm run build` → OK.
 
 Run: `git add src/lib/logic.ts src/lib/test/logic.test.ts`
@@ -407,7 +437,7 @@ Run: `git commit -m "feat: sugerencias de carga segun RIR"`
 
 - [ ] **Step 5: Auditoría T12-2**
 
-Subagente `general` (NO edita): verifica las seis reglas, que sin RIR el comportamiento sea idéntico al anterior, que RIR parcial no rompa, que `Suggest` conserve `t`/`msg` y que no se haya tocado `commitSession`; corre `tsc`/`npm test` (66)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
+Subagente `general` (NO edita): verifica las seis reglas, que sin RIR el comportamiento sea idéntico al anterior, que RIR parcial no rompa, que `Suggest` conserve `t`/`msg` y que no se haya tocado `commitSession`; corre `tsc`/`npm test` (67)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
 ---
 
@@ -654,17 +684,19 @@ export default function RegistrarView() {
 - [ ] **Step 4: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
-Run: `npm test` → Expected: **66 passed** (sin tests nuevos).
+Run: `npm test` → Expected: **67 passed** (sin tests nuevos).
 Run: `npm run build` → OK.
 
 Prueba manual: con 2 sesiones guardadas y una sesión en curso, comparar el semáforo contra Progreso; tildar una serie y verificar que el número sube en vivo; confirmar que no se duplica el historial guardado.
+
+Regresión de R2: a 360×844, 390×844 y 412×915, con un día cargado, verificar que la primera serie sigue visible sin scroll. Si `VolumePulse` la empuja fuera del viewport, moverlo debajo de la primera tarjeta de ejercicio o plegarlo en un `<details>` antes de commitear; no cerrar la tarea con la métrica rota.
 
 Run: `git add src/components/hierro/VolumePulse.tsx src/components/hierro/RegistrarView.tsx src/styles/global.css`
 Run: `git commit -m "feat: semaforo de volumen semanal en vivo"`
 
 - [ ] **Step 5: Auditoría T12-3**
 
-Subagente `general` (NO edita): verifica que `VolumePulse` use `weeklyVolume` y no un cálculo paralelo, que solo sume series `done`, que no renderice en SSR, que el `role="meter"` tenga min/max/now, que no duplique sesiones guardadas y corre `tsc`/`npm test` (66)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
+Subagente `general` (NO edita): verifica que `VolumePulse` use `weeklyVolume` y no un cálculo paralelo, que solo sume series `done`, que no renderice en SSR, que el `role="meter"` tenga min/max/now, que no duplique sesiones guardadas y corre `tsc`/`npm test` (67)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
 ---
 
@@ -737,7 +769,7 @@ Bajo `## Tarea 12 — Modo GYM R3: RIR y volumen en vivo`, marcar T12-1 a T12-3 
 el resultado de cada auditoría. Agregar al final:
 
 ```markdown
-- **Cierre R3 (2026-10-23)**: auditor final APROBADO (66 tests, tsc + build OK, RIR
+- **Cierre R3 (2026-10-23)**: auditor final APROBADO (67 tests, tsc + build OK, RIR
   opcional conservado en respaldo v3, sugerencias por RIR, semáforo en vivo sin duplicar
   volumen y Progreso con “series completadas”).
 ```
@@ -745,7 +777,7 @@ el resultado de cada auditoría. Agregar al final:
 - [ ] **Step 4: Validación completa**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
-Run: `npm test` → Expected: **66 passed**.
+Run: `npm test` → Expected: **67 passed**.
 Run: `npm run build` → OK con `[forja-pwa] sw.js generado con N archivos`.
 
 Smoke test:
@@ -757,6 +789,7 @@ Verificar en DevTools 360×844, 390×844 y 412×915:
 3. Semáforo en vivo sube al tildar una serie y coincide con Progreso tras guardar.
 4. El estado vacío de Progreso distingue “sin series completadas” de “sin historial”.
 5. Exportar/importar respaldo con RIR y verificar que se conserva.
+6. Confirmar que la primera serie sigue visible sin scroll a 360×844, 390×844 y 412×915.
 
 - [ ] **Step 5: Commit y auditor final**
 
@@ -772,7 +805,7 @@ Devuelve APROBADO/RECHAZADO y la lista de archivos tocados.
 
 ## Criterio de salida de R3
 
-- [ ] `npm test` → 66 passed.
+- [ ] `npm test` → 67 passed.
 - [ ] `npx tsc --noEmit -p tsconfig.check.json` → limpio.
 - [ ] `npm run build` → OK, SW generado.
 - [ ] RIR opcional por serie, visible en fila e historial, conservado en respaldo v3.

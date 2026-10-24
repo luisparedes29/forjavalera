@@ -202,7 +202,7 @@ Objetivo: abrir la app y estar registrando, sin scroll y con una mano.
 4. **Fila de serie v2:**
    - Check de 48 px, inputs de 48 px, números tabulares de 20 px.
    - Barra de herramientas del set activo: ±1 rep, ±2,5 kg, repetir serie anterior.
-   - Línea “La vez actual pasada: 50×10 · 50×10 · 50×9 · objetivo 8–12”.
+   - Línea “La vez pasada: 50×10 · 50×10 · 50×9 · objetivo 8–12”.
    - Borrar con undo; auto-scroll a la siguiente serie pendiente.
    - Cadena Enter: reps → kg → tildar → siguiente serie.
 5. **Timer manual + overlay:** presets 60/90/120/180, ±15, pausa, anillo grande y
