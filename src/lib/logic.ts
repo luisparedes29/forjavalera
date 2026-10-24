@@ -49,13 +49,13 @@ export function stagnant(history: SessionHistory[]): Record<string, boolean> {
     ;[...history].reverse().forEach((h) =>
       h.exercises.forEach((e) => {
         const k = normName(e.name)
+        const done = completedSets(e.sets)
+        if (!done.length) return
         const score = Math.max(
           0,
-          ...e.sets.map(
-            (s) => (Number(s.kg) || 0) * 10 + (Number(s.reps) || 0) / 100
-          )
+          ...done.map((s) => (Number(s.kg) || 0) * 10 + (Number(s.reps) || 0) / 100)
         )
-          ; (occ[k] = occ[k] || []).push(score)
+        ;(occ[k] = occ[k] || []).push(score)
       })
     )
   const out: Record<string, boolean> = {}
@@ -91,7 +91,16 @@ export function focusOf(
   return Object.entries(c).sort((a, b) => b[1] - a[1])[0]?.[0]
 }
 
-export const isEff = (s: SetData): boolean => s.done || Number(s.reps) > 0
+export const isCompletedSet = (s: SetData): boolean => s.done === true
+
+export const setVolume = (s: SetData): number =>
+  (Number(s.reps) || 0) * (Number(s.kg) || 0)
+
+export const completedSets = (sets: SetData[]): SetData[] =>
+  sets.filter(isCompletedSet)
+
+export const volumeOf = (sets: SetData[]): number =>
+  sets.reduce((a, s) => a + (isCompletedSet(s) ? setVolume(s) : 0), 0)
 
 export function mondayOf(now: number): number {
   const d = new Date(now)
@@ -115,20 +124,25 @@ export function lastDelta(
   return (av as number) - (bv as number)
 }
 
+export interface WeeklyVolumeEntry {
+  sets: number
+  volume: number
+  ex: Set<string>
+}
+
 export function weeklyVolume(
   history: SessionHistory[],
   now: number = Date.now()
-): Record<string, { sets: number; volume: number; ex: Set<string> }> {
+): Record<string, WeeklyVolumeEntry> {
   const weekStart = mondayOf(now)
-  const out: Record<string, { sets: number; volume: number; ex: Set<string> }> =
-    {}
+  const out: Record<string, WeeklyVolumeEntry> = {}
   history.forEach((h) => {
     if (new Date(h.ts).getTime() < weekStart) return
     h.exercises.forEach((e) => {
       const g = e.group === 'brazos' ? mapBrazosByName(e.name) : e.group
       if (!out[g]) out[g] = { sets: 0, volume: 0, ex: new Set<string>() }
       e.sets.forEach((s) => {
-        if (isEff(s)) {
+        if (isCompletedSet(s)) {
           out[g].sets++
           out[g].volume += (Number(s.reps) || 0) * (Number(s.kg) || 0)
         }
@@ -164,7 +178,7 @@ export function exerciseSeries(
       let bestKg = 0
       let bestE = 0
       let vol = 0
-      e.sets.forEach((s) => {
+      completedSets(e.sets).forEach((s) => {
         const kg = Number(s.kg) || 0
         const reps = Number(s.reps) || 0
         vol += kg * reps

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { LS, load, saveL } from '../lib/storage'
-import { focusOf, lastSets, suggestFor } from '../lib/logic'
+import { focusOf, lastSets, suggestFor, volumeOf } from '../lib/logic'
 import { normName, uid } from '../lib/util'
 import type {
   BodyRecord,
@@ -203,10 +203,7 @@ export const useAppStore = create<AppStore>()((set, get) => ({
         sug: suggestFor(e)
       }
     })
-    const volume = clean.reduce(
-      (a, e) => a + e.sets.reduce((x, s) => x + Number(s.reps) * Number(s.kg), 0),
-      0
-    )
+    const volume = clean.reduce((a, e) => a + volumeOf(e.sets), 0)
     const focus = focusOf(clean) ?? ''
     const history: SessionHistory[] = [
       { id: uid(), ts: new Date().toISOString(), volume, focus, exercises: clean },

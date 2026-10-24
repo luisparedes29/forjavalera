@@ -4,6 +4,7 @@ import { useAppStore } from '../../store/appStore'
 import type { SessionHistory } from '../../lib/types'
 import { GCOLORS, GROUPS } from '../../data/routine'
 import { fmtN } from '../../lib/util'
+import { isCompletedSet, volumeOf } from '../../lib/logic'
 import { toast } from '../../lib/toast'
 
 export default function Historial() {
@@ -27,8 +28,15 @@ export default function Historial() {
     )
   }
 
-  const setsOf = (h: SessionHistory): number =>
-    h.exercises.reduce((a, e) => a + e.sets.length, 0)
+  const totalsOf = (h: SessionHistory): { done: number; total: number; volume: number } =>
+    h.exercises.reduce(
+      (a, e) => ({
+        done: a.done + e.sets.filter(isCompletedSet).length,
+        total: a.total + e.sets.length,
+        volume: a.volume + volumeOf(e.sets)
+      }),
+      { done: 0, total: 0, volume: 0 }
+    )
 
   return (
     <div id="historyList">
@@ -41,6 +49,7 @@ export default function Historial() {
           year: 'numeric'
         })
         const gc = GCOLORS[h.focus] ?? '#8ba0a8'
+        const totals = totalsOf(h)
         const isOpen = !!open[h.id]
         return (
           <article className={`hist-item${isOpen ? ' open' : ''}`} key={h.id}>
@@ -57,8 +66,8 @@ export default function Historial() {
                 {GROUPS[h.focus] || 'General'}
               </span>
               <span className="hist-meta">
-                {h.exercises.length} ej · {setsOf(h)} series ·{' '}
-                <b>{fmtN(Math.round(h.volume))} kg</b>
+                {h.exercises.length} ej · {totals.done}/{totals.total} series ·{' '}
+                <b>{fmtN(Math.round(totals.volume))} kg</b>
               </span>
               <span className="chev">▸</span>
             </button>

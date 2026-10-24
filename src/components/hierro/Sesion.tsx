@@ -9,7 +9,9 @@ import {
   suggestFor,
   parseRest,
   focusOf,
-  lastSets
+  lastSets,
+  isCompletedSet,
+  volumeOf
 } from '../../lib/logic'
 import { GROUPS, GCOLORS, ROUTINE } from '../../data/routine'
 import { fmtN, uid } from '../../lib/util'
@@ -120,15 +122,7 @@ export default function Sesion() {
     (a, e) => a + e.sets.filter((s) => s.done).length,
     0
   )
-  const volDone = exercises.reduce(
-    (a, e) =>
-      a +
-      e.sets.reduce(
-        (x, s) => x + (Number(s.reps) || 0) * (Number(s.kg) || 0) * (s.done ? 1 : 0),
-        0
-      ),
-    0
-  )
+  const volDone = exercises.reduce((a, e) => a + volumeOf(e.sets), 0)
   const pct = total ? (done / total) * 100 : 0
 
   const onSave = (): void => {
@@ -267,11 +261,11 @@ export default function Sesion() {
           </div>
         ) : (
           exercises.map((e, i) => {
-            const vol = e.sets.reduce(
-              (a, s) => a + (Number(s.reps) || 0) * (Number(s.kg) || 0),
-              0
+            const vol = volumeOf(e.sets)
+            const best = Math.max(
+              0,
+              ...e.sets.filter(isCompletedSet).map((s) => Number(s.kg) || 0)
             )
-            const best = Math.max(0, ...e.sets.map((s) => Number(s.kg) || 0))
             const c = GCOLORS[e.group] || '#8ba0a8'
             const sug = suggestFor(e)
             return (

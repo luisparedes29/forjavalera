@@ -1,4 +1,5 @@
 import { useAppStore } from '../../store/appStore'
+import { completedSets, volumeOf } from '../../lib/logic'
 import AnimatedNumber from '../shared/AnimatedNumber'
 import Rutina from './Rutina'
 import Sesion from './Sesion'
@@ -11,12 +12,10 @@ export default function HierroView() {
 
   let v = 0
   let sets = 0
-  exercises.forEach((e) =>
-    e.sets.forEach((s) => {
-      v += (Number(s.reps) || 0) * (Number(s.kg) || 0)
-      sets++
-    })
-  )
+  exercises.forEach((e) => {
+    v += volumeOf(e.sets)
+    sets += completedSets(e.sets).length
+  })
   const stVol = Math.round(v)
   const stSets = sets
   const stEx = exercises.length
