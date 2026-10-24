@@ -108,7 +108,7 @@
 ## Validación general
 - Siempre: `npx tsc --noEmit -p tsconfig.check.json` · `npm test` · `npm run build` (SW con
   `[forja-pwa] sw.js generado con N archivos`).
-- Tests esperados: 33 base → **48** al cerrar R1 → **60** al cerrar R2 → **66** al cerrar R3.
+- Tests esperados: 33 base → **48** al cerrar R1 → **60** al cerrar R2 → **67** al cerrar R3.
 - Manual: `npm run dev` (nav, F5, offline en preview), preview Netlify y prueba en Android
   real (390×844) al cerrar cada release.
 
@@ -147,14 +147,17 @@
 ## Tarea 10 — Modo GYM R1: confiabilidad (spec: docs/superpowers/specs/2026-10-23-modo-gym-design.md)
 > Plan: `docs/superpowers/plans/2026-10-23-modo-gym-r1-confiabilidad.md`
 > Objetivo: que FORJA no mienta ni se rompa durante el entrenamiento. Cierre esperado: **48 tests**.
-1. [ ] T10-1 Volumen canónico: `isCompletedSet`/`setVolume`/`completedSets`/`volumeOf`; `commitSession`, stats, historial, semanal, `exerciseSeries` y `stagnant` usan solo series `done`. Cierre: 39 tests.
-2. [ ] T10-2 Fechas: `src/lib/date.ts` (`capFirst`, `formatLongDate`, `formatWeekday`) y eliminar `text-transform: capitalize` de fechas. Cierre: 42 tests.
-3. [ ] T10-3 Overlays: toasts arriba (`z-index: 110`, `pointer-events` selectivo), timer abajo; sin solapamiento a 360/390/412 px.
-4. [ ] T10-4 Timer exacto: `endsAt` + `sync()` por timestamp, pausa real, ±15 s, Wake Lock opcional y resync en `visibilitychange`/`pageshow`/`focus`. Cierre: 48 tests.
-5. [ ] T10-5 Undo: toasts con acción de 6 s; deshacer serie, ejercicio, sesión, historial y medición; “Limpiar” deja de usar `confirm()`.
-6. [ ] T10-6 Targets y tipografía: controles ≥ 44 px, metadatos ≥ 11 px, fila de serie sin overflow a 360 px.
-7. [ ] T10-7 Iconos PWA: PNG 192/512/180 + maskable con `scripts/generate-icons.mjs`; manifest y `apple-touch-icon` actualizados; iconos en precaché.
-8. [ ] T10-8 Docs y cierre R1: URL `https://forjavalera.netlify.app/` en README y `astro.config.mjs`, decisión de volumen en `MIGRACION-ASTRO.md`, validación completa y auditor final.
+1. [x] T10-1 Volumen canónico: `isCompletedSet`/`setVolume`/`completedSets`/`volumeOf`; `commitSession`, stats, historial, semanal, `exerciseSeries` y `stagnant` usan solo series `done`. Cierre: 39 tests. — `584c0d2` — review APROBADA (spec ✅, 5 minors diferidos al cierre R1).
+2. [x] T10-2 Fechas: `src/lib/date.ts` (`capFirst`, `formatLongDate`, `formatWeekday`) y eliminar `text-transform: capitalize` de fechas. Cierre: 42 tests. — `0cc3bcb` — review APROBADA (spec ✅, 3 minors diferidos al cierre R1).
+3. [x] T10-3 Overlays: toasts arriba (`z-index: 110`, `pointer-events` selectivo), timer abajo; sin solapamiento a 360/390/412 px. — `d2f51c9` + `5bf86e1` — re-review APROBADA (spec ✅, 5/26/26 px de aire medidos; 2 minors diferidos al cierre R1).
+4. [x] T10-4 Timer exacto: `endsAt` + `sync()` por timestamp, pausa real, ±15 s, Wake Lock opcional y resync en `visibilitychange`/`pageshow`/`focus`. Cierre: 48 tests. — `81e040a` — review APROBADA (spec ✅, 5 minors diferidos al cierre R1).
+5. [x] T10-5 Undo: toasts con acción de 6 s; deshacer serie, ejercicio, sesión, historial y medición; “Limpiar” deja de usar `confirm()`. — `a14151f` — review APROBADA (spec ✅, 16/16 checks funcionales, 3 minors diferidos al cierre R1).
+6. [x] T10-6 Targets y tipografía: controles ≥ 44 px, metadatos ≥ 11 px, fila de serie sin overflow a 360 px. — `c4949e6` — re-review APROBADA (targets medidos, 0 overflow, tabular-nums efectivo; 1 minor diferido: inputs de 49 px a 360).
+7. [x] T10-7 Iconos PWA: PNG 192/512/180 + maskable con `scripts/generate-icons.mjs`; manifest y `apple-touch-icon` actualizados; iconos en precaché. — `c3c67eb` — review APROBADA (4 PNG verificados, SW 28 archivos; 1 minor diferido: la franja decorativa del maskable se recorta en las esquinas de la zona segura circular).
+8. [x] T10-8 Docs y cierre R1: URL `https://forjavalera.netlify.app/` en README y `astro.config.mjs`, decisión de volumen en `MIGRACION-ASTRO.md`, validación completa y auditor final. — cierre documental; auditor final APROBADO.
+- **Cierre R1 (2026-10-24)**: auditor final APROBADO (48 tests, tsc + build OK, timer
+  verificado tras salto de 3 min, 0 solapamientos, targets ≥44 px, iconos PNG en precache
+  con 28 archivos).
 - **Criterio de cierre R1**: 48 tests · tsc limpio · build con SW · timer correcto tras 3 min con pantalla bloqueada · 0 solapamientos · undo en las cuatro acciones destructivas · controles ≥ 44 px · iconos PNG en `dist` · auditor final APROBADO.
 
 ## Tarea 11 — Modo GYM R2: sesión-first (spec: docs/superpowers/specs/2026-10-23-modo-gym-design.md)
@@ -171,9 +174,9 @@
 
 ## Tarea 12 — Modo GYM R3: RIR y volumen en vivo (spec: docs/superpowers/specs/2026-10-23-modo-gym-design.md)
 > Plan: `docs/superpowers/plans/2026-10-23-modo-gym-r3-rir-volumen.md`
-> Objetivo: que la inteligencia de FORJA se vea en la fila. Cierre esperado: **66 tests**.
+> Objetivo: que la inteligencia de FORJA se vea en la fila. Cierre esperado: **67 tests**.
 1. [ ] T12-1 RIR opcional: `SetData.rir?: number | null`, `setSetRir`, chips 44 px en el set activo, badge en fila e historial, conservado en respaldo v3.
-2. [ ] T12-2 Sugerencias por RIR: todas al tope + RIR 0 → mantener; al tope + RIR ≤ 2 → subir; en rango + RIR ≥ 3 → subir; bajo mínimo → bajar; sin RIR o RIR parcial → fallback actual. Cierre: 66 tests.
+2. [ ] T12-2 Sugerencias por RIR: todas al tope + RIR 0 → mantener; al tope + RIR ≤ 2 → subir; en rango + RIR ≥ 3 → subir; bajo mínimo → bajar; sin RIR o RIR parcial → fallback actual. Cierre: 67 tests.
 3. [ ] T12-3 Semáforo de volumen en vivo: `VolumePulse` reutiliza `weeklyVolume` con la sesión en curso, `role="meter"`, sin duplicar sesiones guardadas.
 4. [ ] T12-4 Progreso honesto + docs y cierre R3: “series completadas”, vacío distinto de “sin historial”, README/MIGRACION/PLAN, validación completa y auditor final.
-- **Criterio de cierre R3**: 66 tests · RIR opcional visible y conservado · seis reglas de sugerencia testeadas · semáforo con `weeklyVolume` · Progreso sin “series efectivas” · auditor final APROBADO.
+- **Criterio de cierre R3**: 67 tests · RIR opcional visible y conservado · seis reglas de sugerencia testeadas · respaldo con RIR testeado · semáforo con `weeklyVolume` · Progreso sin “series efectivas” · auditor final APROBADO.

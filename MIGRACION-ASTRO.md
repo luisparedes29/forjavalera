@@ -18,6 +18,9 @@ tocar el código para retomar el trabajo sin perder el hilo.
   woff2/json, directivas de islas `client:idle/visible`, refactor (`viewFromHash`, guard SSR,
   `TABS` compartido) y cabeceras de cache en `netlify.toml`. Detalle en `PLAN-V1.md`.
 - Decisión post-migración: volumen semanal = semana calendario (lun–dom, hora local) en vez de ventana móvil de 7 días (spec: docs/superpowers/).
+- Decisión post-migración (2026-10-23): el volumen canónico se calcula solo con series
+  completadas (`done`). Historial, volumen semanal, progresión y estancamiento derivan del
+  mismo helper; los datos viejos se recalculan al mostrarse, sin migración destructiva.
 - Fixes aplicados y validados: nav tras F5 (sin residuo), acordeón Historial,
   reloj TopBar (sin hydration-mismatch), SW dev (sin registro/errores `chrome-extension`),
   parpadeo de Hierro al F5 (D-lite: `data-view` pre-paint). Servers de dev cerrados.

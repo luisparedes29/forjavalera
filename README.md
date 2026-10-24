@@ -3,7 +3,7 @@
 PWA **offline-first** de seguimiento de entrenamiento de fuerza, en español. Sin backend,
 sin cuentas, sin red: tus datos viven **solo en este navegador** (`localStorage`).
 
-**URL:** https://forja.netlify.app
+**URL:** https://forjavalera.netlify.app
 
 ## Funcionalidades
 
@@ -14,8 +14,12 @@ sin cuentas, sin red: tus datos viven **solo en este navegador** (`localStorage`
   estancamiento; historial colapsable.
 - **Cuerpo** — Registro antropométrico (peso, altura y 9 medidas), deltas y gráfico de
   peso dibujado en SVG.
-- **Progreso** —Volumen semanal por grupo muscular vs. rango recomendado (`SET_GUIDE`) — ventana: semana lun–dom y
-  progresión por ejercicio (kg / e1RM Epley / volumen) con PR y deltas.
+- **Progreso** — Volumen semanal por grupo muscular vs. rango recomendado (`SET_GUIDE`),
+  calculado **solo con series completadas** — ventana: semana lun–dom — y progresión por
+  ejercicio (kg / e1RM Epley / volumen) con PR y deltas.
+
+Las **series completadas** (`done`) son la fuente de verdad del volumen y del historial: las
+series sin completar no suman volumen ni cuentan como entrenadas.
 
 Además: **instalable (PWA)** y funciona **sin conexión** (Service Worker con Workbox,
 fuentes Anton + Space Grotesk self-hosted, sin Google Fonts), con **respaldo export/import**

@@ -38,7 +38,7 @@
 - `weeklyVolume` conserva la firma y pasa a devolver `Record<string, WeeklyVolumeEntry>`; `exerciseSeries` y `stagnant` conservan sus firmas.
 - Produces: `WeeklyVolumeEntry` (`{ sets: number; volume: number; ex: Set<string> }`).
 
-- [ ] **Step 1: Escribir los tests que fallan**
+- [x] **Step 1: Escribir los tests que fallan**
 
 En `src/lib/test/logic.test.ts`, cambiar el import:
 
@@ -159,12 +159,12 @@ it('ignora series no completadas y omite sesiones sin completadas', () => {
 })
 ```
 
-- [ ] **Step 2: Correr los tests y confirmar que fallan**
+- [x] **Step 2: Correr los tests y confirmar que fallan**
 
 Run: `npm test`
 Expected: FAIL — `isCompletedSet`, `setVolume`, `completedSets` y `volumeOf` no existen; los casos nuevos de `weeklyVolume`, `stagnant` y `exerciseSeries` fallan.
 
-- [ ] **Step 3: Implementar los helpers y corregir la lógica**
+- [x] **Step 3: Implementar los helpers y corregir la lógica**
 
 En `src/lib/logic.ts`, reemplazar `isEff` (línea 94) por:
 
@@ -221,7 +221,7 @@ En `exerciseSeries` (líneas 167–174), reemplazar `e.sets.forEach((s) => {` po
 completedSets(e.sets).forEach((s) => {
 ```
 
-- [ ] **Step 4: Cambiar los consumidores**
+- [x] **Step 4: Cambiar los consumidores**
 
 `src/store/appStore.ts`, en `commitSession` (líneas 206–209), reemplazar el cálculo de `volume` por:
 
@@ -295,7 +295,7 @@ const best = Math.max(
 )
 ```
 
-- [ ] **Step 5: Validar y commitear**
+- [x] **Step 5: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **39 passed** (33 base − 1 `isEff` + 3 tests de helpers —`setVolume` se cubre dentro de `volumeOf`— + 2 `weeklyVolume` + 1 `stagnant` + 1 `exerciseSeries` = 39).
@@ -304,7 +304,7 @@ Run: `npm run build` → OK.
 Run: `git add src/lib/logic.ts src/lib/test/logic.test.ts src/store/appStore.ts src/components/hierro/HierroView.tsx src/components/hierro/Historial.tsx src/components/hierro/Sesion.tsx`
 Run: `git commit -m "feat: unificar volumen en series completadas"`
 
-- [ ] **Step 6: Auditoría T10-1**
+- [x] **Step 6: Auditoría T10-1**
 
 Lanzar subagente `general` (NO edita): verifica que no quede ningún uso de `isEff`, que `weeklyVolume`, `exerciseSeries`, `stagnant`, `commitSession`, stats e historial usen `isCompletedSet`, que el volumen de la barra de sesión coincida con el historial para los mismos datos, y corre `tsc`/`npm test` (39)/`npm run build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
@@ -324,7 +324,7 @@ Lanzar subagente `general` (NO edita): verifica que no quede ningún uso de `isE
 **Interfaces:**
 - Produces: `capFirst(s: string): string`, `formatDate(value: string | number | Date, options: Intl.DateTimeFormatOptions): string`, `formatLongDate(value): string`, `formatWeekday(value): string`.
 
-- [ ] **Step 1: Escribir el helper y sus tests**
+- [x] **Step 1: Escribir el helper y sus tests**
 
 Crear `src/lib/date.ts`:
 
@@ -388,12 +388,12 @@ describe('formatWeekday y formatDate', () => {
 })
 ```
 
-- [ ] **Step 2: Correr los tests y confirmar que fallan**
+- [x] **Step 2: Correr los tests y confirmar que fallan**
 
 Run: `npm test`
 Expected: FAIL — no existe `src/lib/date.ts`.
 
-- [ ] **Step 3: Reemplazar los formateos inline**
+- [x] **Step 3: Reemplazar los formateos inline**
 
 `src/components/shared/TopBar.tsx`:
 
@@ -430,7 +430,7 @@ const date = formatDate(h.ts, { day: 'numeric', month: 'short', year: 'numeric' 
 
 `src/styles/global.css`: eliminar `text-transform: capitalize;` de `.chip-date b` (línea 217), `.hist-date` (línea 1369) y `.br-date` (línea 1677). No cambiar nada más de esas reglas.
 
-- [ ] **Step 4: Validar y commitear**
+- [x] **Step 4: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **42 passed**.
@@ -439,7 +439,7 @@ Run: `npm run build` → OK.
 Run: `git add src/lib/date.ts src/lib/test/date.test.ts src/components/shared/TopBar.tsx src/components/hierro/Historial.tsx src/components/hierro/HierroView.tsx src/components/cuerpo/CuerpoView.tsx src/styles/global.css`
 Run: `git commit -m "fix: fechas sin mayusculas internas"`
 
-- [ ] **Step 5: Auditoría T10-2**
+- [x] **Step 5: Auditoría T10-2**
 
 Subagente `general` (NO edita): verifica que no quede `text-transform: capitalize` en fechas, que TopBar/Historial/Cuerpo/Hierro usen el helper, que la salida sea “sábado, 24 de octubre de 2026” (sin “De”), y corre `tsc`/`npm test` (42)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
@@ -452,14 +452,14 @@ Subagente `general` (NO edita): verifica que no quede `text-transform: capitaliz
 
 **Interfaces:** ninguna. Cambio solo CSS; no toca la lógica de `toast.ts` ni `timerStore.ts`.
 
-- [ ] **Step 1: Mover los toasts arriba**
+- [x] **Step 1: Mover los toasts arriba**
 
 En `src/styles/global.css`, reemplazar el bloque `#toasts` (líneas 2158–2166) por:
 
 ```css
 #toasts {
   position: fixed;
-  top: calc(84px + env(safe-area-inset-top, 0px));
+  top: calc(96px + env(safe-area-inset-top, 0px));
   right: 22px;
   z-index: 110;
   display: flex;
@@ -472,43 +472,54 @@ En `src/styles/global.css`, reemplazar el bloque `#toasts` (líneas 2158–2166)
 
 En `.toast` (línea 2167), agregar `pointer-events: auto;`.
 
-Dentro del `@media (max-width: 1020px)` de la tabbar (después de `.tabbar-btn.active svg`, línea 2155), agregar:
+Inmediatamente **después** de la regla base `.toast` (para que el override gane en la cascada), agregar:
 
 ```css
-#toasts {
-  top: calc(84px + env(safe-area-inset-top, 0px));
-  left: 12px;
-  right: 12px;
-  align-items: stretch;
+@media (max-width: 1020px) {
+  #toasts {
+    left: 12px;
+    right: 12px;
+    align-items: stretch;
+  }
+  .toast {
+    max-width: none;
+  }
 }
-.toast {
-  max-width: none;
+
+@media (max-width: 640px) {
+  #toasts {
+    top: calc(168px + env(safe-area-inset-top, 0px));
+  }
 }
 ```
+
+El header móvil mide 136–157 px de alto a 360/390/412 (envuelve fecha y reloj); `top: 96px` lo dejaba tapado. El offset de 168 px deja 11 px de aire sobre el caso más alto. No repitas `top` en el bloque de 1020 px. No lo pongas dentro del `@media` de la tabbar: ese bloque está antes de las reglas base de `#toasts`/`.toast` y perdería `right`, `align-items` y `max-width` por orden de cascada.
 
 No cambiar la posición de `#timer`: sigue abajo a la izquierda con
 `bottom: calc(22px + var(--tabbar-h))`.
 
-- [ ] **Step 2: Validar visualmente**
+- [x] **Step 2: Validar visualmente**
 
 Run: `npm run build` → OK.
 Run: `npm run preview` en background.
 Abrir Chrome DevTools en 360×844, 390×844 y 412×915:
 1. Cargar un día y tildar una serie para iniciar el timer.
 2. Borrar una serie y un ejercicio para disparar dos toasts.
-3. Verificar que los toasts quedan arriba, debajo del header, y que los botones del timer
-   (`−15`, pausa, `+15`, cerrar) reciben click sin que nada los tape.
+3. Verificar con `getBoundingClientRect()` que el `top` del toast es mayor que el `bottom`
+   del header en 360/390/412, y que los botones del timer (`−15`, pausa, `+15`, cerrar)
+   reciben click sin que nada los tape.
 4. Verificar que el toast no bloquea el header sticky (la capa `#toasts` tiene
    `pointer-events: none`; solo el `.toast` recibe clicks).
 
-- [ ] **Step 3: Commit y auditoría T10-3**
+- [x] **Step 3: Commit y auditoría T10-3**
 
 Run: `git add src/styles/global.css`
 Run: `git commit -m "fix: separar toasts del timer en movil"`
 
 Subagente `general` (NO edita): verifica el CSS, que `#toasts` esté arriba con
-`pointer-events: none` y `.toast` con `pointer-events: auto`, que `#timer` siga abajo, y que
-`npm run build` pase. PASS/FAIL → marcar en `PLAN-V1.md`.
+`pointer-events: none` y `.toast` con `pointer-events: auto`, que en 360/390/412 el toast
+quede debajo del header (sin solape), que `#timer` siga abajo, y que `npm run build` pase.
+PASS/FAIL → marcar en `PLAN-V1.md`.
 
 ---
 
@@ -527,7 +538,7 @@ Subagente `general` (NO edita): verifica el CSS, que `#toasts` esté arriba con
 - Timer store: `endsAt: number | null`, `sync(): void`, `add(sec: number): void`; se elimina `add15`.
 - `useTimerSync()` y `useWakeLock(running)` son hooks sin valor de retorno.
 
-- [ ] **Step 1: Escribir los tests que fallan**
+- [x] **Step 1: Escribir los tests que fallan**
 
 Crear `src/lib/test/timer.test.ts`:
 
@@ -633,12 +644,12 @@ describe('timerStore por timestamp', () => {
 })
 ```
 
-- [ ] **Step 2: Correr los tests y confirmar que fallan**
+- [x] **Step 2: Correr los tests y confirmar que fallan**
 
 Run: `npm test`
 Expected: FAIL — no existe `src/lib/timer.ts` y `timerStore` no tiene `endsAt`/`sync`/`add`.
 
-- [ ] **Step 3: Implementar el helper puro**
+- [x] **Step 3: Implementar el helper puro**
 
 Crear `src/lib/timer.ts`:
 
@@ -647,7 +658,7 @@ export const remainingAt = (endsAt: number, now: number): number =>
   Math.max(0, Math.ceil((endsAt - now) / 1000))
 ```
 
-- [ ] **Step 4: Reescribir el store**
+- [x] **Step 4: Reescribir el store**
 
 Reemplazar `src/store/timerStore.ts` completo por:
 
@@ -766,7 +777,7 @@ export const useTimerStore = create<TimerStore>()((set, get) => ({
 }))
 ```
 
-- [ ] **Step 5: Resincronizar al volver y mantener la pantalla despierta**
+- [x] **Step 5: Resincronizar al volver y mantener la pantalla despierta**
 
 Crear `src/hooks/useTimerSync.ts`:
 
@@ -798,7 +809,7 @@ interface WakeLockLike {
   addEventListener: (type: 'release', listener: () => void) => void
 }
 
-interface NavigatorWithWakeLock extends Navigator {
+type WakeLockNavigator = {
   wakeLock?: { request: (type: 'screen') => Promise<WakeLockLike> }
 }
 
@@ -807,7 +818,7 @@ let sentinel: WakeLockLike | null = null
 export async function requestWakeLock(): Promise<void> {
   try {
     if (typeof document === 'undefined' || document.visibilityState !== 'visible') return
-    const wl = (navigator as NavigatorWithWakeLock).wakeLock
+    const wl = (navigator as unknown as WakeLockNavigator).wakeLock
     if (!wl) return
     if (sentinel && !sentinel.released) return
     sentinel = await wl.request('screen')
@@ -852,7 +863,7 @@ export default function useWakeLock(active: boolean): void {
 }
 ```
 
-- [ ] **Step 6: Cambiar la UI del timer**
+- [x] **Step 6: Cambiar la UI del timer**
 
 En `src/components/shared/Timer.tsx`:
 
@@ -881,12 +892,12 @@ En `src/components/shared/Timer.tsx`:
 5. En el texto de estado, mostrar `pausado` cuando `paused` sea true:
 
 ```tsx
-const time = done ? '¡Listo!' : `${m}:${String(secs).padStart(2, '0')}`
+<span id="timerLabel">{paused ? 'pausado' : label}</span>
 ```
 
 No cambiar el `z-index` ni la posición; eso ya quedó en Task 3.
 
-- [ ] **Step 7: Validar y commitear**
+- [x] **Step 7: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **48 passed**.
@@ -895,7 +906,7 @@ Run: `npm run build` → OK.
 Run: `git add src/lib/timer.ts src/lib/test/timer.test.ts src/lib/wakeLock.ts src/hooks/useTimerSync.ts src/hooks/useWakeLock.ts src/store/timerStore.ts src/components/shared/Timer.tsx`
 Run: `git commit -m "fix: timer exacto con timestamp y resync"`
 
-- [ ] **Step 8: Auditoría T10-4**
+- [x] **Step 8: Auditoría T10-4**
 
 Subagente `general` (NO edita): verifica que `left` solo se derive de `endsAt`, que `finish` sea idempotente, que `visibilitychange`/`pageshow`/`focus` llamen a `sync`, que Wake Lock esté protegido con `try/catch` y no prometa background, y corre `tsc`/`npm test` (48)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
@@ -918,7 +929,7 @@ Subagente `general` (NO edita): verifica que `left` solo se derive de `endsAt`, 
 - Nuevo `dismissToast(id: number): void`.
 - Store: `replaceHistory(history: SessionHistory[]): void`, `replaceBody(body: BodyRecord[]): void`.
 
-- [ ] **Step 1: Extender el sistema de toasts**
+- [x] **Step 1: Extender el sistema de toasts**
 
 Reemplazar `src/lib/toast.ts` por:
 
@@ -1032,7 +1043,7 @@ En `src/styles/global.css`, después de `.toast.warn`:
 }
 ```
 
-- [ ] **Step 2: Agregar snapshots al store**
+- [x] **Step 2: Agregar snapshots al store**
 
 En `src/store/appStore.ts`, agregar a la interfaz:
 
@@ -1055,7 +1066,7 @@ replaceBody: (body) => {
 },
 ```
 
-- [ ] **Step 3: Usar undo en las acciones destructivas**
+- [x] **Step 3: Usar undo en las acciones destructivas**
 
 `src/components/hierro/Sesion.tsx`:
 
@@ -1127,7 +1138,7 @@ onClick={() => {
 
 Si `body` no está desestructurado en el componente, usar `useAppStore.getState().body` antes de borrar.
 
-- [ ] **Step 4: Validar y commitear**
+- [x] **Step 4: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **48 passed** (sin tests nuevos).
@@ -1139,7 +1150,7 @@ el estado exacto y que el toast dura 6 s.
 Run: `git add src/lib/toast.ts src/components/shared/Toasts.tsx src/store/appStore.ts src/components/hierro/Sesion.tsx src/components/hierro/Historial.tsx src/components/cuerpo/CuerpoView.tsx src/styles/global.css`
 Run: `git commit -m "feat: deshacer en acciones destructivas"`
 
-- [ ] **Step 5: Auditoría T10-5**
+- [x] **Step 5: Auditoría T10-5**
 
 Subagente `general` (NO edita): verifica que las cuatro acciones usen `replaceExercises`/`replaceHistory`/`replaceBody` con el snapshot previo, que “Limpiar” ya no use `confirm`, que el toast con acción dure 6 s, que `dismissToast` no rompa la cola, y corre `tsc`/`npm test` (48)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
@@ -1152,7 +1163,7 @@ Subagente `general` (NO edita): verifica que las cuatro acciones usen `replaceEx
 
 **Interfaces:** ninguna. Cambio solo CSS.
 
-- [ ] **Step 1: Agrandar controles**
+- [x] **Step 1: Agrandar controles**
 
 En `src/styles/global.css`, aplicar estos valores (respetando el resto de cada regla):
 
@@ -1222,7 +1233,7 @@ grid-template-columns: 48px 28px 1fr 1fr 44px;
 Mantener `gap: 10px`; si a 360 px los inputs quedan demasiado angostos, bajar el gap a 8 px
 solo dentro de `@media (max-width: 400px)`.
 
-- [ ] **Step 2: Subir el piso tipográfico**
+- [x] **Step 2: Subir el piso tipográfico**
 
 Cambiar estos tamaños (mínimo 11 px en metadatos y controles):
 
@@ -1236,12 +1247,16 @@ Cambiar estos tamaños (mínimo 11 px en metadatos y controles):
 .sw-label { font-size: 11px; }
 ```
 
+En `@media (max-width: 640px)`, cambiar `.t-info span { font-size: 9px; }` (línea 2074) por
+`font-size: 11px;` y `.t-btns button { font-size: 9px; }` (línea 2083) por `font-size: 11px;`.
+Sin esto, el override móvil pisa el piso de 11 px en el timer.
+
 En `@media (max-width: 640px)`, cambiar `.stat span { font-size: 9px; }` (línea 2257) por
 `font-size: 11px;`.
 
 No tocar `.brand small` (es decorativo, no metadato operativo).
 
-- [ ] **Step 3: Validar visualmente**
+- [x] **Step 3: Validar visualmente**
 
 Run: `npm run build` → OK.
 Run: `npm run preview`.
@@ -1252,7 +1267,7 @@ En DevTools 360×844, 390×844 y 412×915:
 3. Verificar que la fila de serie no se rompe: check, número, reps, kg y trash en una línea.
 4. Verificar que los textos de 11 px se leen sin zoom.
 
-- [ ] **Step 4: Commit y auditoría T10-6**
+- [x] **Step 4: Commit y auditoría T10-6**
 
 Run: `git add src/styles/global.css`
 Run: `git commit -m "fix: targets de 44px y tipografia legible"`
@@ -1269,12 +1284,12 @@ Subagente `general` (NO edita): revisa el CSS, confirma los tamaños mínimos, q
 - New: `public/icons/icon-192.png`, `public/icons/icon-512.png`,
   `public/icons/icon-maskable-512.png`, `public/icons/apple-touch-icon-180.png`
 - Modify: `package.json` (script `icons` + `sharp` devDependency)
-- Modify: `manifest.json`
+- Modify: `public/manifest.json` (el que sirve Astro) y `manifest.json` de la raíz (mismo contenido)
 - Modify: `src/layouts/Base.astro` (`apple-touch-icon`)
 
 **Interfaces:** ninguna de código. El build no ejecuta `sharp`; los PNG se commitean.
 
-- [ ] **Step 1: Instalar `sharp` y crear el script**
+- [x] **Step 1: Instalar `sharp` y crear el script**
 
 Run: `npm install -D sharp`
 Run: `npm pkg set scripts.icons="node scripts/generate-icons.mjs"`
@@ -1303,12 +1318,12 @@ await sharp({
 console.log('[forja-icons] 4 PNG generados en public/icons')
 ```
 
-- [ ] **Step 2: Generar y actualizar el manifest**
+- [x] **Step 2: Generar y actualizar el manifest**
 
 Run: `npm run icons`
 Expected: `[forja-icons] 4 PNG generados en public/icons` y los 4 archivos existen.
 
-Reemplazar el bloque `icons` de `manifest.json` por:
+Reemplazar el bloque `icons` de `public/manifest.json` y del `manifest.json` de la raíz por el mismo contenido. Astro sirve `public/manifest.json`; el de la raíz se mantiene sincronizado para no divergir.
 
 ```json
 "icons": [
@@ -1331,19 +1346,20 @@ por:
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png" />
 ```
 
-- [ ] **Step 3: Validar build y precache**
+- [x] **Step 3: Validar build y precache**
 
 Run: `npm run build` → OK; el log debe seguir mostrando `[forja-pwa] sw.js generado con N archivos`.
 Verificar que `dist/icons/icon-192.png`, `dist/icons/icon-512.png`,
 `dist/icons/icon-maskable-512.png` y `dist/icons/apple-touch-icon-180.png` existen.
 Verificar que `dist/sw.js` contiene `icons/icon-192.png` y `icons/icon-maskable-512.png`.
-Validar `manifest.json` con `node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8'))"`.
+Validar `public/manifest.json` y `manifest.json` con `node -e "for (const f of ['public/manifest.json','manifest.json']) JSON.parse(require('fs').readFileSync(f,'utf8'))"`.
+Verificar que `dist/manifest.json` tiene los PNG nuevos (Astro copia `public/`).
 Prueba manual en Android: instalar la PWA y verificar que el icono no es un cuadrado genérico;
 en iOS verificar que el icono de inicio no queda en blanco.
 
-- [ ] **Step 4: Commit y auditoría T10-7**
+- [x] **Step 4: Commit y auditoría T10-7**
 
-Run: `git add package.json package-lock.json scripts/generate-icons.mjs public/icons manifest.json src/layouts/Base.astro`
+Run: `git add package.json package-lock.json scripts/generate-icons.mjs public/icons public/manifest.json manifest.json src/layouts/Base.astro`
 Run: `git commit -m "feat: iconos PWA PNG y maskable"`
 
 Subagente `general` (NO edita): verifica que los 4 PNG existan y tengan el tamaño correcto,
@@ -1361,7 +1377,7 @@ PNG, que los iconos estén precacheados y que `npm run build` pase. PASS/FAIL �
 - Modify: `MIGRACION-ASTRO.md` (decisión de volumen)
 - Modify: `PLAN-V1.md` (Tarea 10)
 
-- [ ] **Step 1: Corregir la URL y documentar el volumen**
+- [x] **Step 1: Corregir la URL y documentar el volumen**
 
 `README.md`: cambiar `https://forja.netlify.app` por `https://forjavalera.netlify.app`.
 En la sección de Progreso, aclarar “volumen calculado solo con series completadas”.
@@ -1379,32 +1395,36 @@ volumen y del historial.
   mismo helper; los datos viejos se recalculan al mostrarse, sin migración destructiva.
 ```
 
-- [ ] **Step 2: Marcar la Tarea 10 en PLAN-V1.md**
+- [x] **Step 2: Marcar la Tarea 10 en PLAN-V1.md**
 
-Bajo `## Tarea 10 — Modo GYM R1: confiabilidad`, marcar los subtítulos T10-1 a T10-7 con
-`[x]` y el resultado de la auditoría de cada uno. Agregar al final:
+Bajo `## Tarea 10 — Modo GYM R1: confiabilidad`, T10-1 a T10-7 ya están marcados con su
+commit y su review. No los reescribas: marcá solo T10-8 con el commit de cierre y agregá al
+final:
 
 ```markdown
-- **Cierre R1 (2026-10-23)**: auditor final APROBADO (48 tests, tsc + build OK, timer
-  verificado tras salto de 3 min, 0 solapamientos, targets ≥44 px, iconos PNG en precache).
+- **Cierre R1 (2026-10-24)**: auditor final APROBADO (48 tests, tsc + build OK, timer
+  verificado tras salto de 3 min, 0 solapamientos, targets ≥44 px, iconos PNG en precache
+  con 28 archivos).
 ```
 
-- [ ] **Step 3: Validación completa**
+- [x] **Step 3: Validación completa**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **48 passed**.
-Run: `npm run build` → OK con `[forja-pwa] sw.js generado con N archivos`.
+Run: `npm run build` → OK con `[forja-pwa] sw.js generado con 28 archivos`.
 
 Smoke test:
 Run: `npm run preview` (background, puerto 4321).
 Verificar HTTP 200 de `/`, `/manifest.json`, `/sw.js`, `/icons/icon-192.png`.
-Verificar que `dist/index.html` referencia `/icons/apple-touch-icon-180.png` y que no
-quedan referencias a `forja.netlify.app` en `README.md` ni en `astro.config.mjs`.
+Verificar que `/manifest.json` tiene los 4 iconos y una entrada `maskable`, que `dist/sw.js`
+incluye los 4 PNG y que `dist/index.html` referencia `/icons/apple-touch-icon-180.png`.
+Verificar que no quedan referencias a `forja.netlify.app` en `README.md` ni en
+`astro.config.mjs`.
 Cerrar el preview al terminar.
 
-- [ ] **Step 4: Commit y auditor final**
+- [x] **Step 4: Commit y auditor final**
 
-Run: `git add README.md astro.config.mjs MIGRACION-ASTRO.md PLAN-V1.md`
+Run: `git add README.md astro.config.mjs MIGRACION-ASTRO.md PLAN-V1.md docs/superpowers/plans/2026-10-23-modo-gym-r1-confiabilidad.md`
 Run: `git commit -m "docs: cerrar release 1 de confiabilidad"`
 
 Subagente `general` (NO edita): repasa Tasks 1–8, corre la validación completa, verifica que
