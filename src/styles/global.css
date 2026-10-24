@@ -2154,7 +2154,7 @@
 
       #toasts {
         position: fixed;
-        top: calc(84px + env(safe-area-inset-top, 0px));
+        top: calc(96px + env(safe-area-inset-top, 0px));
         right: 22px;
         z-index: 110;
         display: flex;
@@ -2178,13 +2178,17 @@
       }
       @media (max-width: 1020px) {
         #toasts {
-          top: calc(84px + env(safe-area-inset-top, 0px));
           left: 12px;
           right: 12px;
           align-items: stretch;
         }
         .toast {
           max-width: none;
+        }
+      }
+      @media (max-width: 640px) {
+        #toasts {
+          top: calc(168px + env(safe-area-inset-top, 0px));
         }
       }
       .toast.show {
