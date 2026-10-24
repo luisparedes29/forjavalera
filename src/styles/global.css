@@ -250,6 +250,7 @@
         letter-spacing: 0.09em;
         text-transform: uppercase;
         padding: 10px 26px;
+        min-height: 48px;
         transition: 0.2s;
         box-shadow: none;
       }
@@ -371,7 +372,7 @@
         color: var(--teal);
       }
       .stat span {
-        font-size: 10px;
+        font-size: 11px;
         letter-spacing: 0.22em;
         text-transform: uppercase;
         color: var(--muted);
@@ -611,8 +612,8 @@
         border: none;
         color: var(--muted);
         cursor: pointer;
-        width: 28px;
-        height: 28px;
+        width: 44px;
+        height: 44px;
         display: grid;
         place-items: center;
         border-radius: 4px;
@@ -634,6 +635,7 @@
         cursor: pointer;
         border-bottom: 1px solid transparent;
         padding: 0;
+        min-height: 44px;
       }
       .link-btn:hover {
         border-color: var(--volt);
@@ -674,6 +676,7 @@
         padding: 8px 13px 7px;
         text-align: center;
         min-width: 78px;
+        min-height: 48px;
         position: relative;
         transition: 0.2s;
         font-family: 'Space Grotesk';
@@ -688,7 +691,7 @@
         transition: 0.2s;
       }
       .day-tab span {
-        font-size: 9px;
+        font-size: 11px;
         letter-spacing: 0.1em;
         text-transform: uppercase;
       }
@@ -789,6 +792,7 @@
         gap: 8px;
         cursor: pointer;
         user-select: none;
+        min-height: 44px;
       }
       .switch input {
         display: none;
@@ -821,7 +825,7 @@
         background: var(--orange);
       }
       .sw-label {
-        font-size: 10px;
+        font-size: 11px;
         letter-spacing: 0.18em;
         color: var(--muted);
         font-weight: 700;
@@ -873,6 +877,7 @@
         margin-left: auto;
         box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.4);
         transition: 0.15s;
+        min-height: 44px;
       }
       .btn-mini:hover {
         transform: translate(-1px, -1px);
@@ -952,7 +957,7 @@
       .rt-sets i {
         font-style: normal;
         display: block;
-        font-size: 9px;
+        font-size: 11px;
         letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--orange);
@@ -967,6 +972,7 @@
         text-transform: uppercase;
         padding: 7px 12px;
         transition: 0.2s;
+        min-height: 44px;
       }
       .rt-add:hover {
         border-color: var(--volt);
@@ -1128,7 +1134,7 @@
         text-transform: uppercase;
       }
       .tag {
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 700;
         letter-spacing: 0.14em;
         text-transform: uppercase;
@@ -1168,16 +1174,25 @@
       .sets-head,
       .set-row {
         display: grid;
-        grid-template-columns: 26px 40px 1fr 1fr 36px;
+        grid-template-columns: 48px 28px 1fr 1fr 44px;
         gap: 10px;
         align-items: center;
       }
       .sets-head {
-        font-size: 10px;
+        font-size: 11px;
         letter-spacing: 0.2em;
         text-transform: uppercase;
         color: var(--muted);
         padding: 6px 0;
+      }
+      .sets-head span:nth-child(2) {
+        letter-spacing: 0;
+      }
+      @media (max-width: 400px) {
+        .sets-head,
+        .set-row {
+          gap: 8px;
+        }
       }
       .set-row {
         padding: 5px 0;
@@ -1185,8 +1200,8 @@
         transition: background 0.2s;
       }
       .set-check {
-        width: 22px;
-        height: 22px;
+        width: 48px;
+        height: 48px;
         border: 1px solid var(--line);
         background: rgba(0, 0, 0, 0.25);
         cursor: pointer;
@@ -1214,8 +1229,8 @@
         opacity: 0.45;
       }
       .set-num {
-        width: 26px;
-        height: 26px;
+        width: 28px;
+        height: 28px;
         display: grid;
         place-items: center;
         border: 1px solid var(--line);
@@ -1235,7 +1250,12 @@
         border: none;
         border-bottom: 1px solid var(--line);
         padding: 4px 2px;
-        font: 600 15px 'Space Grotesk';
+        font-weight: 600;
+        font-size: 19px;
+        font-family: 'Space Grotesk';
+        min-height: 48px;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
         box-shadow: none;
         transition: opacity 0.2s;
       }
@@ -1255,10 +1275,11 @@
         border: 1px dashed var(--line);
         color: var(--muted);
         cursor: pointer;
-        font: 700 11px 'Space Grotesk';
+        font: 700 12px 'Space Grotesk';
         letter-spacing: 0.14em;
         text-transform: uppercase;
-        padding: 7px 14px;
+        padding: 10px 14px;
+        min-height: 44px;
         transition: 0.2s;
       }
       .add-set:hover {
@@ -1266,7 +1287,7 @@
         color: var(--gc);
       }
       .prog {
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 700;
         letter-spacing: 0.1em;
         text-transform: uppercase;
@@ -1448,6 +1469,7 @@
         letter-spacing: 0.16em;
         text-transform: uppercase;
         padding: 6px 12px;
+        min-height: 44px;
         transition: 0.2s;
       }
       .del-hist:hover {
@@ -2025,7 +2047,7 @@
         font-variant-numeric: tabular-nums;
       }
       .t-info span {
-        font-size: 10px;
+        font-size: 11px;
         color: var(--muted);
         letter-spacing: 0.08em;
         text-transform: uppercase;
@@ -2048,6 +2070,8 @@
         font: 700 10px 'Space Grotesk';
         letter-spacing: 0.08em;
         padding: 7px 9px;
+        min-width: 44px;
+        min-height: 44px;
         transition: 0.15s;
       }
       .t-btns button:hover {
@@ -2072,7 +2096,7 @@
           font-size: 19px;
         }
         .t-info span {
-          font-size: 9px;
+          font-size: 11px;
           max-width: 118px;
           margin-top: 2px;
         }
@@ -2081,7 +2105,7 @@
         }
         .t-btns button {
           padding: 6px 8px;
-          font-size: 9px;
+          font-size: 11px;
         }
       }
 
@@ -2149,6 +2173,12 @@
         }
         .tabbar-btn.active svg {
           transform: translateY(-2px);
+        }
+      }
+
+      @media (max-width: 1020px) {
+        .tabbar-btn {
+          min-height: 56px;
         }
       }
 
@@ -2288,7 +2318,7 @@
           font-size: 29px;
         }
         .stat span {
-          font-size: 9px;
+          font-size: 11px;
           letter-spacing: 0.16em;
         }
         #statsHierro .stat:nth-child(1) {
