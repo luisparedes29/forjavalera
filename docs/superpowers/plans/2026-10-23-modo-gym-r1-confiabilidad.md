@@ -1436,12 +1436,12 @@ archivos tocados.
 
 ## Criterio de salida de R1
 
-- [ ] `npm test` → 48 passed.
-- [ ] `npx tsc --noEmit -p tsconfig.check.json` → limpio.
-- [ ] `npm run build` → OK, SW con iconos PNG en precache.
-- [ ] Timer correcto tras 3 min con pantalla bloqueada (diferencia ≤ 1 s).
-- [ ] 0 solapamientos timer/toasts a 360/390/412 px.
-- [ ] Serie, ejercicio, sesión y medición se pueden deshacer.
-- [ ] 100% de controles interactivos ≥ 44 px; metadatos ≥ 11 px.
-- [ ] URLs de producción corregidas a `https://forjavalera.netlify.app/`.
-- [ ] Auditor final APROBADO y Tarea 10 cerrada en `PLAN-V1.md`.
+- [x] `npm test` → 48 passed.
+- [x] `npx tsc --noEmit -p tsconfig.check.json` → limpio.
+- [x] `npm run build` → OK, SW con iconos PNG en precache.
+- [x] Timer correcto tras 3 min con pantalla bloqueada (diferencia ≤ 1 s).
+- [x] 0 solapamientos timer/toasts a 360/390/412 px.
+- [x] Serie, ejercicio, sesión y medición se pueden deshacer.
+- [x] 100% de controles interactivos ≥ 44 px; metadatos ≥ 11 px.
+- [x] URLs de producción corregidas a `https://forjavalera.netlify.app/`.
+- [x] Auditor final APROBADO y Tarea 10 cerrada en `PLAN-V1.md`.

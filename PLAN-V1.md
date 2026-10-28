@@ -154,11 +154,11 @@
 5. [x] T10-5 Undo: toasts con acción de 6 s; deshacer serie, ejercicio, sesión, historial y medición; “Limpiar” deja de usar `confirm()`. — `a14151f` — review APROBADA (spec ✅, 16/16 checks funcionales, 3 minors diferidos al cierre R1).
 6. [x] T10-6 Targets y tipografía: controles ≥ 44 px, metadatos ≥ 11 px, fila de serie sin overflow a 360 px. — `c4949e6` — re-review APROBADA (targets medidos, 0 overflow, tabular-nums efectivo; 1 minor diferido: inputs de 49 px a 360).
 7. [x] T10-7 Iconos PWA: PNG 192/512/180 + maskable con `scripts/generate-icons.mjs`; manifest y `apple-touch-icon` actualizados; iconos en precaché. — `c3c67eb` — review APROBADA (4 PNG verificados, SW 28 archivos; 1 minor diferido: la franja decorativa del maskable se recorta en las esquinas de la zona segura circular).
-8. [x] T10-8 Docs y cierre R1: URL `https://forjavalera.netlify.app/` en README y `astro.config.mjs`, decisión de volumen en `MIGRACION-ASTRO.md`, validación completa y auditor final. — cierre documental; auditor final APROBADO.
-- **Cierre R1 (2026-10-24)**: auditor final APROBADO (48 tests, tsc + build OK, timer
+8. [x] T10-8 Docs y cierre R1: URL `https://forjavalera.netlify.app/` en README y `astro.config.mjs`, decisión de volumen en `MIGRACION-ASTRO.md`, validación completa y auditoría final. — cierre documental; auditoría final APROBADA.
+- **Cierre R1 (2026-10-24)**: auditoría final APROBADA (48 tests, tsc + build OK, timer
   verificado tras salto de 3 min, 0 solapamientos, targets ≥44 px, iconos PNG en precache
   con 28 archivos).
-- **Criterio de cierre R1**: 48 tests · tsc limpio · build con SW · timer correcto tras 3 min con pantalla bloqueada · 0 solapamientos · undo en las cuatro acciones destructivas · controles ≥ 44 px · iconos PNG en `dist` · auditor final APROBADO.
+- **Criterio de cierre R1**: 48 tests · tsc limpio · build con SW · timer correcto tras 3 min con pantalla bloqueada · 0 solapamientos · undo en las cuatro acciones destructivas · controles ≥ 44 px · iconos PNG en `dist` · auditoría final APROBADA.
 
 ## Tarea 11 — Modo GYM R2: sesión-first (spec: docs/superpowers/specs/2026-10-23-modo-gym-design.md)
 > Plan: `docs/superpowers/plans/2026-10-23-modo-gym-r2-sesion-first.md`
