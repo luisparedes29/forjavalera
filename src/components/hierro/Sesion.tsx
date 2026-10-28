@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent } from 'react'
 import { useAppStore } from '../../store/appStore'
 import { useTimerStore } from '../../store/timerStore'
-import type { Exercise } from '../../lib/types'
+import type { Exercise, SetData } from '../../lib/types'
 import {
   repsLabel,
   suggestFor,
@@ -14,7 +14,12 @@ import {
 } from '../../lib/logic'
 import { GROUPS, GCOLORS } from '../../data/routine'
 import { fmtN, normName, uid } from '../../lib/util'
-import { suggestExercises, type ExerciseSuggestion } from '../../lib/session'
+import {
+  nextPending,
+  stepValue,
+  suggestExercises,
+  type ExerciseSuggestion
+} from '../../lib/session'
 import { toast } from '../../lib/toast'
 import useSaveSession from '../../hooks/useSaveSession'
 
@@ -65,6 +70,7 @@ export default function Sesion() {
   const [group, setGroup] = useState('pecho')
   const [picked, setPicked] = useState<ExerciseSuggestion | null>(null)
   const [acOpen, setAcOpen] = useState(false)
+  const [active, setActive] = useState<{ exId: string; si: number } | null>(null)
   const suggestions = useMemo(
     () => suggestExercises(history, name, 6),
     [history, name]
@@ -142,6 +148,7 @@ export default function Sesion() {
   const onSave = useSaveSession()
 
   const onClear = (): void => {
+    setActive(null)
     const prev = exercises
     const prevStart = useAppStore.getState().sessionStartedAt
     clearSession()
@@ -209,6 +216,53 @@ export default function Sesion() {
     }
   }
 
+  const repeatSet = (e: Exercise, si: number): void => {
+    const last = lastSets(history, e.name)
+    const hasData = (s?: SetData): boolean =>
+      !!s && ((s.reps !== '' && s.reps != null) || (s.kg !== '' && s.kg != null))
+    const prevSet = e.sets[si - 1]
+    const pick = [prevSet, last?.[si], last?.[0]].find(hasData)
+    if (!pick) {
+      toast('No hay una serie anterior para repetir', 'warn')
+      return
+    }
+    if (pick.reps !== '' && pick.reps != null)
+      setSetField(e.id, si, 'reps', String(pick.reps))
+    if (pick.kg !== '' && pick.kg != null)
+      setSetField(e.id, si, 'kg', String(pick.kg))
+  }
+
+  const focusSet = (exId: string, si: number): void => {
+    window.requestAnimationFrame(() => {
+      const row = document.querySelector<HTMLElement>(
+        `[data-set="${exId}-${si}"]`
+      )
+      row
+        ?.querySelector<HTMLInputElement>('input[data-field="reps"]')
+        ?.focus({ preventScroll: true })
+      window.requestAnimationFrame(() => {
+        row?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      })
+    })
+  }
+
+  const markDone = (e: Exercise, si: number): void => {
+    const s = e.sets[si]
+    if (!s || s.done) return
+    toggleSetDone(e.id, si)
+    const nextInEx = nextPending(e.sets, si + 1)
+    if (nextInEx >= 0) {
+      focusSet(e.id, nextInEx)
+    } else {
+      const nextEx = exercises.find(
+        (x) => x.id !== e.id && nextPending(x.sets) >= 0
+      )
+      if (nextEx) focusSet(nextEx.id, nextPending(nextEx.sets))
+    }
+    const sec = parseRest(e.rest) || 90
+    useTimerStore.getState().start(sec, `${e.name} · S${si + 1}`)
+  }
+
   return (
     <section
       className="panel reveal d2"
@@ -254,6 +308,13 @@ export default function Sesion() {
             )
             const c = GCOLORS[e.group] || '#8ba0a8'
             const sug = suggestFor(e)
+            const prevSets = (lastSets(history, e.name) ?? []).filter(
+              (s) =>
+                s.reps !== '' &&
+                s.reps != null &&
+                s.kg !== '' &&
+                s.kg != null
+            )
             return (
               <article
                 className="ex-card"
@@ -279,6 +340,7 @@ export default function Sesion() {
                     className="icon-btn del-ex"
                     title="Eliminar ejercicio"
                     onClick={() => {
+                      setActive(null)
                       const prev = useAppStore.getState().exercises
                       const prevStart = useAppStore.getState().sessionStartedAt
                       removeExerciseFromSession(e.id)
@@ -296,6 +358,16 @@ export default function Sesion() {
                   </button>
                 </header>
                 {e.note ? <p className="ex-note">▸ {e.note}</p> : null}
+                {prevSets.length ? (
+                  <p className="ex-last">
+                    La vez pasada:{' '}
+                    {prevSets
+                      .slice(0, 4)
+                      .map((s) => `${fmtN(Number(s.kg), 1)}×${String(s.reps)}`)
+                      .join(' · ')}
+                    {e.reps ? ` · objetivo ${e.reps}` : ''}
+                  </p>
+                ) : null}
                 <div className="sets">
                   <div className="sets-head">
                     <span></span>
@@ -304,71 +376,158 @@ export default function Sesion() {
                     <span>Peso (kg)</span>
                     <span></span>
                   </div>
-                  {e.sets.map((s, si) => (
-                    <div className={`set-row${s.done ? ' done' : ''}`} key={si}>
-                      <button
-                        className="set-check"
-                        title="Marcar serie completada"
-                        aria-pressed={s.done}
-                        onClick={() => {
-                          const wasDone = s.done
-                          toggleSetDone(e.id, si)
-                          if (!wasDone && e.rest) {
-                            useTimerStore
-                              .getState()
-                              .start(
-                                parseRest(e.rest),
-                                `${e.name} · Serie ${si + 1}`
-                              )
-                          }
-                        }}
-                      >
-                        {checkSVG}
-                      </button>
-                      <span className="set-num">{si + 1}</span>
-                      <input
-                        type="number"
-                        min={0}
-                        step={1}
-                        value={s.reps ?? ''}
-                        placeholder="0"
-                        aria-label={`Repeticiones serie ${si + 1}`}
-                        onChange={(ev) =>
-                          setSetField(e.id, si, 'reps', ev.target.value)
-                        }
-                      />
-                      <input
-                        type="number"
-                        min={0}
-                        step={0.5}
-                        value={s.kg ?? ''}
-                        placeholder="0.0"
-                        aria-label={`Peso serie ${si + 1}`}
-                        onChange={(ev) =>
-                          setSetField(e.id, si, 'kg', ev.target.value)
-                        }
-                      />
-                      <button
-                        className="icon-btn del-set"
-                        title="Eliminar serie"
-                        onClick={() => {
-                          const prev = useAppStore.getState().exercises
-                          const prevStart = useAppStore.getState().sessionStartedAt
-                          removeSetFromExercise(e.id, si)
-                          toast(`Serie ${si + 1} eliminada`, 'warn', {
-                            label: 'Deshacer',
-                            run: () => {
-                              const st = useAppStore.getState()
-                              st.replaceExercises(prev)
-                              st.restoreSessionStart(prevStart)
+                  {e.sets.map((s, si) => {
+                    const isActive = active?.exId === e.id && active.si === si
+                    return (
+                      <Fragment key={si}>
+                        <div
+                          className={`set-row${s.done ? ' done' : ''}${
+                            isActive ? ' active' : ''
+                          }`}
+                          data-set={`${e.id}-${si}`}
+                        >
+                          <button
+                            className="set-check"
+                            title="Marcar serie completada"
+                            aria-pressed={s.done}
+                            onClick={() => {
+                              if (s.done) toggleSetDone(e.id, si)
+                              else markDone(e, si)
+                            }}
+                          >
+                            {checkSVG}
+                          </button>
+                          <span className="set-num">{si + 1}</span>
+                          <input
+                            type="number"
+                            min={0}
+                            step={1}
+                            value={s.reps ?? ''}
+                            placeholder="0"
+                            aria-label={`Repeticiones serie ${si + 1}`}
+                            data-field="reps"
+                            onFocus={() => setActive({ exId: e.id, si })}
+                            onChange={(ev) =>
+                              setSetField(e.id, si, 'reps', ev.target.value)
                             }
-                          })
-                        }}
-                      >
-                        {trashSVG}
-                      </button>
-                    </div>
-                  ))}
+                            onKeyDown={(ev) => {
+                              if (ev.key === 'Enter') {
+                                ev.preventDefault()
+                                document
+                                  .querySelector<HTMLInputElement>(
+                                    `[data-set="${e.id}-${si}"] input[data-field="kg"]`
+                                  )
+                                  ?.focus()
+                              }
+                            }}
+                          />
+                          <input
+                            type="number"
+                            min={0}
+                            step={0.5}
+                            value={s.kg ?? ''}
+                            placeholder="0.0"
+                            aria-label={`Peso serie ${si + 1}`}
+                            data-field="kg"
+                            onFocus={() => setActive({ exId: e.id, si })}
+                            onChange={(ev) =>
+                              setSetField(e.id, si, 'kg', ev.target.value)
+                            }
+                            onKeyDown={(ev) => {
+                              if (ev.key === 'Enter') {
+                                ev.preventDefault()
+                                markDone(e, si)
+                              }
+                            }}
+                          />
+                          <button
+                            className="icon-btn del-set"
+                            title="Eliminar serie"
+                            onClick={() => {
+                              setActive(null)
+                              const prev = useAppStore.getState().exercises
+                              const prevStart =
+                                useAppStore.getState().sessionStartedAt
+                              removeSetFromExercise(e.id, si)
+                              toast(`Serie ${si + 1} eliminada`, 'warn', {
+                                label: 'Deshacer',
+                                run: () => {
+                                  const st = useAppStore.getState()
+                                  st.replaceExercises(prev)
+                                  st.restoreSessionStart(prevStart)
+                                }
+                              })
+                            }}
+                          >
+                            {trashSVG}
+                          </button>
+                        </div>
+                        {isActive ? (
+                          <div
+                            className="set-tools"
+                            role="group"
+                            aria-label={`Herramientas serie ${si + 1} de ${e.name}`}
+                          >
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setSetField(
+                                  e.id,
+                                  si,
+                                  'reps',
+                                  String(stepValue(s.reps, -1))
+                                )
+                              }
+                            >
+                              −1 rep
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setSetField(
+                                  e.id,
+                                  si,
+                                  'reps',
+                                  String(stepValue(s.reps, 1))
+                                )
+                              }
+                            >
+                              +1 rep
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setSetField(
+                                  e.id,
+                                  si,
+                                  'kg',
+                                  String(stepValue(s.kg, -2.5))
+                                )
+                              }
+                            >
+                              −2,5 kg
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setSetField(
+                                  e.id,
+                                  si,
+                                  'kg',
+                                  String(stepValue(s.kg, 2.5))
+                                )
+                              }
+                            >
+                              +2,5 kg
+                            </button>
+                            <button type="button" onClick={() => repeatSet(e, si)}>
+                              Repetir
+                            </button>
+                          </div>
+                        ) : null}
+                      </Fragment>
+                    )
+                  })}
                 </div>
                 <footer className="ex-foot">
                   <button className="add-set" onClick={() => addSetToExercise(e.id)}>

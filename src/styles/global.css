@@ -1445,6 +1445,46 @@
       .best b {
         color: var(--volt);
       }
+      .set-row.active {
+        background: rgba(201, 242, 75, 0.06);
+      }
+      .set-tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 4px 0 10px 58px;
+      }
+      .set-tools button {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0 10px;
+        background: none;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        font: 700 11px 'Space Grotesk';
+        letter-spacing: 0.04em;
+        cursor: pointer;
+      }
+      .set-tools button:hover {
+        border-color: var(--gc);
+        color: var(--gc);
+      }
+      .ex-last {
+        margin: 8px 14px 0;
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .set-row input {
+        font-size: 20px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+      @media (max-width: 400px) {
+        .set-tools {
+          padding-left: 0;
+        }
+      }
       .session-actions {
         display: flex;
         gap: 12px;
