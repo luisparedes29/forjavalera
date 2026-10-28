@@ -206,7 +206,7 @@ export default function Sesion() {
       style={{ '--acc': 'var(--volt)' } as CSSProperties}
     >
       <h2>
-        <span className="n">02/</span> Sesión actual
+        <span className="n">01/</span> Sesión actual
         <span className="autosave">
           <span className="dot"></span>borrador autoguardado
         </span>

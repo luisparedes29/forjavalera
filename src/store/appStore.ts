@@ -19,7 +19,7 @@ function mapBrazosByName(n: string): string {
   return 'brazos'
 }
 
-export type ViewId = 'hierro' | 'cuerpo' | 'progreso'
+export type ViewId = 'registrar' | 'plan' | 'cuerpo' | 'progreso'
 
 export type RoutineExerciseExt = RoutineExercise & {
   name: string
@@ -71,7 +71,7 @@ interface AppStore {
 }
 
 function initialView(): ViewId {
-  return 'hierro'
+  return 'registrar'
 }
 
 const RESET_WEEK: WeekState = { week: 1, deload: false }

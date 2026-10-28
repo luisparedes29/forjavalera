@@ -284,8 +284,10 @@
       .view {
         display: none;
       }
-      :root:not([data-view]) #view-hierro,
-      :root[data-view='hierro'] #view-hierro,
+      :root:not([data-view]) #view-registrar,
+      :root[data-view='registrar'] #view-registrar,
+      :root[data-view='hierro'] #view-registrar,
+      :root[data-view='plan'] #view-plan,
       :root[data-view='cuerpo'] #view-cuerpo,
       :root[data-view='progreso'] #view-progreso {
         display: block;
@@ -329,16 +331,16 @@
         line-height: 1;
         font-variant-numeric: tabular-nums;
       }
-      #statsHierro .stat:nth-child(1) b {
+      #statsPlan .stat:nth-child(1) b {
         color: var(--volt);
       }
-      #statsHierro .stat:nth-child(2) b {
+      #statsPlan .stat:nth-child(2) b {
         color: var(--teal);
       }
-      #statsHierro .stat:nth-child(4) b {
+      #statsPlan .stat:nth-child(4) b {
         color: var(--orange);
       }
-      #statsHierro .stat:nth-child(5) b {
+      #statsPlan .stat:nth-child(5) b {
         color: var(--blue);
       }
       .stats-cuerpo .stat:nth-child(1) b {
@@ -2127,7 +2129,7 @@
           bottom: 0;
           z-index: 60;
           display: grid;
-          grid-template-columns: 1fr 1fr 1fr;
+          grid-template-columns: repeat(4, 1fr);
           background: rgba(14, 19, 22, 0.94);
           backdrop-filter: blur(10px);
           border-top: 1px solid var(--line);
@@ -2321,16 +2323,16 @@
           font-size: 11px;
           letter-spacing: 0.16em;
         }
-        #statsHierro .stat:nth-child(1) {
+        #statsPlan .stat:nth-child(1) {
           border-top-color: var(--volt);
         }
-        #statsHierro .stat:nth-child(2) {
+        #statsPlan .stat:nth-child(2) {
           border-top-color: var(--teal);
         }
-        #statsHierro .stat:nth-child(4) {
+        #statsPlan .stat:nth-child(4) {
           border-top-color: var(--orange);
         }
-        #statsHierro .stat:nth-child(5) {
+        #statsPlan .stat:nth-child(5) {
           border-top-color: var(--blue);
         }
         .stats-cuerpo .stat:nth-child(1) {
@@ -2354,16 +2356,16 @@
         .stats-progreso .stat:nth-child(4) {
           border-top-color: var(--orange);
         }
-        #statsHierro .stat:last-child {
+        #statsPlan .stat:last-child {
           grid-column: 1/-1;
           display: flex;
           align-items: baseline;
           gap: 12px;
         }
-        #statsHierro .stat:last-child b {
+        #statsPlan .stat:last-child b {
           font-size: 20px;
         }
-        #statsHierro .stat:last-child span {
+        #statsPlan .stat:last-child span {
           margin-left: auto;
         }
       }

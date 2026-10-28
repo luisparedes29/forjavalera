@@ -2,7 +2,8 @@ import { useEffect } from 'react'
 import { useAppStore } from '../store/appStore'
 import { viewFromHash } from '../lib/view'
 import useReveal from '../hooks/useReveal'
-import HierroView from './hierro/HierroView'
+import RegistrarView from './hierro/RegistrarView'
+import PlanView from './hierro/PlanView'
 import CuerpoView from './cuerpo/CuerpoView'
 import ProgresoView from './progreso/ProgresoView'
 
@@ -21,8 +22,11 @@ export default function ViewManager() {
 
   return (
     <div ref={ref}>
-      <div id="view-hierro" className={`view${view === 'hierro' ? ' active' : ''}`}>
-        <HierroView />
+      <div id="view-registrar" className={`view${view === 'registrar' ? ' active' : ''}`}>
+        <RegistrarView />
+      </div>
+      <div id="view-plan" className={`view${view === 'plan' ? ' active' : ''}`}>
+        <PlanView />
       </div>
       <div id="view-cuerpo" className={`view${view === 'cuerpo' ? ' active' : ''}`}>
         <CuerpoView />
