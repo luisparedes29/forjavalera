@@ -977,7 +977,7 @@ Subagente `general` (NO edita): verifica que el composer esté después de la li
 - Consume: `nextPending` y `stepValue` de `src/lib/session.ts`.
 - No agrega helpers puros nuevos.
 
-- [ ] **Step 1: Agregar estado activo y barra de herramientas**
+- [x] **Step 1: Agregar estado activo y barra de herramientas**
 
 En `Sesion.tsx`:
 
@@ -1068,7 +1068,7 @@ const repeatSet = (e: Exercise, si: number): void => {
 }
 ```
 
-- [ ] **Step 2: Mostrar “La vez pasada”**
+- [x] **Step 2: Mostrar “La vez pasada”**
 
 Dentro de cada `ex-card`, antes de `<div className="sets">`:
 
@@ -1095,7 +1095,7 @@ Dentro de cada `ex-card`, antes de `<div className="sets">`:
 ) : null}
 ```
 
-- [ ] **Step 3: Auto-scroll y cadena Enter**
+- [x] **Step 3: Auto-scroll y cadena Enter**
 
 Agregar helper local:
 
@@ -1169,7 +1169,7 @@ onKeyDown={(ev) => {
 }}
 ```
 
-- [ ] **Step 4: Estilos de la fila v2**
+- [x] **Step 4: Estilos de la fila v2**
 
 En `global.css`:
 
@@ -1225,7 +1225,7 @@ En `global.css`:
 
 No achicar `.set-check` ni `.set-row input`: R1 ya los dejó en 48 px de alto.
 
-- [ ] **Step 5: Validar y commitear**
+- [x] **Step 5: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **58 passed** (sin tests nuevos).
@@ -1240,7 +1240,7 @@ Prueba manual en 390×844:
 Run: `git add src/components/hierro/Sesion.tsx src/styles/global.css`
 Run: `git commit -m "feat: fila de serie rapida con herramientas y autoavance"`
 
-- [ ] **Step 6: Auditoría T11-4**
+- [x] **Step 6: Auditoría T11-4**
 
 Subagente `general` (NO edita): verifica que tildar avance a la próxima pendiente, que Enter haga reps → kg → tildar, que `Repetir` use la serie anterior o la última sesión, que borrar siga teniendo undo y que los controles midan ≥44 px; corre `tsc`/`npm test` (58)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
