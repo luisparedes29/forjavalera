@@ -659,7 +659,7 @@ Subagente `general` (NO edita): verifica que `sessionStartedAt` se cree al carga
 - Produces: `stepValue(value: number | string | null, delta: number, min?: number): number`.
 - `ExerciseSuggestion = { name: string; group?: string; reps?: string; rest?: string; note?: string }`.
 
-- [ ] **Step 1: Escribir los tests que fallan**
+- [x] **Step 1: Escribir los tests que fallan**
 
 Agregar a `src/lib/test/session.test.ts`:
 
@@ -704,12 +704,12 @@ describe('stepValue', () => {
 })
 ```
 
-- [ ] **Step 2: Correr los tests y confirmar que fallan**
+- [x] **Step 2: Correr los tests y confirmar que fallan**
 
 Run: `npm test`
 Expected: FAIL — `suggestExercises` y `stepValue` no existen.
 
-- [ ] **Step 3: Implementar catálogo y pasos**
+- [x] **Step 3: Implementar catálogo y pasos**
 
 En `src/lib/session.ts`, agregar:
 
@@ -771,7 +771,7 @@ export function stepValue(
 }
 ```
 
-- [ ] **Step 4: Plegar el composer y conectarlo al catálogo**
+- [x] **Step 4: Plegar el composer y conectarlo al catálogo**
 
 En `Sesion.tsx`:
 
@@ -950,7 +950,7 @@ CSS:
 
 En `@media (max-width: 600px)`, `.add-ex` ya pasa a una columna; mantener.
 
-- [ ] **Step 5: Validar y commitear**
+- [x] **Step 5: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **58 passed**.
@@ -961,7 +961,7 @@ Prueba manual: abrir Registrar con una sesión cargada; confirmar que los ejerci
 Run: `git add src/lib/session.ts src/lib/test/session.test.ts src/components/hierro/Sesion.tsx src/styles/global.css`
 Run: `git commit -m "feat: composer plegado con autocompletado de ejercicios"`
 
-- [ ] **Step 6: Auditoría T11-3**
+- [x] **Step 6: Auditoría T11-3**
 
 Subagente `general` (NO edita): verifica que el composer esté después de la lista, que el autocompletado no tape inputs de forma permanente, que elegir un ejercicio de la rutina complete grupo/reps/rest/nota, que el historial reciente aparezca con query vacía y corre `tsc`/`npm test` (58)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
