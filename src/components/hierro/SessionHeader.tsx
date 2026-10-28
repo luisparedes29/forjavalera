@@ -3,6 +3,7 @@ import useSaveSession from '../../hooks/useSaveSession'
 import { formatElapsed, sessionSummary } from '../../lib/session'
 import { fmtN } from '../../lib/util'
 import { useAppStore } from '../../store/appStore'
+import { useTimerStore } from '../../store/timerStore'
 
 export default function SessionHeader() {
   const exercises = useAppStore((s) => s.exercises)
@@ -38,6 +39,13 @@ export default function SessionHeader() {
           <b>{startedAt && now ? formatElapsed(now - startedAt) : '—'}</b>
         </span>
       </div>
+      <button
+        type="button"
+        className="btn btn-ghost sh-timer"
+        onClick={() => useTimerStore.getState().setOpenPanel(true)}
+      >
+        ⏱ Descanso
+      </button>
       <button type="button" className="btn btn-volt sh-save" onClick={save}>
         Guardar
       </button>

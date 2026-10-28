@@ -12,6 +12,8 @@ interface TimerStore {
   paused: boolean
   label: string
   endsAt: number | null
+  openPanel: boolean
+  setOpenPanel: (open: boolean) => void
   start: (sec: number, label: string) => void
   finish: () => void
   toggle: () => void
@@ -40,6 +42,10 @@ export const useTimerStore = create<TimerStore>()((set, get) => ({
   paused: false,
   label: 'descanso',
   endsAt: null,
+  openPanel: false,
+
+  setOpenPanel: (open) =>
+    set((s) => ({ openPanel: open, done: open ? false : s.done })),
 
   start: (sec, label) => {
     if (!sec) return
@@ -51,7 +57,8 @@ export const useTimerStore = create<TimerStore>()((set, get) => ({
       done: false,
       label,
       running: true,
-      endsAt: Date.now() + sec * 1000
+      endsAt: Date.now() + sec * 1000,
+      openPanel: false
     })
     ensureTicker()
   },
@@ -107,6 +114,12 @@ export const useTimerStore = create<TimerStore>()((set, get) => ({
 
   stop: () => {
     clearTicker()
-    set({ running: false, done: false, paused: false, endsAt: null })
+    set({
+      running: false,
+      done: false,
+      paused: false,
+      endsAt: null,
+      openPanel: false
+    })
   }
 }))
