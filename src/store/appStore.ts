@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { LS, load, saveL } from '../lib/storage'
+import { LS, load, removeL, saveL } from '../lib/storage'
 import { focusOf, lastSets, suggestFor, volumeOf } from '../lib/logic'
 import { normName, uid } from '../lib/util'
 import type {
@@ -44,7 +44,10 @@ interface AppStore {
   body: BodyRecord[]
   week: WeekState
   view: ViewId
+  sessionStartedAt: number | null
   setView: (view: ViewId, push?: boolean) => void
+  startSession: () => void
+  restoreSessionStart: (ts: number | null) => void
   addExercise: (ex: Exercise) => void
   addRoutineExerciseToSession: (
     r: RoutineExerciseExt,
@@ -76,12 +79,23 @@ function initialView(): ViewId {
 
 const RESET_WEEK: WeekState = { week: 1, deload: false }
 
+const savedExercises = load<Exercise[]>(LS.session, [])
+
+const savedSessionStart = (): number | null => {
+  if (!savedExercises.length) {
+    removeL(LS.sessionStart)
+    return null
+  }
+  return load<number | null>(LS.sessionStart, null)
+}
+
 export const useAppStore = create<AppStore>()((set, get) => ({
-  exercises: load<Exercise[]>(LS.session, []),
+  exercises: savedExercises,
   history: load<SessionHistory[]>(LS.history, []),
   body: load<BodyRecord[]>(LS.body, []),
   week: load<WeekState>(LS.week, { ...RESET_WEEK }),
   view: initialView(),
+  sessionStartedAt: savedSessionStart(),
 
   setView: (view, push = false) => {
     set({ view })
@@ -92,7 +106,21 @@ export const useAppStore = create<AppStore>()((set, get) => ({
     if (typeof window !== 'undefined') window.scrollTo({ top: 0 })
   },
 
+  startSession: () => {
+    if (get().sessionStartedAt) return
+    const ts = Date.now()
+    set({ sessionStartedAt: ts })
+    saveL(LS.sessionStart, ts)
+  },
+
+  restoreSessionStart: (ts) => {
+    set({ sessionStartedAt: ts })
+    if (ts) saveL(LS.sessionStart, ts)
+    else removeL(LS.sessionStart)
+  },
+
   addExercise: (ex) => {
+    get().startSession()
     set((s) => ({ exercises: [...s.exercises, ex] }))
     saveL(LS.session, get().exercises)
   },
@@ -124,8 +152,13 @@ export const useAppStore = create<AppStore>()((set, get) => ({
   },
 
   removeExerciseFromSession: (id) => {
-    set((s) => ({ exercises: s.exercises.filter((e) => e.id !== id) }))
-    saveL(LS.session, get().exercises)
+    const exercises = get().exercises.filter((e) => e.id !== id)
+    set({ exercises })
+    saveL(LS.session, exercises)
+    if (!exercises.length) {
+      set({ sessionStartedAt: null })
+      removeL(LS.sessionStart)
+    }
   },
 
   replaceExercises: (exs) => {
@@ -143,12 +176,15 @@ export const useAppStore = create<AppStore>()((set, get) => ({
   },
 
   removeSetFromExercise: (id, sid) => {
-    set((s) => ({
-      exercises: s.exercises.map((e) =>
-        e.id === id ? { ...e, sets: e.sets.filter((_, i) => i !== sid) } : e
-      )
-    }))
-    saveL(LS.session, get().exercises)
+    const exercises = get().exercises.map((e) =>
+      e.id === id ? { ...e, sets: e.sets.filter((_, i) => i !== sid) } : e
+    )
+    set({ exercises })
+    saveL(LS.session, exercises)
+    if (!exercises.some((e) => e.sets.length)) {
+      set({ sessionStartedAt: null })
+      removeL(LS.sessionStart)
+    }
   },
 
   setSetField: (id, sid, field, value) => {
@@ -169,6 +205,10 @@ export const useAppStore = create<AppStore>()((set, get) => ({
   },
 
   toggleSetDone: (id, sid) => {
+    const target = get()
+      .exercises.find((e) => e.id === id)
+      ?.sets[sid]
+    if (target && !target.done) get().startSession()
     set((s) => ({
       exercises: s.exercises.map((e) =>
         e.id === id
@@ -185,8 +225,9 @@ export const useAppStore = create<AppStore>()((set, get) => ({
   },
 
   clearSession: () => {
-    set({ exercises: [] })
+    set({ exercises: [], sessionStartedAt: null })
     saveL(LS.session, [])
+    removeL(LS.sessionStart)
   },
 
   commitSession: () => {
@@ -211,9 +252,10 @@ export const useAppStore = create<AppStore>()((set, get) => ({
       { id: uid(), ts: new Date().toISOString(), volume, focus, exercises: clean },
       ...get().history
     ]
-    set({ history, exercises: [] })
+    set({ history, exercises: [], sessionStartedAt: null })
     saveL(LS.history, history)
     saveL(LS.session, [])
+    removeL(LS.sessionStart)
   },
 
   removeSession: (id) => {
@@ -259,7 +301,14 @@ export const useAppStore = create<AppStore>()((set, get) => ({
       window.localStorage.removeItem(LS.body)
       window.localStorage.removeItem(LS.week)
     }
-    set({ exercises: [], history: [], body: [], week: { ...RESET_WEEK } })
+    removeL(LS.sessionStart)
+    set({
+      exercises: [],
+      history: [],
+      body: [],
+      week: { ...RESET_WEEK },
+      sessionStartedAt: null
+    })
   },
 
   restoreAll: (data) => {
@@ -267,7 +316,8 @@ export const useAppStore = create<AppStore>()((set, get) => ({
     const history = data.history ?? []
     const body = data.body ?? []
     const week = data.week ?? { ...RESET_WEEK }
-    set({ exercises: session, history, body, week })
+    removeL(LS.sessionStart)
+    set({ exercises: session, history, body, week, sessionStartedAt: null })
     saveL(LS.session, session)
     saveL(LS.history, history)
     saveL(LS.body, body)

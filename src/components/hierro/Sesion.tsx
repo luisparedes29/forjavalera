@@ -16,6 +16,7 @@ import {
 import { GROUPS, GCOLORS, ROUTINE } from '../../data/routine'
 import { fmtN, uid } from '../../lib/util'
 import { toast } from '../../lib/toast'
+import useSaveSession from '../../hooks/useSaveSession'
 
 const barSVG = (
   <svg width="46" height="23" viewBox="0 0 48 24">
@@ -58,7 +59,6 @@ export default function Sesion() {
   const removeSetFromExercise = useAppStore((s) => s.removeSetFromExercise)
   const removeExerciseFromSession = useAppStore((s) => s.removeExerciseFromSession)
   const clearSession = useAppStore((s) => s.clearSession)
-  const commitSession = useAppStore((s) => s.commitSession)
 
   const dayIdx = useRoutineStore((s) => s.dayIdx)
 
@@ -114,6 +114,7 @@ export default function Sesion() {
   const loadToday = (): void => {
     const day = ROUTINE[dayIdx]
     replaceExercises(day.ex.map((r) => buildOne(r)))
+    useAppStore.getState().startSession()
     toast(`${day.day} cargado en la sesión`)
   }
 
@@ -125,23 +126,19 @@ export default function Sesion() {
   const volDone = exercises.reduce((a, e) => a + volumeOf(e.sets), 0)
   const pct = total ? (done / total) * 100 : 0
 
-  const onSave = (): void => {
-    const valid = exercises.filter((e) => e.name.trim() && e.sets.length)
-    if (!valid.length) {
-      toast('Añade al menos un ejercicio con una serie', 'warn')
-      return
-    }
-    commitSession()
-    const focus = useAppStore.getState().history[0]?.focus
-    toast(`Sesión guardada · enfoque: ${GROUPS[focus ?? ''] || 'general'} 💪`)
-  }
+  const onSave = useSaveSession()
 
   const onClear = (): void => {
     const prev = exercises
+    const prevStart = useAppStore.getState().sessionStartedAt
     clearSession()
     toast('Sesión vaciada', 'warn', {
       label: 'Deshacer',
-      run: () => useAppStore.getState().replaceExercises(prev)
+      run: () => {
+        const st = useAppStore.getState()
+        st.replaceExercises(prev)
+        st.restoreSessionStart(prevStart)
+      }
     })
   }
 
@@ -297,10 +294,15 @@ export default function Sesion() {
                     title="Eliminar ejercicio"
                     onClick={() => {
                       const prev = useAppStore.getState().exercises
+                      const prevStart = useAppStore.getState().sessionStartedAt
                       removeExerciseFromSession(e.id)
                       toast('Ejercicio eliminado', 'warn', {
                         label: 'Deshacer',
-                        run: () => useAppStore.getState().replaceExercises(prev)
+                        run: () => {
+                          const st = useAppStore.getState()
+                          st.replaceExercises(prev)
+                          st.restoreSessionStart(prevStart)
+                        }
                       })
                     }}
                   >
@@ -365,10 +367,15 @@ export default function Sesion() {
                         title="Eliminar serie"
                         onClick={() => {
                           const prev = useAppStore.getState().exercises
+                          const prevStart = useAppStore.getState().sessionStartedAt
                           removeSetFromExercise(e.id, si)
                           toast(`Serie ${si + 1} eliminada`, 'warn', {
                             label: 'Deshacer',
-                            run: () => useAppStore.getState().replaceExercises(prev)
+                            run: () => {
+                              const st = useAppStore.getState()
+                              st.replaceExercises(prev)
+                              st.restoreSessionStart(prevStart)
+                            }
                           })
                         }}
                       >

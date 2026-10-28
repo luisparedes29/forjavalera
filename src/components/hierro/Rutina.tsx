@@ -72,6 +72,7 @@ export default function Rutina() {
       }
     }
     replaceExercises(day.ex.map((d) => buildOne(d)))
+    useAppStore.getState().startSession()
     const had = day.ex.some((d) => lastSets(history, d.n))
     toast(`${day.day} cargado${had ? ' · con tus últimas cargas' : ' 💪'}`)
   }

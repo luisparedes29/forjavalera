@@ -1,10 +1,12 @@
 import type { CSSProperties } from 'react'
 import Sesion from './Sesion'
 import Historial from './Historial'
+import SessionHeader from './SessionHeader'
 
 export default function RegistrarView() {
   return (
     <main>
+      <SessionHeader />
       <Sesion />
       <section className="panel reveal d2" style={{ '--acc': 'var(--teal)' } as CSSProperties}>
         <h2>
