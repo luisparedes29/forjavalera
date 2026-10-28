@@ -1,9 +1,8 @@
-import { useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent } from 'react'
 import { useAppStore } from '../../store/appStore'
-import { useRoutineStore } from '../../store/routineStore'
 import { useTimerStore } from '../../store/timerStore'
-import type { Exercise, RoutineExercise, SetData } from '../../lib/types'
+import type { Exercise } from '../../lib/types'
 import {
   repsLabel,
   suggestFor,
@@ -13,8 +12,9 @@ import {
   isCompletedSet,
   volumeOf
 } from '../../lib/logic'
-import { GROUPS, GCOLORS, ROUTINE } from '../../data/routine'
-import { fmtN, uid } from '../../lib/util'
+import { GROUPS, GCOLORS } from '../../data/routine'
+import { fmtN, normName, uid } from '../../lib/util'
+import { suggestExercises, type ExerciseSuggestion } from '../../lib/session'
 import { toast } from '../../lib/toast'
 import useSaveSession from '../../hooks/useSaveSession'
 
@@ -50,21 +50,46 @@ const saveSVG = (
 export default function Sesion() {
   const exercises = useAppStore((s) => s.exercises)
   const history = useAppStore((s) => s.history)
-  const week = useAppStore((s) => s.week)
   const addExercise = useAppStore((s) => s.addExercise)
-  const replaceExercises = useAppStore((s) => s.replaceExercises)
   const setSetField = useAppStore((s) => s.setSetField)
   const toggleSetDone = useAppStore((s) => s.toggleSetDone)
   const addSetToExercise = useAppStore((s) => s.addSetToExercise)
   const removeSetFromExercise = useAppStore((s) => s.removeSetFromExercise)
   const removeExerciseFromSession = useAppStore((s) => s.removeExerciseFromSession)
   const clearSession = useAppStore((s) => s.clearSession)
-
-  const dayIdx = useRoutineStore((s) => s.dayIdx)
+  const setView = useAppStore((s) => s.setView)
 
   const nameInput = useRef<HTMLInputElement | null>(null)
+  const acWrap = useRef<HTMLDivElement | null>(null)
   const [name, setName] = useState('')
   const [group, setGroup] = useState('pecho')
+  const [picked, setPicked] = useState<ExerciseSuggestion | null>(null)
+  const [acOpen, setAcOpen] = useState(false)
+  const suggestions = useMemo(
+    () => suggestExercises(history, name, 6),
+    [history, name]
+  )
+
+  useEffect(() => {
+    if (!acOpen) return
+    const onDown = (ev: PointerEvent): void => {
+      if (acWrap.current && !acWrap.current.contains(ev.target as Node)) {
+        setAcOpen(false)
+      }
+    }
+    const onOut = (ev: FocusEvent): void => {
+      const next = ev.relatedTarget as Node | null
+      if (next && acWrap.current && !acWrap.current.contains(next)) {
+        setAcOpen(false)
+      }
+    }
+    document.addEventListener('pointerdown', onDown)
+    document.addEventListener('focusout', onOut)
+    return () => {
+      document.removeEventListener('pointerdown', onDown)
+      document.removeEventListener('focusout', onOut)
+    }
+  }, [acOpen])
 
   const addEx = (): void => {
     const trim = name.trim()
@@ -74,10 +99,17 @@ export default function Sesion() {
       return
     }
     const last = lastSets(history, trim)
+    const matchesPick = !!picked && normName(picked.name) === normName(trim)
+    const meta = matchesPick
+      ? picked
+      : suggestions.find((s) => normName(s.name) === normName(trim)) ?? null
     const ex: Exercise = {
       id: uid(),
       name: trim,
-      group,
+      group: matchesPick ? group : meta?.group ?? group,
+      reps: meta?.reps,
+      rest: meta?.rest,
+      note: meta?.note,
       sets: [
         {
           reps: last?.[0]?.reps ?? '',
@@ -88,34 +120,15 @@ export default function Sesion() {
     }
     addExercise(ex)
     setName('')
-    nameInput.current?.focus()
+    setPicked(null)
+    setAcOpen(false)
   }
 
-  const buildOne = (d: RoutineExercise): Exercise => {
-    let active = d.sets.filter((w) => w <= week.week)
-    if (week.deload) active = active.slice(0, Math.ceil(active.length / 2))
-    const last = lastSets(history, d.n)
-    const sets: SetData[] = active.map((_, i) => ({
-      reps: last?.[i]?.reps ?? '',
-      kg: last?.[i]?.kg ?? '',
-      done: false
-    }))
-    return {
-      id: uid(),
-      name: d.n,
-      group: d.g,
-      reps: d.reps,
-      rest: d.rest,
-      note: d.note,
-      sets
-    }
-  }
-
-  const loadToday = (): void => {
-    const day = ROUTINE[dayIdx]
-    replaceExercises(day.ex.map((r) => buildOne(r)))
-    useAppStore.getState().startSession()
-    toast(`${day.day} cargado en la sesión`)
+  const pickSuggestion = (s: ExerciseSuggestion): void => {
+    setName(s.name)
+    setPicked(s)
+    if (s.group) setGroup(s.group)
+    setAcOpen(false)
   }
 
   const total = exercises.reduce((a, e) => a + e.sets.length, 0)
@@ -219,33 +232,6 @@ export default function Sesion() {
           series · {fmtN(Math.round(volDone))} kg completados
         </span>
       </div>
-      <div className="add-ex">
-        <input
-          ref={nameInput}
-          type="text"
-          id="exName"
-          placeholder="Nombre del ejercicio (p. ej. Press de banca)"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
-            if (e.key === 'Enter') addEx()
-          }}
-        />
-        <select
-          id="exGroup"
-          value={group}
-          onChange={(e) => setGroup(e.target.value)}
-        >
-          {Object.entries(GROUPS).map(([k, v]) => (
-            <option key={k} value={k}>
-              {v}
-            </option>
-          ))}
-        </select>
-        <button className="btn btn-volt" id="addEx" onClick={addEx}>
-          + Añadir
-        </button>
-      </div>
       <div id="exList">
         {!exercises.length ? (
           <div className="empty">
@@ -253,10 +239,10 @@ export default function Sesion() {
             <p>
               <b>Sin ejercicios todavía.</b>
               <br />
-              Cargá tu día de la rutina o añadí uno manual arriba.
+              Cargá tu día desde Plan o añadí un ejercicio abajo.
             </p>
-            <button className="link-btn" id="sampleEx" onClick={loadToday}>
-              Cargar el día de hoy de la rutina
+            <button className="link-btn" id="goPlan" onClick={() => setView('plan', true)}>
+              Ir a Plan
             </button>
           </div>
         ) : (
@@ -403,6 +389,59 @@ export default function Sesion() {
           })
         )}
       </div>
+      <details className="add-ex-wrap">
+        <summary>+ Añadir ejercicio</summary>
+        <div className="add-ex">
+          <div className="ac-wrap" ref={acWrap}>
+            <input
+              ref={nameInput}
+              type="text"
+              id="exName"
+              placeholder="Nombre del ejercicio (p. ej. Press de banca)"
+              aria-label="Nombre del ejercicio"
+              value={name}
+              autoComplete="off"
+              onChange={(e) => {
+                setName(e.target.value)
+                setPicked(null)
+                setAcOpen(true)
+              }}
+              onFocus={() => setAcOpen(true)}
+              onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+                if (e.key === 'Enter') addEx()
+                if (e.key === 'Escape') setAcOpen(false)
+              }}
+            />
+            {acOpen && suggestions.length ? (
+              <ul className="ac-list" aria-label="Sugerencias de ejercicios">
+                {suggestions.map((s) => (
+                  <li key={s.name}>
+                    <button type="button" onClick={() => pickSuggestion(s)}>
+                      <b>{s.name}</b>
+                      {s.group ? <span>{GROUPS[s.group] || s.group}</span> : null}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+          <select
+            id="exGroup"
+            aria-label="Grupo del ejercicio"
+            value={group}
+            onChange={(e) => setGroup(e.target.value)}
+          >
+            {Object.entries(GROUPS).map(([k, v]) => (
+              <option key={k} value={k}>
+                {v}
+              </option>
+            ))}
+          </select>
+          <button className="btn btn-volt" id="addEx" onClick={addEx}>
+            + Añadir
+          </button>
+        </div>
+      </details>
       <div className="session-actions">
         <button className="btn btn-volt" id="saveSession" onClick={onSave}>
           {saveSVG}

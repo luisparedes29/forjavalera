@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { formatElapsed, nextPending, sessionSummary } from '../session'
-import type { Exercise, SetData } from '../types'
+import {
+  formatElapsed,
+  nextPending,
+  sessionSummary,
+  stepValue,
+  suggestExercises
+} from '../session'
+import type { Exercise, SessionHistory, SetData } from '../types'
 
 const set = (reps: number | null, kg: number | null, done: boolean): SetData => ({
   reps,
@@ -46,5 +52,41 @@ describe('nextPending', () => {
   it('devuelve -1 si no quedan pendientes', () => {
     expect(nextPending([set(10, 100, true)])).toBe(-1)
     expect(nextPending([])).toBe(-1)
+  })
+})
+
+const hist = (name: string): SessionHistory => ({
+  id: 'h',
+  ts: '2026-10-20T10:00:00Z',
+  volume: 0,
+  focus: 'espalda',
+  exercises: [
+    {
+      id: 'e',
+      name,
+      group: 'espalda',
+      reps: '6–10',
+      rest: '2 min',
+      sets: [set(10, 100, true)]
+    }
+  ]
+})
+
+describe('suggestExercises', () => {
+  it('busca en la rutina y prioriza el historial reciente con query vacía', () => {
+    const h = [hist('Remo con barra')]
+    const press = suggestExercises(h, 'press')
+    expect(press.length).toBeGreaterThan(0)
+    expect(press.every((s) => /press/i.test(s.name))).toBe(true)
+    expect(suggestExercises(h, '')[0].name).toBe('Remo con barra')
+  })
+})
+
+describe('stepValue', () => {
+  it('suma, resta, clampa en 0 y redondea a dos decimales', () => {
+    expect(stepValue('', 2.5)).toBe(2.5)
+    expect(stepValue(50, -2.5)).toBe(47.5)
+    expect(stepValue(0, -2.5)).toBe(0)
+    expect(stepValue('1.1', 0.2)).toBe(1.3)
   })
 })
