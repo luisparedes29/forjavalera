@@ -43,7 +43,7 @@
 - Produces: `viewFromHash(hash?: string): ViewId` con alias `hierro → registrar`.
 - `initialView()` devuelve siempre `'registrar'` para evitar hydration mismatch.
 
-- [ ] **Step 1: Escribir los tests que fallan**
+- [x] **Step 1: Escribir los tests que fallan**
 
 Crear `src/lib/test/view.test.ts`:
 
@@ -70,12 +70,12 @@ describe('viewFromHash', () => {
 })
 ```
 
-- [ ] **Step 2: Correr los tests y confirmar que fallan**
+- [x] **Step 2: Correr los tests y confirmar que fallan**
 
 Run: `npm test`
 Expected: FAIL — `#registrar` y `#plan` caen en `hierro`.
 
-- [ ] **Step 3: Cambiar el tipo y el parser**
+- [x] **Step 3: Cambiar el tipo y el parser**
 
 En `src/store/appStore.ts`:
 
@@ -113,7 +113,7 @@ var v =
     : 'registrar'
 ```
 
-- [ ] **Step 4: Actualizar las pestañas**
+- [x] **Step 4: Actualizar las pestañas**
 
 Reemplazar `src/components/shared/tabs.tsx` por cuatro entradas en este orden:
 `Registrar`, `Plan`, `Cuerpo`, `Progreso`.
@@ -165,7 +165,7 @@ export const TABS: Array<{ v: ViewId; label: string; icon: ReactNode }> = [
 
 `NavTabs` y `NavTabbar` no cambian: ya renderizan `TABS`. En `src/styles/global.css`, dentro de `@media (max-width: 1020px)`, cambiar `.tabbar` de `grid-template-columns: 1fr 1fr 1fr` a `grid-template-columns: repeat(4, 1fr)` para que la cuarta pestaña no caiga en una segunda fila.
 
-- [ ] **Step 5: Partir la vista de hierro**
+- [x] **Step 5: Partir la vista de hierro**
 
 Crear `src/components/hierro/Stats.tsx` moviendo el bloque `<section className="stats ...">` de `HierroView.tsx`, con los cálculos de R1 (`completedSets` y `volumeOf`) y el formateo de fecha de R1. Mantener el mismo markup y clases, cambiar el id a `statsPlan`.
 
@@ -275,7 +275,7 @@ En `src/styles/global.css`, reemplazar las reglas de vistas:
 
 No cambiar `setView`: ya escribe `document.documentElement.dataset.view` y el hash.
 
-- [ ] **Step 6: Validar y commitear**
+- [x] **Step 6: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **51 passed**.
@@ -285,7 +285,7 @@ Run: `git add src/store/appStore.ts src/lib/view.ts src/lib/test/view.test.ts sr
 Run: `git rm src/components/hierro/HierroView.tsx`
 Run: `git commit -m "feat: dividir la app en registrar plan cuerpo progreso"`
 
-- [ ] **Step 7: Auditoría T11-1**
+- [x] **Step 7: Auditoría T11-1**
 
 Subagente `general` (NO edita): verifica que `ViewId` tenga cuatro valores, que `#hierro` siga mostrando Registrar, que las cuatro vistas queden montadas, que el pre-paint y `viewFromHash` coincidan, que no queden imports de `HierroView` y corre `tsc`/`npm test` (51)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
