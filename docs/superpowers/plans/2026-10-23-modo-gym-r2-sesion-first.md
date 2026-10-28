@@ -312,7 +312,7 @@ Subagente `general` (NO edita): verifica que `ViewId` tenga cuatro valores, que 
 - Produces: `nextPending(sets: SetData[], from?: number): number`.
 - `useSaveSession(): () => boolean` centraliza la validación y el guardado de `Sesion` y `SessionHeader`.
 
-- [ ] **Step 1: Escribir los tests que fallan**
+- [x] **Step 1: Escribir los tests que fallan**
 
 Crear `src/lib/test/session.test.ts`:
 
@@ -369,12 +369,12 @@ describe('nextPending', () => {
 })
 ```
 
-- [ ] **Step 2: Correr los tests y confirmar que fallan**
+- [x] **Step 2: Correr los tests y confirmar que fallan**
 
 Run: `npm test`
 Expected: FAIL — no existe `src/lib/session.ts`.
 
-- [ ] **Step 3: Implementar los helpers**
+- [x] **Step 3: Implementar los helpers**
 
 Crear `src/lib/session.ts`:
 
@@ -411,7 +411,7 @@ export function nextPending(sets: SetData[], from = 0): number {
 }
 ```
 
-- [ ] **Step 4: Persistir el inicio de sesión**
+- [x] **Step 4: Persistir el inicio de sesión**
 
 En `src/lib/storage.ts`:
 
@@ -487,7 +487,7 @@ Reglas de limpieza:
 - `Rutina.loadDay`: después de `replaceExercises(...)`, llamar `useAppStore.getState().startSession()`.
 - Actualizar los tres undo de `Sesion.tsx` que creó R1 (borrar serie, borrar ejercicio, limpiar): capturar también `const prevStart = useAppStore.getState().sessionStartedAt` y, dentro de `run`, llamar `useAppStore.getState().restoreSessionStart(prevStart)` después de `replaceExercises(prev)`. Sin esto, deshacer una limpieza o el último borrado deja la sesión sin reloj.
 
-- [ ] **Step 5: Extraer el guardado compartido**
+- [x] **Step 5: Extraer el guardado compartido**
 
 Crear `src/hooks/useSaveSession.ts`:
 
@@ -520,7 +520,7 @@ En `src/components/hierro/Sesion.tsx`:
 - Eliminar la validación duplicada y el toast de guardado.
 - Quitar `commitSession` del selector del store.
 
-- [ ] **Step 6: Crear el header sticky**
+- [x] **Step 6: Crear el header sticky**
 
 Crear `src/components/hierro/SessionHeader.tsx`:
 
@@ -629,7 +629,7 @@ CSS en `src/styles/global.css`:
 }
 ```
 
-- [ ] **Step 7: Validar y commitear**
+- [x] **Step 7: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **56 passed**.
@@ -640,7 +640,7 @@ Prueba manual: cargar un día, recargar la página y verificar que el reloj sigu
 Run: `git add src/lib/storage.ts src/store/appStore.ts src/lib/session.ts src/lib/test/session.test.ts src/hooks/useSaveSession.ts src/components/hierro/SessionHeader.tsx src/components/hierro/RegistrarView.tsx src/components/hierro/Sesion.tsx src/components/hierro/Rutina.tsx src/styles/global.css`
 Run: `git commit -m "feat: header de sesion sticky con guardar siempre visible"`
 
-- [ ] **Step 8: Auditoría T11-2**
+- [x] **Step 8: Auditoría T11-2**
 
 Subagente `general` (NO edita): verifica que `sessionStartedAt` se cree al cargar un día o completar la primera serie, se conserve al recargar y se borre al guardar/vaciar/importar/borrar todo; que `Sesion` y `SessionHeader` usen el mismo `useSaveSession`; que el header no cause hydration mismatch (`now` arranca en `null`); y corre `tsc`/`npm test` (56)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 

@@ -164,7 +164,7 @@
 > Plan: `docs/superpowers/plans/2026-10-23-modo-gym-r2-sesion-first.md`
 > Objetivo: abrir la app y estar registrando, sin scroll y con una mano. Cierre esperado: **60 tests**.
 1. [x] T11-1 Cuatro vistas: `registrar | plan | cuerpo | progreso`, `Registrar` home, `#hierro` alias, `Base.astro` y `viewFromHash` alineados, 4 vistas montadas. Cierre: 51 tests. — `95fa27d` — review APROBADA (spec ✅, 4 minors corregidos: alias con prototipos, `CSSProperties`, reporte).
-2. [ ] T11-2 Inicio de sesión + header sticky: `forja_session_start`, `startSession()`, `formatElapsed`/`sessionSummary`/`nextPending`, `useSaveSession` compartido, header con series/volumen/tiempo/Guardar. Cierre: 56 tests.
+2. [x] T11-2 Inicio de sesión + header sticky: `forja_session_start`, `startSession()`, `formatElapsed`/`sessionSummary`/`nextPending`, `useSaveSession` compartido, header con series/volumen/tiempo/Guardar. Cierre: 56 tests. — `881ceab` — review APROBADA (spec ✅, 3 minors corregidos: `sessionStart` huérfano, intervalo sin sesión, reporte; #418 preexistente diferido).
 3. [ ] T11-3 Composer plegado: ejercicios primero, `<details>` al final, autocompletado de rutina + historial, metadata (grupo/reps/rest/nota). Cierre: 58 tests.
 4. [ ] T11-4 Fila de serie v2: estado activo, ±1 rep, ±2,5 kg, repetir, “La vez pasada”, auto-scroll a la siguiente pendiente y cadena Enter.
 5. [ ] T11-5 Timer manual: presets 60/90/120/180, overlay con anillo, siguiente serie y descanso por defecto de 90 s para ejercicios manuales.
