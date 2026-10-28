@@ -1525,7 +1525,7 @@ Subagente `general` (NO edita): verifica presets 60/90/120/180, pausa real, ±15
 - Produces: `isWeekend(date: Date): boolean`.
 - `ConfirmSheet` props: `{ open: boolean; title: string; children?: ReactNode; confirmLabel?: string; danger?: boolean; onConfirm: () => void; onCancel: () => void }`.
 
-- [ ] **Step 1: Escribir los tests que fallan**
+- [x] **Step 1: Escribir los tests que fallan**
 
 Crear `src/lib/test/routine.test.ts`:
 
@@ -1563,12 +1563,12 @@ describe('lastTrainedDayIdx', () => {
 })
 ```
 
-- [ ] **Step 2: Correr los tests y confirmar que fallan**
+- [x] **Step 2: Correr los tests y confirmar que fallan**
 
 Run: `npm test`
 Expected: FAIL — no existe `src/lib/routine.ts`.
 
-- [ ] **Step 3: Implementar helpers de rutina**
+- [x] **Step 3: Implementar helpers de rutina**
 
 Crear `src/lib/routine.ts`:
 
@@ -1599,7 +1599,7 @@ export function lastTrainedDayIdx(history: SessionHistory[]): number | null {
 }
 ```
 
-- [ ] **Step 4: Navegar al registrar al cargar un día y usar undo**
+- [x] **Step 4: Navegar al registrar al cargar un día y usar undo**
 
 En `Rutina.tsx`:
 
@@ -1657,7 +1657,7 @@ const loadDay = (idx = dayIdx): void => {
 4. Eliminar el `confirm()`; el `scrollIntoView` ya se quitó en la Task 1.
 5. El botón `Cargar día completo en sesión` usa `onClick={() => loadDay()}`.
 
-- [ ] **Step 5: Banner de fin de semana**
+- [x] **Step 5: Banner de fin de semana**
 
 El banner no puede leer `new Date()` durante el render: `Rutina` se prerenderiza y la fecha del build no es la del usuario. Resolver la fecha después del montaje. En `Rutina.tsx`, cambiar el import a `import { useEffect, useMemo, useState } from 'react'` y agregar:
 
@@ -1716,7 +1716,7 @@ CSS:
 }
 ```
 
-- [ ] **Step 6: Crear `ConfirmSheet` y reemplazar los `window.confirm`**
+- [x] **Step 6: Crear `ConfirmSheet` y reemplazar los `window.confirm`**
 
 Crear `src/components/shared/ConfirmSheet.tsx`:
 
@@ -1899,7 +1899,7 @@ const [wipeOpen, setWipeOpen] = useState(false)
 
 6. Verificar que no quede ningún `window.confirm` en `FooterBar.tsx`.
 
-- [ ] **Step 7: Copy del estado vacío**
+- [x] **Step 7: Copy del estado vacío**
 
 En `Sesion.tsx`, cambiar el enlace del estado vacío para que navegue a Plan:
 
@@ -1916,7 +1916,7 @@ En `Sesion.tsx`, cambiar el enlace del estado vacío para que navegue a Plan:
 Cambiar el texto “Cargá tu día de la rutina o añadí uno manual arriba” por
 “Cargá tu día desde Plan o añadí un ejercicio abajo.”
 
-- [ ] **Step 8: Validar y commitear**
+- [x] **Step 8: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **60 passed**.
@@ -1930,7 +1930,7 @@ Prueba manual:
 Run: `git add src/lib/routine.ts src/lib/test/routine.test.ts src/components/shared/ConfirmSheet.tsx src/components/hierro/Rutina.tsx src/components/shared/FooterBar.tsx src/components/hierro/Sesion.tsx src/styles/global.css`
 Run: `git commit -m "feat: fin de semana explicito y confirmaciones propias"`
 
-- [ ] **Step 9: Auditoría T11-6**
+- [x] **Step 9: Auditoría T11-6**
 
 Subagente `general` (NO edita): verifica que no queden `window.confirm`/`confirm(` en componentes, que `Cargar día` navegue a Registrar y ofrezca undo, que el banner de fin de semana explique el lunes y permita repetir el último día, y corre `tsc`/`npm test` (60)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
