@@ -1259,7 +1259,7 @@ Subagente `general` (NO edita): verifica que tildar avance a la próxima pendien
 - Timer store: `openPanel: boolean`, `setOpenPanel(open: boolean): void`.
 - `Timer` consume `nextPending` para mostrar “Siguiente: …”.
 
-- [ ] **Step 1: Extender el store**
+- [x] **Step 1: Extender el store**
 
 En `src/store/timerStore.ts`:
 
@@ -1282,7 +1282,7 @@ setOpenPanel: (open) =>
 En `start`: agregar `openPanel: false` al `set`.
 En `stop`: agregar `openPanel: false` al `set`.
 
-- [ ] **Step 2: Reescribir la UI del timer**
+- [x] **Step 2: Reescribir la UI del timer**
 
 Reemplazar `src/components/shared/Timer.tsx` por:
 
@@ -1402,7 +1402,7 @@ export default function Timer() {
 }
 ```
 
-- [ ] **Step 3: Abrir el panel desde el header**
+- [x] **Step 3: Abrir el panel desde el header**
 
 En `SessionHeader.tsx`:
 
@@ -1421,7 +1421,7 @@ En `SessionHeader.tsx`:
 
 - En `Sesion.tsx`, el descanso por defecto ya queda en `parseRest(e.rest) || 90` (Task 4).
 
-- [ ] **Step 4: CSS del overlay**
+- [x] **Step 4: CSS del overlay**
 
 En `global.css`, dentro de `#timer` agregar `flex-wrap: wrap;` y `max-width: min(420px, calc(100vw - 24px));`.
 Agregar:
@@ -1492,7 +1492,7 @@ Agregar:
 
 Verificar que `#timer` siga con `z-index: 99` y los toasts arriba (`z-index: 110`).
 
-- [ ] **Step 5: Validar y commitear**
+- [x] **Step 5: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **58 passed**.
@@ -1503,7 +1503,7 @@ Prueba manual: abrir “⏱ Descanso” desde el header, elegir 90 s, verificar 
 Run: `git add src/store/timerStore.ts src/components/shared/Timer.tsx src/components/hierro/SessionHeader.tsx src/components/hierro/Sesion.tsx src/styles/global.css`
 Run: `git commit -m "feat: timer manual con presets y siguiente serie"`
 
-- [ ] **Step 6: Auditoría T11-5**
+- [x] **Step 6: Auditoría T11-5**
 
 Subagente `general` (NO edita): verifica presets 60/90/120/180, pausa real, ±15, cierre, etiqueta de siguiente serie, que al abrir el panel con `done=true` se reseteen los presets, que el timer siga por `endsAt` y que no se solape con toasts/tabbar a 360/390/412 px; corre `tsc`/`npm test` (58)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
