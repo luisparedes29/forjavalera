@@ -1,10 +1,14 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useAppStore } from '../../store/appStore'
 import { buildBackup, parseBackup, downloadBackup, readFileAsText } from '../../lib/backup'
+import type { BackupV3 } from '../../lib/backup'
+import ConfirmSheet from './ConfirmSheet'
 import { toast } from '../../lib/toast'
 
 export default function FooterBar() {
   const fileRef = useRef<HTMLInputElement | null>(null)
+  const [pendingImport, setPendingImport] = useState<BackupV3 | null>(null)
+  const [wipeOpen, setWipeOpen] = useState(false)
 
   const exportB = () => {
     const s = useAppStore.getState()
@@ -21,33 +25,14 @@ export default function FooterBar() {
     if (!f) return
     try {
       const d = parseBackup(await readFileAsText(f))
-      if (
-        !window.confirm(
-          'Esto REEMPLAZA tus datos actuales con el respaldo importado. ¿Continuar?'
-        )
-      )
-        return
-      useAppStore.getState().restoreAll({
-        session: Array.isArray(d.session) ? d.session : [],
-        history: Array.isArray(d.history) ? d.history : [],
-        body: Array.isArray(d.body) ? d.body : [],
-        week: d.week && d.week.week ? d.week : undefined
-      })
-      toast('Respaldo importado ✔')
+      setPendingImport(d)
     } catch {
       toast('Archivo de respaldo inválido', 'warn')
     }
   }
 
   const wipe = () => {
-    if (
-      !window.confirm(
-        'Esto borrará TODOS tus datos (sesión, historial, antropometría y semana). ¿Seguro?'
-      )
-    )
-      return
-    useAppStore.getState().wipe()
-    toast('Todos los datos fueron borrados', 'warn')
+    setWipeOpen(true)
   }
 
   return (
@@ -71,6 +56,48 @@ export default function FooterBar() {
       <button className="link-btn" id="wipe" style={{ color: 'var(--red)' }} onClick={wipe}>
         Borrar todos los datos
       </button>
+      <ConfirmSheet
+        open={!!pendingImport}
+        title="Importar respaldo"
+        confirmLabel="Reemplazar datos"
+        onCancel={() => setPendingImport(null)}
+        onConfirm={() => {
+          if (!pendingImport) return
+          useAppStore.getState().restoreAll({
+            session: Array.isArray(pendingImport.session) ? pendingImport.session : [],
+            history: Array.isArray(pendingImport.history) ? pendingImport.history : [],
+            body: Array.isArray(pendingImport.body) ? pendingImport.body : [],
+            week:
+              pendingImport.week && pendingImport.week.week
+                ? pendingImport.week
+                : undefined
+          })
+          setPendingImport(null)
+          toast('Respaldo importado ✔')
+        }}
+      >
+        <p>
+          Esto <b>reemplaza</b> tu sesión, historial, medidas y semana actuales.
+          ¿Continuar?
+        </p>
+      </ConfirmSheet>
+
+      <ConfirmSheet
+        open={wipeOpen}
+        title="Borrar todos los datos"
+        confirmLabel="Borrar todo"
+        danger
+        onCancel={() => setWipeOpen(false)}
+        onConfirm={() => {
+          useAppStore.getState().wipe()
+          setWipeOpen(false)
+          toast('Todos los datos fueron borrados', 'warn')
+        }}
+      >
+        <p>
+          Se borran sesión, historial, antropometría y semana. <b>No se puede deshacer.</b>
+        </p>
+      </ConfirmSheet>
     </>
   )
 }

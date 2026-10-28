@@ -1,10 +1,11 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { useAppStore } from '../../store/appStore'
 import { useRoutineStore } from '../../store/routineStore'
 import type { Exercise, RoutineExercise, SetData } from '../../lib/types'
 import { GROUPS, GCOLORS, ROUTINE } from '../../data/routine'
 import { lastSets, repsLabel, stagnant } from '../../lib/logic'
+import { isWeekend, lastTrainedDayIdx } from '../../lib/routine'
 import { normName, uid } from '../../lib/util'
 import { toast } from '../../lib/toast'
 
@@ -18,9 +19,16 @@ export default function Rutina() {
   const addRoutineExerciseToSession = useAppStore(
     (s) => s.addRoutineExerciseToSession
   )
+  const setView = useAppStore((s) => s.setView)
 
   const dayIdx = useRoutineStore((s) => s.dayIdx)
   const setDayIdx = useRoutineStore((s) => s.setDayIdx)
+
+  const [today, setToday] = useState<Date | null>(null)
+
+  useEffect(() => {
+    setToday(new Date())
+  }, [])
 
   const day = ROUTINE[dayIdx]
   const wk = week.week
@@ -46,14 +54,12 @@ export default function Rutina() {
 
   const total = day.ex.reduce((a, d) => a + activeSets(d).length, 0)
 
-  const loadDay = (): void => {
-    if (
-      exercises.length &&
-      !confirm(
-        'Esto reemplaza la sesión actual por el día seleccionado. ¿Continuar?'
-      )
-    )
-      return
+  const lastIdx = lastTrainedDayIdx(history)
+
+  const loadDay = (idx = dayIdx): void => {
+    const target = ROUTINE[idx]
+    const prev = exercises
+    const prevStart = useAppStore.getState().sessionStartedAt
     const buildOne = (d: RoutineExercise): Exercise => {
       const last = lastSets(history, d.n)
       const sets: SetData[] = activeSets(d).map((_, i) => ({
@@ -71,10 +77,24 @@ export default function Rutina() {
         sets
       }
     }
-    replaceExercises(day.ex.map((d) => buildOne(d)))
+    replaceExercises(target.ex.map((d) => buildOne(d)))
+    useAppStore.getState().restoreSessionStart(null)
     useAppStore.getState().startSession()
-    const had = day.ex.some((d) => lastSets(history, d.n))
-    toast(`${day.day} cargado${had ? ' · con tus últimas cargas' : ' 💪'}`)
+    setView('registrar', true)
+    const had = target.ex.some((d) => lastSets(history, d.n))
+    toast(
+      `${target.day} cargado${had ? ' · con tus últimas cargas' : ' 💪'}`,
+      'ok',
+      prev.length
+        ? {
+            label: 'Deshacer',
+            run: () => {
+              useAppStore.getState().replaceExercises(prev)
+              useAppStore.getState().restoreSessionStart(prevStart)
+            }
+          }
+        : undefined
+    )
   }
 
   return (
@@ -174,6 +194,21 @@ export default function Rutina() {
           Activar DELOAD
         </button>
       </div>
+      {today && isWeekend(today) ? (
+        <div className="weekend-banner">
+          <span>
+            <b>Hoy no toca bloque.</b> Te preparo el lunes.
+          </span>
+          <button className="btn btn-volt" onClick={() => loadDay(0)}>
+            Cargar lunes
+          </button>
+          {lastIdx != null ? (
+            <button className="btn btn-ghost" onClick={() => loadDay(lastIdx)}>
+              Repetir {ROUTINE[lastIdx].short}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
       <div className="day-title" id="dayTitle">
         <b>{day.day}</b> {day.title} ·{' '}
         <span style={{ color: day.side }}>{day.focus}</span>
@@ -233,7 +268,7 @@ export default function Rutina() {
         })}
       </div>
       <div className="routine-actions">
-        <button className="btn btn-volt" id="loadDay" onClick={loadDay}>
+        <button className="btn btn-volt" id="loadDay" onClick={() => loadDay()}>
           <svg
             width="14"
             height="14"

@@ -936,6 +936,25 @@
         transform: translate(-1px, -1px);
         box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4);
       }
+      .weekend-banner {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--orange);
+        background: var(--panel2);
+        padding: 12px 14px;
+        margin-bottom: 14px;
+        font-size: 13px;
+      }
+      .weekend-banner b {
+        color: var(--orange);
+      }
+      .weekend-banner .btn {
+        padding: 10px 14px;
+        min-height: 44px;
+      }
       .day-title {
         margin-bottom: 10px;
         font-size: 13px;
@@ -2472,6 +2491,52 @@
         min-width: 44px;
         padding: 0 10px;
         flex: none;
+      }
+      .confirm-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        background: rgba(0, 0, 0, 0.64);
+        display: grid;
+        place-items: center;
+        padding: 20px;
+      }
+      .confirm-card {
+        width: min(440px, 100%);
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        border-top: 3px solid var(--volt);
+        padding: 20px;
+        box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.5);
+      }
+      .confirm-card.danger {
+        border-top-color: var(--red);
+      }
+      .confirm-card h3 {
+        font-family: Anton;
+        font-weight: 400;
+        font-size: 22px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      .confirm-body {
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--muted);
+      }
+      .confirm-body b {
+        color: var(--ink);
+      }
+      .confirm-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+      }
+      .confirm-actions .btn {
+        min-height: 44px;
       }
       footer {
         border-top: 1px solid var(--line);
