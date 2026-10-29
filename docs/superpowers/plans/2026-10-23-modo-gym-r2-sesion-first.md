@@ -1943,7 +1943,7 @@ Subagente `general` (NO edita): verifica que no queden `window.confirm`/`confirm
 - Modify: `MIGRACION-ASTRO.md`
 - Modify: `PLAN-V1.md` (Tarea 11)
 
-- [ ] **Step 1: Documentar la nueva IA**
+- [x] **Step 1: Documentar la nueva IA**
 
 `README.md`:
 
@@ -1984,7 +1984,7 @@ resultado de cada auditoría. Agregar al final:
   ConfirmSheet sin `window.confirm`).
 ```
 
-- [ ] **Step 3: Validación completa**
+- [x] **Step 3: Validación completa**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **60 passed**.
