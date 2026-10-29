@@ -1374,6 +1374,7 @@
         opacity: 0.45;
       }
       .set-num {
+        position: relative;
         width: 28px;
         height: 28px;
         display: grid;
@@ -1488,6 +1489,56 @@
         border-color: var(--gc);
         color: var(--gc);
       }
+      .set-tools-rir {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 0 10px 58px;
+        flex-wrap: wrap;
+      }
+      .set-tools-rir > span {
+        font: 700 11px 'Space Grotesk';
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .rir-chips {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .rir-chips button {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0 10px;
+        background: none;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        font: 700 12px 'Space Grotesk';
+        cursor: pointer;
+      }
+      .rir-chips button:hover {
+        border-color: var(--volt);
+        color: var(--volt);
+      }
+      .rir-chips button.on {
+        background: var(--volt);
+        border-color: var(--volt);
+        color: #101408;
+      }
+      .rir-dot {
+        position: absolute;
+        top: -6px;
+        right: -9px;
+        font-style: normal;
+        font-size: 11px;
+        line-height: 1.2;
+        font-weight: 700;
+        color: var(--volt);
+        background: var(--panel2);
+        border: 1px solid var(--volt);
+        padding: 0 3px;
+      }
       .ex-last {
         margin: 8px 14px 0;
         font-size: 12px;
@@ -1500,7 +1551,8 @@
         font-variant-numeric: tabular-nums;
       }
       @media (max-width: 400px) {
-        .set-tools {
+        .set-tools,
+        .set-tools-rir {
           padding-left: 0;
         }
       }
@@ -1614,8 +1666,19 @@
         border-top: 1px dashed rgba(255, 255, 255, 0.06);
         flex-wrap: wrap;
       }
-      .hist-ex span:first-child {
+      .hist-ex > span:first-child {
         font-weight: 600;
+      }
+      .hist-rir {
+        font-style: normal;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: var(--volt);
+        border: 1px solid var(--volt);
+        padding: 0 3px;
+        margin-left: 4px;
+        vertical-align: 1px;
       }
       .sug {
         font-style: normal;

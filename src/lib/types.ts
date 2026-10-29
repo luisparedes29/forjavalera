@@ -2,6 +2,7 @@ export interface SetData {
   reps: number | string | null
   kg: number | string | null
   done: boolean
+  rir?: number | null
 }
 
 export interface Exercise {

@@ -82,14 +82,18 @@ export default function Historial() {
                       ) : null}
                     </span>
                     <span className="muted">
-                      {e.sets
-                        .map(
-                          (s) =>
-                            `${s.reps}×${fmtN(Number(s.kg) || 0, 1)}${
-                              s.done ? '✔' : ''
-                            }`
-                        )
-                        .join(' · ')}
+                      {e.sets.map((s, si) => (
+                        <span className="hist-set" key={si}>
+                          {s.reps}×{fmtN(Number(s.kg) || 0, 1)}
+                          {s.done ? '✔' : ''}
+                          {typeof s.rir === 'number' ? (
+                            <i className="hist-rir">
+                              RIR {s.rir === 3 ? '3+' : s.rir}
+                            </i>
+                          ) : null}
+                          {si < e.sets.length - 1 ? ' · ' : ''}
+                        </span>
+                      ))}
                     </span>
                   </div>
                 ))}

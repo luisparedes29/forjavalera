@@ -59,6 +59,7 @@ interface AppStore {
   addSetToExercise: (id: string) => void
   removeSetFromExercise: (id: string, sid: number) => void
   setSetField: (id: string, sid: number, field: SetField, value: string) => void
+  setSetRir: (id: string, sid: number, rir: number | null) => void
   toggleSetDone: (id: string, sid: number) => void
   clearSession: () => void
   commitSession: () => void
@@ -204,6 +205,20 @@ export const useAppStore = create<AppStore>()((set, get) => ({
     saveL(LS.session, get().exercises)
   },
 
+  setSetRir: (id, sid, rir) => {
+    set((s) => ({
+      exercises: s.exercises.map((e) =>
+        e.id === id
+          ? {
+              ...e,
+              sets: e.sets.map((st, i) => (i === sid ? { ...st, rir } : st))
+            }
+          : e
+      )
+    }))
+    saveL(LS.session, get().exercises)
+  },
+
   toggleSetDone: (id, sid) => {
     const target = get()
       .exercises.find((e) => e.id === id)
@@ -238,11 +253,15 @@ export const useAppStore = create<AppStore>()((set, get) => ({
       return {
         ...e,
         group: g,
-        sets: e.sets.map((s) => ({
-          reps: Number(s.reps) || 0,
-          kg: Number(s.kg) || 0,
-          done: !!s.done
-        })),
+        sets: e.sets.map((s) => {
+          const out: SetData = {
+            reps: Number(s.reps) || 0,
+            kg: Number(s.kg) || 0,
+            done: !!s.done
+          }
+          if (typeof s.rir === 'number') out.rir = s.rir
+          return out
+        }),
         sug: suggestFor(e)
       }
     })

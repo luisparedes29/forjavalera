@@ -22,6 +22,7 @@ import {
 } from '../../lib/session'
 import { toast } from '../../lib/toast'
 import useSaveSession from '../../hooks/useSaveSession'
+import RirChips from './RirChips'
 
 const barSVG = (
   <svg width="46" height="23" viewBox="0 0 48 24">
@@ -57,6 +58,7 @@ export default function Sesion() {
   const history = useAppStore((s) => s.history)
   const addExercise = useAppStore((s) => s.addExercise)
   const setSetField = useAppStore((s) => s.setSetField)
+  const setSetRir = useAppStore((s) => s.setSetRir)
   const toggleSetDone = useAppStore((s) => s.toggleSetDone)
   const addSetToExercise = useAppStore((s) => s.addSetToExercise)
   const removeSetFromExercise = useAppStore((s) => s.removeSetFromExercise)
@@ -184,13 +186,17 @@ export default function Sesion() {
             const hasReps = s.reps !== '' && s.reps != null
             const hasKg = s.kg !== '' && s.kg != null
             const has = hasReps || hasKg
+            const rirTxt =
+              typeof s.rir === 'number'
+                ? ` @RIR ${s.rir === 3 ? '3+' : s.rir}`
+                : ''
             return `- S${si + 1}: ${
               has
                 ? `${hasKg ? `${fmtN(Number(s.kg), 1)} kg` : '—'} × ${
                     hasReps ? String(s.reps) : '—'
                   }${s.done ? ' ✔' : ''}`
                 : '_ kg × _ reps'
-            }`
+            }${rirTxt}`
           })
           .join('\n')
         return `${i + 1}. ${e.name}${
@@ -202,7 +208,7 @@ export default function Sesion() {
       weekday: 'long',
       day: 'numeric',
       month: 'long'
-    })}\n${focus ? `Enfoque: ${focus} · ` : ''}RIR 1–2\n\n${body}\n\n*Volumen completado:* ${fmtN(
+    })}\n${focus ? `Enfoque: ${focus}\n` : ''}\n${body}\n\n*Volumen completado:* ${fmtN(
       Math.round(V)
     )} kg · ${D}/${T} series`
     const doneCopy = (): void => toast('Sesión copiada al portapapeles')
@@ -397,7 +403,17 @@ export default function Sesion() {
                           >
                             {checkSVG}
                           </button>
-                          <span className="set-num">{si + 1}</span>
+                          <span className="set-num">
+                            {si + 1}
+                            {typeof s.rir === 'number' ? (
+                              <i
+                                className="rir-dot"
+                                title={`RIR ${s.rir === 3 ? '3+' : s.rir}`}
+                              >
+                                {s.rir === 3 ? '3+' : s.rir}
+                              </i>
+                            ) : null}
+                          </span>
                           <input
                             type="number"
                             min={0}
@@ -523,6 +539,15 @@ export default function Sesion() {
                             <button type="button" onClick={() => repeatSet(e, si)}>
                               Repetir
                             </button>
+                          </div>
+                        ) : null}
+                        {isActive ? (
+                          <div className="set-tools-rir">
+                            <span>RIR</span>
+                            <RirChips
+                              value={s.rir}
+                              onChange={(v) => setSetRir(e.id, si, v)}
+                            />
                           </div>
                         ) : null}
                       </Fragment>
