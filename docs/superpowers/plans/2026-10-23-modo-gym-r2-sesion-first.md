@@ -1973,7 +1973,7 @@ En la misma sección `## Fase 3 — Componentes React (islas)`, actualizar la li
 `#registrar/#plan/#cuerpo/#progreso` con `#hierro` como alias de `#registrar`. Sin esto, el
 auditor final de R2 encuentra una referencia a un archivo eliminado.
 
-- [ ] **Step 2: Marcar la Tarea 11 en PLAN-V1.md**
+- [x] **Step 2: Marcar la Tarea 11 en PLAN-V1.md**
 
 Bajo `## Tarea 11 — Modo GYM R2: sesión-first`, marcar T11-1 a T11-6 con `[x]` y el
 resultado de cada auditoría. Agregar al final:
@@ -2001,7 +2001,7 @@ Verificar en DevTools 360×844, 390×844 y 412×915:
 5. Timer manual, presets y siguiente serie.
 6. Fin de semana y ConfirmSheet.
 
-- [ ] **Step 4: Commit y auditor final**
+- [x] **Step 4: Commit y auditor final**
 
 Run: `git add README.md MIGRACION-ASTRO.md PLAN-V1.md`
 Run: `git commit -m "docs: cerrar release 2 de sesion-first"`
@@ -2015,14 +2015,14 @@ sin scroll. Devuelve APROBADO/RECHAZADO y la lista de archivos tocados.
 
 ## Criterio de salida de R2
 
-- [ ] `npm test` → 60 passed.
-- [ ] `npx tsc --noEmit -p tsconfig.check.json` → limpio.
-- [ ] `npm run build` → OK, SW generado.
-- [ ] 4 pestañas `Registrar / Plan / Cuerpo / Progreso`; `#hierro` sigue funcionando.
-- [ ] Primera serie visible sin scroll a 390×844 con un día cargado.
-- [ ] Registrar una serie lleva ≤ 8 s con una mano.
-- [ ] Header sticky con series, volumen, tiempo y Guardar siempre visible.
-- [ ] Composer plegado al final con autocompletado.
-- [ ] Timer manual con presets y siguiente serie.
-- [ ] Fin de semana explícito y `ConfirmSheet` sin `window.confirm`.
-- [ ] Auditor final APROBADO y Tarea 11 cerrada en `PLAN-V1.md`.
+- [x] `npm test` → 60 passed.
+- [x] `npx tsc --noEmit -p tsconfig.check.json` → limpio.
+- [x] `npm run build` → OK, SW generado.
+- [x] 4 pestañas `Registrar / Plan / Cuerpo / Progreso`; `#hierro` sigue funcionando.
+- [x] Primera serie visible sin scroll a 390×844 con un día cargado.
+- [x] Registrar una serie lleva ≤ 8 s con una mano.
+- [x] Header sticky con series, volumen, tiempo y Guardar siempre visible.
+- [x] Composer plegado al final con autocompletado.
+- [x] Timer manual con presets y siguiente serie.
+- [x] Fin de semana explícito y `ConfirmSheet` sin `window.confirm`.
+- [x] Auditor final APROBADO y Tarea 11 cerrada en `PLAN-V1.md`.
