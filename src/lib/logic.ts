@@ -25,10 +25,21 @@ export function suggestFor(
   if (!rr) return null
   const done = e.sets.filter((s) => s.done && Number(s.reps) > 0)
   if (!done.length || done.length !== e.sets.length) return null
-  if (done.every((s) => Number(s.reps) >= rr[1]))
+
+  const rirKnown = done.every((s) => typeof s.rir === 'number')
+
+  if (done.every((s) => Number(s.reps) >= rr[1])) {
+    if (rirKnown && done.every((s) => s.rir === 0))
+      return { t: 'ok', msg: '✓ Al límite · mantené la carga' }
     return { t: 'up', msg: '▲ Subí ~2,5 kg la próxima' }
+  }
+
   if (done.some((s) => Number(s.reps) < rr[0]))
     return { t: 'down', msg: '▼ Repetí o bajá la carga' }
+
+  if (rirKnown && done.every((s) => Number(s.rir) >= 3))
+    return { t: 'up', msg: '▲ Subí ~2,5 kg la próxima' }
+
   return { t: 'ok', msg: '✓ En rango · mantené la carga' }
 }
 

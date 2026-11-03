@@ -17,10 +17,16 @@ import {
 } from '../logic'
 import type { HistoryExercise, SessionHistory, SetData } from '../types'
 
-const set = (reps: number | null = 10, kg: number | null = 100, done = false): SetData => ({
+const set = (
+  reps: number | null = 10,
+  kg: number | null = 100,
+  done = false,
+  rir?: number | null
+): SetData => ({
   reps,
   kg,
-  done
+  done,
+  ...(rir === undefined ? {} : { rir })
 })
 
 const ex = (name: string, sets: SetData[], reps = '6–10') => ({
@@ -90,6 +96,70 @@ describe('suggestFor', () => {
   it('devuelve null si no todas las series están hechas o si reps es al fallo', () => {
     expect(suggestFor(ex('Press banca', [set(10, 80, false), set(10, 80, true)]))).toBeNull()
     expect(suggestFor(ex('Press banca', [set(10, 80, true)], 'al fallo'))).toBeNull()
+  })
+})
+
+describe('suggestFor con RIR', () => {
+  const rango = (sets: SetData[]) => ex('Press banca', sets, '8–12')
+
+  it('sin RIR o con null conserva el comportamiento actual', () => {
+    expect(
+      suggestFor(rango([set(12, 100, true), set(12, 100, true)]))?.t
+    ).toBe('up')
+    expect(
+      suggestFor(rango([set(12, 100, true, null), set(12, 100, true, null)]))?.t
+    ).toBe('up')
+    expect(
+      suggestFor(rango([set(12, 100, true, 0), set(12, 100, false)]))
+    ).toBeNull()
+  })
+
+  it('todo al tope y RIR 0 pide mantener', () => {
+    expect(
+      suggestFor(rango([set(12, 100, true, 0), set(12, 100, true, 0)]))
+    ).toEqual({ t: 'ok', msg: '✓ Al límite · mantené la carga' })
+  })
+
+  it('todo al tope con RIR 1 o 2 permite subir', () => {
+    expect(
+      suggestFor(rango([set(12, 100, true, 1), set(12, 100, true, 1)]))?.t
+    ).toBe('up')
+    expect(
+      suggestFor(rango([set(12, 100, true, 2), set(12, 100, true, 2)]))?.t
+    ).toBe('up')
+    expect(
+      suggestFor(rango([set(12, 100, true, 0), set(12, 100, true, 2)]))?.t
+    ).toBe('up')
+  })
+
+  it('en rango solo sube con RIR 3 o más', () => {
+    expect(
+      suggestFor(rango([set(10, 100, true, 3), set(9, 100, true, 3)]))?.t
+    ).toBe('up')
+    expect(
+      suggestFor(rango([set(10, 100, true, 2), set(9, 100, true, 2)]))?.t
+    ).toBe('ok')
+  })
+
+  it('alguna serie bajo el mínimo pide repetir o bajar aunque el RIR sea alto', () => {
+    expect(
+      suggestFor(rango([set(7, 100, true, 1), set(12, 100, true, 1)]))?.t
+    ).toBe('down')
+    expect(
+      suggestFor(rango([set(7, 100, true, 3), set(12, 100, true, 3)]))?.t
+    ).toBe('down')
+  })
+
+  it('RIR parcial vuelve al fallback por reps', () => {
+    expect(
+      suggestFor(rango([set(10, 100, true, 3), set(9, 100, true)]))?.t
+    ).toBe('ok')
+    expect(
+      suggestFor(rango([set(10, 100, true, 3), set(9, 100, true, null)]))?.t
+    ).toBe('ok')
+    expect(
+      suggestFor(rango([set(12, 100, true, 0), set(12, 100, true)]))?.t
+    ).toBe('up')
   })
 })
 
