@@ -321,12 +321,12 @@ Reglas:
 |---|---|
 | Sin RIR | Comportamiento actual |
 | Todas al tope y RIR 0 | Mantener (`ok`, “Al límite”) |
-| Todas al tope y RIR ≤ 2 | Subir |
+| Todas al tope y RIR 1–2 (o mezcla con 0) | Subir |
 | En rango y RIR ≥ 3 | Subir |
 | Alguna bajo el mínimo | Repetir/bajar |
 | RIR parcial | Fallback al comportamiento actual |
 
-- [ ] **Step 1: Escribir los tests que fallan**
+- [x] **Step 1: Escribir los tests que fallan**
 
 En `src/lib/test/logic.test.ts`, ampliar el helper `set`:
 
@@ -390,12 +390,12 @@ describe('suggestFor con RIR', () => {
 })
 ```
 
-- [ ] **Step 2: Correr los tests y confirmar que fallan**
+- [x] **Step 2: Correr los tests y confirmar que fallan**
 
 Run: `npm test`
 Expected: FAIL — los casos con RIR 0 y RIR 3 no se distinguen.
 
-- [ ] **Step 3: Implementar las reglas**
+- [x] **Step 3: Implementar las reglas**
 
 Reemplazar `suggestFor` en `src/lib/logic.ts` por:
 
@@ -426,7 +426,7 @@ export function suggestFor(
 }
 ```
 
-- [ ] **Step 4: Validar y commitear**
+- [x] **Step 4: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **67 passed**.
@@ -435,7 +435,7 @@ Run: `npm run build` → OK.
 Run: `git add src/lib/logic.ts src/lib/test/logic.test.ts`
 Run: `git commit -m "feat: sugerencias de carga segun RIR"`
 
-- [ ] **Step 5: Auditoría T12-2**
+- [x] **Step 5: Auditoría T12-2**
 
 Subagente `general` (NO edita): verifica las seis reglas, que sin RIR el comportamiento sea idéntico al anterior, que RIR parcial no rompa, que `Suggest` conserve `t`/`msg` y que no se haya tocado `commitSession`; corre `tsc`/`npm test` (67)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
