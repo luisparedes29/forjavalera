@@ -176,7 +176,7 @@
 ## Tarea 12 — Modo GYM R3: RIR y volumen en vivo (spec: docs/superpowers/specs/2026-10-23-modo-gym-design.md)
 > Plan: `docs/superpowers/plans/2026-10-23-modo-gym-r3-rir-volumen.md`
 > Objetivo: que la inteligencia de FORJA se vea en la fila. Cierre esperado: **67 tests**.
-1. [ ] T12-1 RIR opcional: `SetData.rir?: number | null`, `setSetRir`, chips 44 px en el set activo, badge en fila e historial, conservado en respaldo v3.
+1. [x] T12-1 RIR opcional: `SetData.rir?: number | null`, `setSetRir`, chips 44 px en el set activo, badge en fila e historial, conservado en respaldo v3. — `46dd760` — review APROBADA (spec ✅, 0 Critical, 0 Important, 3 minors del reporte corregidos). 61 tests, `tsc` check limpio, SW 28.
 2. [ ] T12-2 Sugerencias por RIR: todas al tope + RIR 0 → mantener; al tope + RIR ≤ 2 → subir; en rango + RIR ≥ 3 → subir; bajo mínimo → bajar; sin RIR o RIR parcial → fallback actual. Cierre: 67 tests.
 3. [ ] T12-3 Semáforo de volumen en vivo: `VolumePulse` reutiliza `weeklyVolume` con la sesión en curso, `role="meter"`, sin duplicar sesiones guardadas.
 4. [ ] T12-4 Progreso honesto + docs y cierre R3: “series completadas”, vacío distinto de “sin historial”, README/MIGRACION/PLAN, validación completa y auditor final.

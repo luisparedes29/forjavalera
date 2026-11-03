@@ -40,7 +40,7 @@
 - Store: `setSetRir(id: string, sid: number, rir: number | null): void`.
 - No cambia la versión del respaldo: `buildBackup` copia los sets con spread.
 
-- [ ] **Step 1: Agregar el campo y la acción**
+- [x] **Step 1: Agregar el campo y la acción**
 
 En `src/lib/types.ts`:
 
@@ -122,7 +122,7 @@ describe('respaldo con RIR', () => {
 
 Este test no tiene RED propio: `buildBackup` ya copia los sets con spread y el campo `rir` se agrega en esta misma tarea. Es una guardia contra regresiones del respaldo, no la fuente del comportamiento.
 
-- [ ] **Step 2: Crear los chips**
+- [x] **Step 2: Crear los chips**
 
 Crear `src/components/hierro/RirChips.tsx`:
 
@@ -156,7 +156,7 @@ export default function RirChips({ value, onChange }: Props) {
 }
 ```
 
-- [ ] **Step 3: Mostrar los chips en el set activo**
+- [x] **Step 3: Mostrar los chips en el set activo**
 
 En `Sesion.tsx`:
 
@@ -193,7 +193,7 @@ En `Sesion.tsx`:
 }`
 ```
 
-- [ ] **Step 4: Mostrar RIR en el historial**
+- [x] **Step 4: Mostrar RIR en el historial**
 
 En `src/components/hierro/Historial.tsx`, reemplazar el `map` de sets que hoy devuelve un string por JSX con badge:
 
@@ -212,7 +212,7 @@ En `src/components/hierro/Historial.tsx`, reemplazar el `map` de sets que hoy de
 </span>
 ```
 
-- [ ] **Step 5: Estilos**
+- [x] **Step 5: Estilos**
 
 En `global.css`:
 
@@ -288,7 +288,7 @@ En `global.css`:
 }
 ```
 
-- [ ] **Step 6: Validar y commitear**
+- [x] **Step 6: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **61 passed** (60 previos + 1 de respaldo con RIR).
@@ -299,7 +299,7 @@ Prueba manual: elegir RIR 0, 1, 2, 3+ y “—”; guardar la sesión; exportar 
 Run: `git add src/lib/types.ts src/store/appStore.ts src/components/hierro/RirChips.tsx src/components/hierro/Sesion.tsx src/components/hierro/Historial.tsx src/styles/global.css`
 Run: `git commit -m "feat: RIR opcional por serie"`
 
-- [ ] **Step 7: Auditoría T12-1**
+- [x] **Step 7: Auditoría T12-1**
 
 Subagente `general` (NO edita): verifica que `rir` sea opcional, que `setSetRir` persista en `forja_session`, que `commitSession` conserve el valor, que el respaldo v3 lo mantenga sin cambiar de versión, que RIR no bloquee guardar, que el test de respaldo conserve `rir` sin cambiar la versión y que los chips midan 44 px; corre `tsc`/`npm test` (61)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
