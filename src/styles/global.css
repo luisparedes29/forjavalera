@@ -1380,13 +1380,20 @@
         display: grid;
         place-items: center;
         border: 1px solid var(--line);
-        font-weight: 700;
-        font-size: 12px;
+        font: 700 12px 'Space Grotesk';
         color: var(--gc);
         background: rgba(0, 0, 0, 0.25);
         transition: 0.15s;
+        padding: 0;
+        cursor: pointer;
+        appearance: none;
       }
       .set-row:hover .set-num {
+        background: var(--gc);
+        color: #0c0f0a;
+        border-color: var(--gc);
+      }
+      .set-num[aria-expanded='true'] {
         background: var(--gc);
         color: #0c0f0a;
         border-color: var(--gc);
