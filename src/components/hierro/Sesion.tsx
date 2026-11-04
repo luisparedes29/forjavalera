@@ -268,9 +268,13 @@ export default function Sesion() {
 
   const markDone = (e: Exercise, si: number, focusNext = false): void => {
     const s = e.sets[si]
-    if (!s || s.done) return
-    toggleSetDone(e.id, si)
+    if (!s) return
     const next = nextSetTarget(exercises, e.id, si)
+    if (s.done) {
+      if (focusNext && next) focusSet(next.exId, next.si)
+      return
+    }
+    toggleSetDone(e.id, si)
     if (next) {
       if (focusNext) focusSet(next.exId, next.si)
       else scrollSet(next.exId, next.si)
@@ -484,11 +488,6 @@ export default function Sesion() {
                             onKeyDown={(ev) => {
                               if (ev.key === 'Enter') {
                                 ev.preventDefault()
-                                if (s.done) {
-                                  const next = nextSetTarget(exercises, e.id, si)
-                                  if (next) focusSet(next.exId, next.si)
-                                  return
-                                }
                                 markDone(e, si, true)
                               }
                             }}
