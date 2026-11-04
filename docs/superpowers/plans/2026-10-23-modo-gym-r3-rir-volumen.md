@@ -708,7 +708,7 @@ Subagente `general` (NO edita): verifica que `VolumePulse` use `weeklyVolume` y 
 - Modify: `MIGRACION-ASTRO.md`
 - Modify: `PLAN-V1.md` (Tarea 12)
 
-- [ ] **Step 1: Ajustar el copy de Progreso**
+- [x] **Step 1: Ajustar el copy de Progreso**
 
 En `src/components/progreso/ProgresoView.tsx`:
 
@@ -742,7 +742,7 @@ Guardá series completadas de este ejercicio para ver su progresión.
 
 - Si `names.length` es 0, el select sigue mostrando “Sin ejercicios aún”; no cambiar.
 
-- [ ] **Step 2: Documentar RIR y el semáforo**
+- [x] **Step 2: Documentar RIR y el semáforo**
 
 `README.md`:
 
@@ -763,7 +763,7 @@ Guardá series completadas de este ejercicio para ver su progresión.
   de volumen.
 ```
 
-- [ ] **Step 3: Marcar la Tarea 12 en PLAN-V1.md**
+- [x] **Step 3: Marcar la Tarea 12 en PLAN-V1.md**
 
 Bajo `## Tarea 12 — Modo GYM R3: RIR y volumen en vivo`, marcar T12-1 a T12-3 con `[x]` y
 el resultado de cada auditoría. Agregar al final:
@@ -774,7 +774,7 @@ el resultado de cada auditoría. Agregar al final:
   volumen y Progreso con “series completadas”).
 ```
 
-- [ ] **Step 4: Validación completa**
+- [x] **Step 4: Validación completa**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **67 passed**.
@@ -791,7 +791,7 @@ Verificar en DevTools 360×844, 390×844 y 412×915:
 5. Exportar/importar respaldo con RIR y verificar que se conserva.
 6. Confirmar que la primera serie sigue visible sin scroll a 360×844, 390×844 y 412×915.
 
-- [ ] **Step 5: Commit y auditor final**
+- [x] **Step 5: Commit y auditor final**
 
 Run: `git add src/components/progreso/ProgresoView.tsx README.md MIGRACION-ASTRO.md PLAN-V1.md`
 Run: `git commit -m "docs: cerrar release 3 de RIR y volumen en vivo"`
