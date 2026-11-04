@@ -34,6 +34,10 @@ series sin completar no suman volumen ni cuentan como entrenadas.
 > El timer usa la hora de finalización (`endsAt`) y se corrige al volver a la app, pero con
 > la PWA cerrada o la pantalla apagada el sistema puede suspender el aviso. No prometemos
 > notificaciones confiables en segundo plano.
+>
+> Además, el **estado del descanso no se persiste**: si Android recarga la pestaña al apagar
+> la pantalla, el timer desaparece. La sesión y las series sí sobreviven (`forja_session` y
+> `forja_session_start`). Queda documentado como limitación conocida.
 
 Además: **instalable (PWA)** y funciona **sin conexión** (Service Worker con Workbox,
 fuentes Anton + Space Grotesk self-hosted, sin Google Fonts), con **respaldo export/import**

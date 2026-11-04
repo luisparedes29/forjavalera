@@ -178,3 +178,45 @@
 4. [x] T12-4 Progreso honesto + docs y cierre R3: “series completadas”, vacío distinto de “sin historial”, README/MIGRACION/PLAN, validación completa y auditor final. — `3ee302c` — review APROBADA (spec ✅, 0 Critical, 0 Important, 1 minor preexistente: cardio fuera de `SET_GUIDE`). 67 tests, `tsc` check limpio, SW 28, smoke 63/63. — `58e1eb5` — auditor final **APROBADO CON OBSERVACIONES** (9/9 criterios, 0 Critical, 0 Important, 2 minors documentales corregidos en el cierre).
 - **Criterio de cierre R3**: 67 tests · RIR opcional visible y conservado · seis reglas de sugerencia testeadas · respaldo con RIR testeado · semáforo con `weeklyVolume` · Progreso sin “series efectivas” · auditor final APROBADO.
 - **Cierre R3 (2026-10-23)**: auditor final APROBADO CON OBSERVACIONES (67 tests, `tsc` check limpio, build OK con SW 28 y manifest completo; RIR opcional visible en fila e historial y conservado en respaldo v3; seis reglas de sugerencia testeadas; semáforo en vivo con `weeklyVolume` sin duplicar volumen; Progreso sin “series efectivas” y con vacío honesto; primera serie visible sin scroll a 360/390/412). Minor abierto diferido: `totalSets` no cuenta cardio y `exerciseSeries` omite kg=0, limitaciones preexistentes fuera de alcance.
+
+## Tarea 13 — Resistencia en Android: timer y memoria (medición, 2026-11-04)
+
+> Estado: **documentado, sin cambios de código**. El usuario decidió no implementar por ahora.
+
+**Síntoma real:** en un Samsung A32 4G (4 GB RAM), al apagar/encender la pantalla Android recarga la pestaña. La sesión y las series sobreviven (`forja_session`, `forja_session_start`), pero el descanso vive solo en memoria (`timerStore`) y desaparece.
+
+**Medición** (Chrome headless, viewport 390×844, heap tras GC forzado; sirve para comparar, no como valor absoluto de Android):
+
+| Escenario | Heap JS | Nodos DOM |
+|---|---:|---:|
+| Sin historial | 2,5 MB | 3.709 |
+| 10 sesiones | 4,9 MB | 9.123 |
+| 50 sesiones | 8,3 MB | 20.337 |
+| 200 sesiones | 15,5 MB | 53.301 |
+| 200 sesiones en `#progreso` | 26,7 MB | 86.266 |
+
+Con 200 sesiones, comparación de parches temporales (revertidos):
+
+| Variante (200 sesiones, `#registrar`) | Heap JS | Nodos DOM | Nodos de historial |
+|---|---:|---:|---:|
+| Actual | 15,5 MB | 53.301 | 7.401 |
+| Solo vistas lazy | 6,9 MB | 29.574 | 7.401 |
+| Solo historial liviano | 3,7 MB | 8.364 | 0 |
+
+El historial colapsado explica el **76% del heap y el 84% de los nodos**. Las vistas lazy apenas suman ~1.600 nodos después de arreglar el historial.
+
+**Timer verificado:** al marcar una serie quedó en `1:59` y no había ninguna clave de timer en `localStorage`; tras recargar, el timer estaba apagado pero las 6 series y `forja_session_start` seguían intactos.
+
+**Opciones evaluadas (no implementadas):**
+
+1. **Timer persistente** en `localStorage` (alto impacto, bajo riesgo): reconciliar `endsAt` al cargar; conservar pausa; mostrar “listo” si venció; limpiar al detener o guardar la sesión.
+2. **Historial liviano**: renderizar el cuerpo de cada sesión solo al abrirla. Es la mayor ganancia de memoria; cuidar la animación de apertura/cierre y el botón “Eliminar sesión”.
+3. **Vistas visitadas**: montar cada vista la primera vez que se abre. Ganancia extra chica y riesgo de perder estado al cambiar de pestaña.
+4. **`navigator.storage.persist()`**: protege los datos de una limpieza por falta de espacio, pero no evita que Android mate la pestaña.
+
+**No prometible:** beep/notificación confiables con la pantalla apagada, ni que Android no recargue la pestaña.
+
+**Mitigación en el teléfono:** agregar FORJA/Chrome a “Apps que nunca se suspenden” y desactivar la optimización de batería; exportar respaldo periódicamente.
+
+**Si se retoma:** empezar por timer persistente + historial liviano, con tests primero; después evaluar vistas lazy.
+
