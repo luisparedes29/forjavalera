@@ -460,6 +460,9 @@
         max-width: 1340px;
         margin: 0 auto;
       }
+      .progreso-main.hist-only {
+        grid-template-columns: minmax(0, 1fr);
+      }
       @media (max-width: 1020px) {
         main,
         .cuerpo-main,
@@ -2155,6 +2158,9 @@
         letter-spacing: 0.02em;
       }
 
+      #sessionPanel {
+        grid-column: 1 / -1;
+      }
       .volume-pulse {
         grid-column: 1 / -1;
         min-width: 0;
@@ -2307,6 +2313,17 @@
         align-items: stretch;
         flex-wrap: wrap;
         margin-bottom: 14px;
+      }
+      .prog-subnav {
+        display: flex;
+        justify-content: flex-start;
+        padding: 24px 28px 0;
+        max-width: 1340px;
+        margin: 0 auto;
+      }
+      .prog-subnav .seg button {
+        min-height: 44px;
+        padding: 11px 16px;
       }
       .prog-ctl select {
         flex: 1;
@@ -2803,6 +2820,9 @@
         }
         .progreso-main {
           padding: 16px 16px 40px;
+        }
+        .prog-subnav {
+          padding: 14px 16px 0;
         }
         footer {
           padding: 16px 16px 24px;
