@@ -220,3 +220,13 @@ El historial colapsado explica el **76% del heap y el 84% de los nodos**. Las vi
 
 **Si se retoma:** empezar por timer persistente + historial liviano, con tests primero; después evaluar vistas lazy.
 
+## Tarea 14 — Fila de serie sin teclado (2026-11-04)
+
+> Spec: `docs/superpowers/specs/2026-11-04-fila-serie-sin-teclado-design.md`
+> Plan: `docs/superpowers/plans/2026-11-04-fila-serie-sin-teclado.md`
+> Estado: **completa** (bloque 1). El bloque 2 —pestaña Historial propia y renderizado liviano— queda para después.
+
+1. [x] T14-1 `nextSetTarget` puro con 5 tests: misma serie, `si > 0`, siguiente ejercicio, vuelta a pendientes anteriores y sin pendientes. — 72 tests. Commits `1ec716e`, `3da80eb`, `1124852`; review APROBADA.
+2. [x] T14-2 Check sin teclado, Enter encadena reps → kg → siguiente y herramientas al tocar número/fila; `aria-controls` solo expandido, anillo de estado abierto y `type="button"`. — smoke CDP 69/69. Commits `500df52`, `82b3fcc`, `9ca5b1d`; reviews APROBADAS.
+3. [x] T14-3 Docs y cierre del bloque. — `tsc` check limpio, 72 tests, build SW 28; auditoría final en curso.
+

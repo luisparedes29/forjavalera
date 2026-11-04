@@ -12,8 +12,10 @@ Cuatro vistas con navegación por hash (`#registrar`, `#plan`, `#cuerpo`, `#prog
 
 - **Registrar** — Home y sesión en curso: header sticky con series completadas, volumen y
   tiempo; composer plegado con autocompletado desde la rutina y el historial; fila de serie
-  con ±1 rep, ±2,5 kg, repetir y “La vez pasada”; auto-avance con Enter; timer de descanso
-  manual con presets 60/90/120/180 y aviso de la siguiente serie.
+  con ±1 rep, ±2,5 kg, repetir y “La vez pasada”; herramientas al tocar el número de serie o
+  el espacio libre de la fila (sin abrir teclado); el check no abre teclado y Enter encadena
+  reps → kg → siguiente; timer de descanso manual con presets 60/90/120/180 y aviso de la
+  siguiente serie.
 - **Plan** — Rutina de 5 días (lun–vie) con semanas 1–6 y DELOAD; carga del día en la sesión
   con undo; fin de semana explícito que propone el lunes o repetir el último día entrenado.
 - **Cuerpo** — Registro antropométrico (peso, altura y 9 medidas), deltas y gráfico de
