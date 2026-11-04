@@ -77,7 +77,7 @@ describe('nextSetTarget', () => {
   })
 
   it('respeta el índice cuando la serie actual no es la primera', () => {
-    const exercises = [ex('a', [true, true, false]), ex('b', [false])]
+    const exercises = [ex('a', [false, true, false]), ex('b', [false])]
     expect(nextSetTarget(exercises, 'a', 1)).toEqual({ exId: 'a', si: 2 })
   })
 
@@ -202,9 +202,13 @@ Reemplazar `markDone` completo por:
 ```ts
   const markDone = (e: Exercise, si: number, focusNext = false): void => {
     const s = e.sets[si]
-    if (!s || s.done) return
-    toggleSetDone(e.id, si)
+    if (!s) return
     const next = nextSetTarget(exercises, e.id, si)
+    if (s.done) {
+      if (focusNext && next) focusSet(next.exId, next.si)
+      return
+    }
+    toggleSetDone(e.id, si)
     if (next) {
       if (focusNext) focusSet(next.exId, next.si)
       else scrollSet(next.exId, next.si)
@@ -219,16 +223,11 @@ El check sigue llamando `markDone(e, si)` (default `false`). En el `onKeyDown` d
 ```ts
                               if (ev.key === 'Enter') {
                                 ev.preventDefault()
-                                if (s.done) {
-                                  const next = nextSetTarget(exercises, e.id, si)
-                                  if (next) focusSet(next.exId, next.si)
-                                  return
-                                }
                                 markDone(e, si, true)
                               }
 ```
 
-Enter en kg de una serie ya completada no vuelve a marcarla ni reinicia el timer: solo encadena a la próxima reps pendiente.
+`markDone` centraliza el caso de serie ya completada: con `focusNext = true` solo enfoca la próxima reps pendiente; no vuelve a marcarla ni reinicia el timer.
 
 - [ ] **Step 3: Hacer que la fila y el número abran las herramientas**
 
@@ -447,9 +446,10 @@ En el bullet de Registrar (13-16), dejar:
 ```md
 - **Registrar** — Home y sesión en curso: header sticky con series completadas, volumen y
   tiempo; composer plegado con autocompletado desde la rutina y el historial; fila de serie
-  con ±1 rep, ±2,5 kg, repetir y “La vez pasada”; herramientas al tocar el número de serie
-  (sin abrir teclado); el check no abre teclado y Enter encadena reps → kg → siguiente;
-  timer de descanso manual con presets 60/90/120/180 y aviso de la siguiente serie.
+  con ±1 rep, ±2,5 kg, repetir y “La vez pasada”; herramientas al tocar el número de serie o
+  el espacio libre de la fila (sin abrir teclado); el check no abre teclado y Enter encadena
+  reps → kg → siguiente; timer de descanso manual con presets 60/90/120/180 y aviso de la
+  siguiente serie.
 ```
 
 - [ ] **Step 3: Registrar la Tarea 14 en PLAN-V1**
@@ -458,11 +458,14 @@ Agregar al final:
 
 ```md
 ## Tarea 14 — Fila de serie sin teclado (2026-11-04)
+
 > Spec: `docs/superpowers/specs/2026-11-04-fila-serie-sin-teclado-design.md`
 > Plan: `docs/superpowers/plans/2026-11-04-fila-serie-sin-teclado.md`
-1. [x] T14-1 `nextSetTarget` puro con 5 tests: misma serie, `si > 0`, siguiente ejercicio, vuelta a pendientes anteriores y sin pendientes. — 72 tests.
-2. [x] T14-2 Check sin teclado, Enter encadena y herramientas al tocar número/fila. — smoke CDP 60/60.
-3. [x] T14-3 Docs y cierre del bloque. — `tsc` check limpio, 72 tests, build SW 28, auditor APROBADO.
+> Estado: **completa** (bloque 1). El bloque 2 —pestaña Historial propia y renderizado liviano— queda para después.
+
+1. [x] T14-1 `nextSetTarget` puro con 5 tests: misma serie, `si > 0`, siguiente ejercicio, vuelta a pendientes anteriores y sin pendientes. — 72 tests. Commits `1ec716e`, `3da80eb`, `1124852`; review APROBADA.
+2. [x] T14-2 Check sin teclado, Enter encadena reps → kg → siguiente y herramientas al tocar número/fila; `aria-controls` solo expandido, anillo de estado abierto y `type="button"`. — smoke CDP 69/69. Commits `500df52`, `82b3fcc`, `9ca5b1d`; reviews APROBADAS.
+3. [x] T14-3 Docs y cierre del bloque. — `tsc` check limpio, 72 tests, build SW 28; auditoría final APROBADA.
 ```
 
 - [ ] **Step 4: Validación final y commit de docs**
