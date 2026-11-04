@@ -4,6 +4,8 @@ import { useAppStore } from '../../store/appStore'
 import type { SessionHistory } from '../../lib/types'
 import { GCOLORS, GROUPS } from '../../data/routine'
 import { fmtN } from '../../lib/util'
+import { isCompletedSet, volumeOf } from '../../lib/logic'
+import { formatDate, formatWeekday } from '../../lib/date'
 import { toast } from '../../lib/toast'
 
 export default function Historial() {
@@ -27,20 +29,28 @@ export default function Historial() {
     )
   }
 
-  const setsOf = (h: SessionHistory): number =>
-    h.exercises.reduce((a, e) => a + e.sets.length, 0)
+  const totalsOf = (h: SessionHistory): { done: number; total: number; volume: number } =>
+    h.exercises.reduce(
+      (a, e) => ({
+        done: a.done + e.sets.filter(isCompletedSet).length,
+        total: a.total + e.sets.length,
+        volume: a.volume + volumeOf(e.sets)
+      }),
+      { done: 0, total: 0, volume: 0 }
+    )
 
   return (
     <div id="historyList">
       {history.map((h) => {
         const d = new Date(h.ts)
-        const weekday = d.toLocaleDateString('es-ES', { weekday: 'short' })
-        const date = d.toLocaleDateString('es-ES', {
+        const weekday = formatWeekday(d)
+        const date = formatDate(d, {
           day: 'numeric',
           month: 'short',
           year: 'numeric'
         })
         const gc = GCOLORS[h.focus] ?? '#8ba0a8'
+        const totals = totalsOf(h)
         const isOpen = !!open[h.id]
         return (
           <article className={`hist-item${isOpen ? ' open' : ''}`} key={h.id}>
@@ -57,8 +67,8 @@ export default function Historial() {
                 {GROUPS[h.focus] || 'General'}
               </span>
               <span className="hist-meta">
-                {h.exercises.length} ej · {setsOf(h)} series ·{' '}
-                <b>{fmtN(Math.round(h.volume))} kg</b>
+                {h.exercises.length} ej · {totals.done}/{totals.total} series ·{' '}
+                <b>{fmtN(Math.round(totals.volume))} kg</b>
               </span>
               <span className="chev">▸</span>
             </button>
@@ -72,22 +82,30 @@ export default function Historial() {
                       ) : null}
                     </span>
                     <span className="muted">
-                      {e.sets
-                        .map(
-                          (s) =>
-                            `${s.reps}×${fmtN(Number(s.kg) || 0, 1)}${
-                              s.done ? '✔' : ''
-                            }`
-                        )
-                        .join(' · ')}
+                      {e.sets.map((s, si) => (
+                        <span className="hist-set" key={si}>
+                          {s.reps}×{fmtN(Number(s.kg) || 0, 1)}
+                          {s.done ? '✔' : ''}
+                          {typeof s.rir === 'number' ? (
+                            <i className="hist-rir">
+                              RIR {s.rir === 3 ? '3+' : s.rir}
+                            </i>
+                          ) : null}
+                          {si < e.sets.length - 1 ? ' · ' : ''}
+                        </span>
+                      ))}
                     </span>
                   </div>
                 ))}
                 <button
                   className="del-hist"
                   onClick={() => {
+                    const prev = history
                     removeSession(h.id)
-                    toast('Sesión eliminada')
+                    toast('Sesión eliminada', 'warn', {
+                      label: 'Deshacer',
+                      run: () => useAppStore.getState().replaceHistory(prev)
+                    })
                   }}
                 >
                   Eliminar sesión

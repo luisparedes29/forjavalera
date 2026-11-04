@@ -1,23 +1,32 @@
 import { describe, expect, it } from 'vitest'
 import {
   allExerciseNames,
+  completedSets,
   exerciseSeries,
   focusOf,
-  isEff,
+  isCompletedSet,
   lastSets,
   mondayOf,
   parseRest,
   repRange,
+  setVolume,
   stagnant,
   suggestFor,
+  volumeOf,
   weeklyVolume
 } from '../logic'
 import type { HistoryExercise, SessionHistory, SetData } from '../types'
 
-const set = (reps: number | null = 10, kg: number | null = 100, done = false): SetData => ({
+const set = (
+  reps: number | null = 10,
+  kg: number | null = 100,
+  done = false,
+  rir?: number | null
+): SetData => ({
   reps,
   kg,
-  done
+  done,
+  ...(rir === undefined ? {} : { rir })
 })
 
 const ex = (name: string, sets: SetData[], reps = '6–10') => ({
@@ -90,6 +99,70 @@ describe('suggestFor', () => {
   })
 })
 
+describe('suggestFor con RIR', () => {
+  const rango = (sets: SetData[]) => ex('Press banca', sets, '8–12')
+
+  it('sin RIR o con null conserva el comportamiento actual', () => {
+    expect(
+      suggestFor(rango([set(12, 100, true), set(12, 100, true)]))?.t
+    ).toBe('up')
+    expect(
+      suggestFor(rango([set(12, 100, true, null), set(12, 100, true, null)]))?.t
+    ).toBe('up')
+    expect(
+      suggestFor(rango([set(12, 100, true, 0), set(12, 100, false)]))
+    ).toBeNull()
+  })
+
+  it('todo al tope y RIR 0 pide mantener', () => {
+    expect(
+      suggestFor(rango([set(12, 100, true, 0), set(12, 100, true, 0)]))
+    ).toEqual({ t: 'ok', msg: '✓ Al límite · mantené la carga' })
+  })
+
+  it('todo al tope con RIR 1 o 2 permite subir', () => {
+    expect(
+      suggestFor(rango([set(12, 100, true, 1), set(12, 100, true, 1)]))?.t
+    ).toBe('up')
+    expect(
+      suggestFor(rango([set(12, 100, true, 2), set(12, 100, true, 2)]))?.t
+    ).toBe('up')
+    expect(
+      suggestFor(rango([set(12, 100, true, 0), set(12, 100, true, 2)]))?.t
+    ).toBe('up')
+  })
+
+  it('en rango solo sube con RIR 3 o más', () => {
+    expect(
+      suggestFor(rango([set(10, 100, true, 3), set(9, 100, true, 3)]))?.t
+    ).toBe('up')
+    expect(
+      suggestFor(rango([set(10, 100, true, 2), set(9, 100, true, 2)]))?.t
+    ).toBe('ok')
+  })
+
+  it('alguna serie bajo el mínimo pide repetir o bajar aunque el RIR sea alto', () => {
+    expect(
+      suggestFor(rango([set(7, 100, true, 1), set(12, 100, true, 1)]))?.t
+    ).toBe('down')
+    expect(
+      suggestFor(rango([set(7, 100, true, 3), set(12, 100, true, 3)]))?.t
+    ).toBe('down')
+  })
+
+  it('RIR parcial vuelve al fallback por reps', () => {
+    expect(
+      suggestFor(rango([set(10, 100, true, 3), set(9, 100, true)]))?.t
+    ).toBe('ok')
+    expect(
+      suggestFor(rango([set(10, 100, true, 3), set(9, 100, true, null)]))?.t
+    ).toBe('ok')
+    expect(
+      suggestFor(rango([set(12, 100, true, 0), set(12, 100, true)]))?.t
+    ).toBe('up')
+  })
+})
+
 describe('parseRest', () => {
   it.each([
     ['2 min', 120],
@@ -108,11 +181,29 @@ describe('parseRest', () => {
   })
 })
 
-describe('isEff', () => {
-  it('cuenta series marcadas o con reps cargadas', () => {
-    expect(isEff(set(0, 0, true))).toBe(true)
-    expect(isEff(set(10, 0, false))).toBe(true)
-    expect(isEff(set(0, 0, false))).toBe(false)
+describe('isCompletedSet', () => {
+  it('solo cuenta series con done=true', () => {
+    expect(isCompletedSet(set(10, 100, true))).toBe(true)
+    expect(isCompletedSet(set(10, 100, false))).toBe(false)
+    expect(isCompletedSet(set(0, 0, false))).toBe(false)
+  })
+})
+
+describe('completedSets', () => {
+  it('devuelve solo las series completadas', () => {
+    const sets = [set(10, 100, true), set(8, 80, false), set(6, 60, true)]
+    expect(completedSets(sets)).toHaveLength(2)
+    expect(completedSets(sets).every((s) => s.done)).toBe(true)
+  })
+})
+
+describe('volumeOf', () => {
+  it('suma solo series completadas y usa setVolume', () => {
+    expect(
+      volumeOf([set(10, 100, true), set(10, 100, false), { reps: 8, kg: 50, done: true }])
+    ).toBe(1400)
+    expect(setVolume(set(10, 100, true))).toBe(1000)
+    expect(setVolume({ reps: '', kg: '', done: false })).toBe(0)
   })
 })
 
@@ -152,6 +243,21 @@ describe('stagnant', () => {
   it('no marca si está progresando o hay menos de 3 sesiones', () => {
     expect(stagnant(mk([90, 95, 100]))['press banca']).toBeUndefined()
     expect(stagnant(mk([100, 100]))['press banca']).toBeUndefined()
+  })
+
+  it('ignora series no completadas al calcular el score', () => {
+    const h = [
+      hist('2026-07-22T10:00:00Z', [
+        { name: 'Press banca', sets: [set(8, 100, true), set(8, 200, false)] }
+      ]),
+      hist('2026-07-21T10:00:00Z', [
+        { name: 'Press banca', sets: [set(8, 100, true)] }
+      ]),
+      hist('2026-07-20T10:00:00Z', [
+        { name: 'Press banca', sets: [set(8, 100, true)] }
+      ])
+    ]
+    expect(stagnant(h)['press banca']).toBe(true)
   })
 })
 
@@ -224,6 +330,32 @@ describe('weeklyVolume (semana calendario lun-dom local)', () => {
     })
   })
 
+  it('ignora series con reps cargadas pero no completadas', () => {
+    const h: SessionHistory[] = [
+      hist(new Date(2026, 7, 3, 10, 0, 0).toISOString(), [
+        { name: 'Press banca', sets: [set(10, 100, true), set(10, 100, false)] }
+      ])
+    ]
+    expect(weeklyVolume(h, now)['pecho']).toEqual({
+      sets: 1,
+      volume: 1000,
+      ex: new Set(['press banca'])
+    })
+  })
+
+  it('cuenta una serie completada aunque no tenga reps ni kg', () => {
+    const h: SessionHistory[] = [
+      hist(new Date(2026, 7, 3, 10, 0, 0).toISOString(), [
+        { name: 'Press banca', sets: [set(0, 0, true)] }
+      ])
+    ]
+    expect(weeklyVolume(h, now)['pecho']).toEqual({
+      sets: 1,
+      volume: 0,
+      ex: new Set(['press banca'])
+    })
+  })
+
   it('separa brazos histórico en biceps/triceps por nombre', () => {
     const h: SessionHistory[] = [
       hist(new Date(2026, 7, 3, 10, 0, 0).toISOString(), [
@@ -272,5 +404,20 @@ describe('exerciseSeries (e1RM Epley)', () => {
     expect(series[0].kg).toBe(102.5)
     expect(series[0].e1rm).toBeCloseTo(100 * (1 + 10 / 30))
     expect(series[0].vol).toBe(1000 + 820)
+  })
+
+  it('ignora series no completadas y omite sesiones sin completadas', () => {
+    const h: SessionHistory[] = [
+      hist('2026-07-26T10:00:00Z', [
+        { name: 'Press banca', sets: [set(10, 120, false)] }
+      ]),
+      hist('2026-07-25T10:00:00Z', [
+        { name: 'Press banca', sets: [set(10, 100, true), set(8, 150, false)] }
+      ])
+    ]
+    const series = exerciseSeries(h, 'press banca')
+    expect(series).toHaveLength(1)
+    expect(series[0].kg).toBe(100)
+    expect(series[0].vol).toBe(1000)
   })
 })

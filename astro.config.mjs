@@ -48,6 +48,6 @@ function pwa() {
 // https://astro.build/config
 export default defineConfig({
   output: 'static',
-  site: 'https://forja.netlify.app',
+  site: 'https://forjavalera.netlify.app',
   integrations: [react(), pwa()]
 })

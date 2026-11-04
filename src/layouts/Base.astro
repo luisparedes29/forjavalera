@@ -29,7 +29,7 @@ const {
     />
     <meta name="mobile-web-app-capable" content="yes" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
-    <link rel="apple-touch-icon" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png" />
     <link rel="manifest" href="/manifest.json" />
   </head>
   <body>
@@ -37,7 +37,10 @@ const {
       // Pre-paint: no puede importar módulos (va antes de las islas). Lógica espejo de src/lib/view.ts.
       ;(function () {
         var h = (window.location.hash || '').slice(1)
-        var v = h === 'cuerpo' || h === 'progreso' ? h : 'hierro'
+        var v =
+          h === 'plan' || h === 'cuerpo' || h === 'progreso'
+            ? h
+            : 'registrar'
         document.documentElement.dataset.view = v
       })()
     </script>

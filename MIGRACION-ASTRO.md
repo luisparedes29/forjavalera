@@ -12,12 +12,27 @@ tocar el código para retomar el trabajo sin perder el hilo.
 - **Dato actualizado**: el usuario SÍ tiene datos de entrenamiento (semana pasada) en su
   **teléfono**, en la URL vieja. Antes del deploy final: **exportar respaldo v3** desde el
   teléfono y verificarlo; tras el deploy, comprobar que la app nueva los lee (o importarlos).
-- Verificaciones actuales: tsc ✅ · vitest 27/27 ✅ · `npm run build` ✅ (SW `dist/sw.js` con precache inyectado, 23 archivos)
+- Verificaciones actuales: tsc ✅ · vitest 67/67 ✅ · `npm run build` ✅ (SW `dist/sw.js` con precache inyectado, 28 archivos)
 - Post-migración (paquete 1 de optimizaciones, commit `acde33c` en `dev`): fonts self-hosted
   (Anton + Space Grotesk en `public/fonts/`, sin Google Fonts), precache SW ampliado a
   woff2/json, directivas de islas `client:idle/visible`, refactor (`viewFromHash`, guard SSR,
   `TABS` compartido) y cabeceras de cache en `netlify.toml`. Detalle en `PLAN-V1.md`.
 - Decisión post-migración: volumen semanal = semana calendario (lun–dom, hora local) en vez de ventana móvil de 7 días (spec: docs/superpowers/).
+- Decisión post-migración (2026-10-23): el volumen canónico se calcula solo con series
+  completadas (`done`). Historial, volumen semanal, progresión y estancamiento derivan del
+  mismo helper; los datos viejos se recalculan al mostrarse, sin migración destructiva.
+- Decisión post-migración (2026-10-23): la app pasa a cuatro vistas (`registrar`, `plan`,
+  `cuerpo`, `progreso`). `#hierro` es alias de `#registrar`. La sesión en curso se abre en
+  `Registrar`; la rutina vive en `Plan`.
+- Decisión post-migración (2026-10-23): `forja_session_start` guarda el inicio de la sesión
+  actual. Es estado de UI: no entra en el respaldo v3 y se borra al guardar, vaciar,
+  importar o borrar todos los datos.
+- Decisión post-migración (2026-10-23): `SetData.rir` es opcional y no cambia la versión
+  del respaldo (sigue v3). Las sugerencias de carga solo usan RIR cuando todas las series
+  completadas lo tienen; sin RIR se mantiene la regla por reps.
+- Decisión post-migración (2026-10-23): el semáforo de volumen en vivo reutiliza
+  `weeklyVolume` con la sesión en curso como una sesión más. No existe un quinto criterio
+  de volumen.
 - Fixes aplicados y validados: nav tras F5 (sin residuo), acordeón Historial,
   reloj TopBar (sin hydration-mismatch), SW dev (sin registro/errores `chrome-extension`),
   parpadeo de Hierro al F5 (D-lite: `data-view` pre-paint). Servers de dev cerrados.
@@ -34,14 +49,18 @@ estado vive en `localStorage`. No tiene build, dependencias ni framework.
 - Archivos: `index.html` · `sw.js` · `manifest.json` · `icon.svg`
 - Node v24.14.1 / npm 11.3.0 · SO: Windows (PowerShell)
 
-### Funcionalidad actual (3 vistas con navegación por hash)
-1. **Hierro**: stats, rutina/bloque 5 días (L–V), semanas 1–6, DELOAD, detección
-   de estancamiento, sesión actual (autoguardado, check de series que dispara
-   temporizador, sugerencias ▲/▼/✓), historial colapsable.
-2. **Cuerpo**: registro antropométrico (peso, altura, 9 medidas), deltas,
+### Funcionalidad actual (4 vistas con navegación por hash)
+1. **Registrar**: home y sesión en curso. Header sticky con series completadas, volumen y
+   tiempo; composer plegado con autocompletado; guardado compartido; timer de descanso
+   manual con presets y aviso de la siguiente serie; historial colapsable.
+2. **Plan**: stats, rutina/bloque 5 días (L–V), semanas 1–6, DELOAD, detección de
+   estancamiento, carga del día en la sesión con undo y fin de semana explícito.
+3. **Cuerpo**: registro antropométrico (peso, altura, 9 medidas), deltas,
    gráfico de peso en SVG dibujado a mano, acordeón de registros.
-3. **Progreso**: volumen semanal por grupo vs. rango recomendado (`SET_GUIDE`),
+4. **Progreso**: volumen semanal por grupo vs. rango recomendado (`SET_GUIDE`),
    progresión por ejercicio (kg / e1RM Epley / volumen) con PR, última, delta.
+
+`#hierro` sigue funcionando como alias de `#registrar`.
 
 PWA: `manifest.json` + `sw.js` (stale-while-revalidate, caché del shell y fonts).
 
@@ -49,7 +68,7 @@ PWA: `manifest.json` + `sw.js` (stale-while-revalidate, caché del shell y fonts
 - **Framework**: Astro (`output: 'static'`) + **islas React** (`client:load`).
   - JavaScript: el usuario domina React; no Next (overkill: sin SEO ni servidor).
   - Astro aporta: build de Vite, ship estático, y que header/tabs/footer no
-    gasten JS (solo los 3 paneles interactivos son islas).
+    gasten JS (solo las cuatro vistas son islas).
 - **Estado entre islas**: **Zustand** (store externo) — las islas React de Astro
   NO comparten Context; cada una hidrata su propio árbol. El store global debe
   ser externo y suscribir a las islas.
@@ -95,6 +114,7 @@ Todo el código vive en `index.html`:
 - `forja_history` → sesiones guardadas (`{ id, ts, volume, focus, exercises[] }`)
 - `forja_body` → registros antropométricos (`{ id, ts, peso, altura, m{} }`)
 - `forja_week` → `{ week: 1..6, deload: bool }`
+- `forja_session_start` → inicio de la sesión actual (timestamp en ms; estado de UI, fuera del respaldo v3)
 
 Backup v3 (export): `{ app:'FORJA', version:3, week, session, history, body }`.
 Importante preservar el formato byte a byte (compatibilidad con respaldos viejos).
@@ -123,18 +143,20 @@ Importante preservar el formato byte a byte (compatibilidad con respaldos viejos
 - `src/store/appStore.ts`: estado `{ exercises, history, body, weekState, view }`.
 - Storage con listeners personalizados que escriban/lean las keys `forja_*`
   manteniendo el formato exacto (mismo `JSON.stringify` que hoy).
-- `view` controlada por la URL hash (`#hierro/#cuerpo/#progreso`).
+- `view` controlada por la URL hash (`#registrar/#plan/#cuerpo/#progreso`, con `#hierro`
+  como alias de `#registrar`).
 
 ### Fase 3 — Componentes React (islas) ✅
 - `src/pages/index.astro`: shell estático (tape, header, footer) + **islas `client:load`**:
   `TopBar`, `NavTabs`, `ViewManager`, `FooterBar`, `NavTabbar`, `Timer`, `Toasts`.
 - **Decisión final (§6 resuelta)**: **1 isla de vistas** (`ViewManager.tsx`) que renderiza
-  los 3 `.view` con clase `active` según `store.view` (usa `useReveal` para los `.reveal`).
+  las 4 `.view` con clase `active` según `store.view` (usa `useReveal` para los `.reveal`).
   Nav superior/inferior en islas separadas. Resultado: visualmente idéntico al monolito.
-- `src/components/hierro/`: `Rutina.tsx`, `Sesion.tsx`, `Historial.tsx`, `HierroView.tsx` (stats+composición).
-- `src/components/cuerpo/`: `CuerpoView.tsx` (Registro + Evolución + Deltas + BodyList consolidados) + `shared/ChartLine.tsx`.
+- `src/components/hierro/`: `RegistrarView.tsx`, `PlanView.tsx`, `Stats.tsx`, `Sesion.tsx`,
+  `Rutina.tsx`, `SessionHeader.tsx`, `Historial.tsx`.
+- `src/components/cuerpo/`: `CuerpoView.tsx` (Registro + Evolución + Deltas + BodyList consolidados).
 - `src/components/progreso/`: `ProgresoView.tsx` (Volumen + Progresión consolidados).
-- `src/components/shared/`: `Timer.tsx`, `Toasts.tsx`, `AnimatedNumber.tsx`, `TopBar.tsx`, `FooterBar.tsx`.
+- `src/components/shared/`: `Timer.tsx`, `Toasts.tsx`, `AnimatedNumber.tsx`, `ChartLine.tsx`, `ConfirmSheet.tsx`, `TopBar.tsx`, `NavTabs.tsx`, `NavTabbar.tsx`, `tabs.tsx`, `FooterBar.tsx`.
 - `src/components/ViewManager.tsx` + `src/hooks/useReveal.ts` + `src/store/routineStore.ts` (`dayIdx` compartido Rutina/Sesion).
 - Al cambiarse el store (Zustand global), todas las islas se actualizan: no hay render manual.
 - Detalle: `local.forja_session` persiste por cada tecla (`saveL`); `commitSession` réplica el guard de sesión.

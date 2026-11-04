@@ -66,7 +66,7 @@ export default function ProgresoView() {
       <section className="stats stats-progreso">
         <div className="stat">
           <AnimatedNumber value={totalSets} />
-          <span>series esta semana</span>
+          <span>series completadas</span>
         </div>
         <div className="stat">
           <b>
@@ -92,7 +92,7 @@ export default function ProgresoView() {
           <p className="vol-legend">
             <i></i>
             <span>
-              zona = objetivo recomendado · series efectivas de la semana (lun–dom)
+              zona = objetivo recomendado · series completadas de la semana (lun–dom)
               {weekRange ? ` · ${weekRange}` : ''}
             </span>
           </p>
@@ -101,6 +101,14 @@ export default function ProgresoView() {
               <div className="empty">
                 <p>
                   Guardá tus sesiones para ver el volumen por grupo muscular.
+                  <br />
+                  <b>El volumen semanal es la clave de la hipertrofia.</b>
+                </p>
+              </div>
+            ) : totalSets === 0 ? (
+              <div className="empty">
+                <p>
+                  Todavía no hay series completadas esta semana.
                   <br />
                   <b>El volumen semanal es la clave de la hipertrofia.</b>
                 </p>
@@ -244,7 +252,7 @@ export default function ProgresoView() {
               <ChartLine points={vals} height={150} unit={M.unit} />
             ) : (
               <p className="chart-empty" id="progEmpty">
-                Guardá sesiones con este ejercicio para ver su progresión.
+                Guardá series completadas con carga de este ejercicio para ver su progresión.
               </p>
             )}
           </div>

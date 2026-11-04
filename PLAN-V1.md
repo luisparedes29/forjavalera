@@ -4,13 +4,13 @@
 > antes de tocar el código. Complementa a `MIGRACION-ASTRO.md` (migración monolito→Astro).
 
 ## Estado
-- Fecha: 2026-08-03 · Última actualización: tras Tarea 3 (paquete 1).
+- Fecha: 2026-10-23 · Última actualización: R3 cerrado (RIR y volumen en vivo).
 - **Hecho**: Tareas 1 (README), 2 (merge dev→main, por el usuario), 3 (optimizaciones,
-  commiteada en `dev` local `acde33c`, **push pendiente**), 5 (volumen semanal lun–dom, `ae072c6`), 6 (rutina pullover + curl inclinado, `570b8ab`/`616fa4b`), 7 (series 4 + predicador/pushdown, `61bcc8e`/`c4e6137`), 8 (ajuste EZ/overhead a 3, `2b186a0`) y 9 (split brazos→bíceps/tríceps, `ee9c49d`/`7b0db2e`/`616e5c5`).
-- **En curso**: — (Tarea 9 cerrada, auditor final APROBADO).
-- **Pendiente**: push de `dev` → merge a `main` (lo hace el usuario) → deploy producción +
-  verificación en el teléfono; **respaldo v3 antes del deploy** (el usuario SÍ tiene datos
-  de la semana pasada en el teléfono, en la URL vieja); Tarea 4 opcional.
+  commiteada en `dev` local `acde33c`, **push pendiente**), 5 (volumen semanal lun–dom, `ae072c6`), 6 (rutina pullover + curl inclinado, `570b8ab`/`616fa4b`), 7 (series 4 + predicador/pushdown, `61bcc8e`/`c4e6137`), 8 (ajuste EZ/overhead a 3, `2b186a0`), 9 (split brazos→bíceps/tríceps, `ee9c49d`/`7b0db2e`/`616e5c5`), planificación Modo GYM (spec + planes R1/R2/R3, 2026-10-23) y Tareas 10 (R1 confiabilidad), 11 (R2 sesión-first) y 12 (R3 RIR y volumen en vivo), con auditor final aprobado por release.
+- **En curso**: —
+- **Pendiente**: push de `dev` → merge a `main` (lo hace el usuario) → deploy producción + verificación en el teléfono; **respaldo v3 antes del deploy** (el usuario SÍ tiene datos de la semana pasada en el teléfono, en la URL vieja); Tarea 4 opcional.
+- **URL de producción confirmada**: `https://forjavalera.netlify.app/` (corregir
+  `astro.config.mjs` y README en R1; hoy dicen `forja.netlify.app`).
 - **Regla acordada**: tareas por confirmación del usuario; tras cada bloque se actualiza
   este archivo.
 
@@ -102,8 +102,11 @@
 ---
 
 ## Validación general
-- Siempre: `npx tsc --noEmit -p tsconfig.check.json` · `npm test` (27/27) · `npm run build` (SW ~23 archivos).
-- Manual: `npm run dev` (nav, F5, offline en preview) y preview Netlify.
+- Siempre: `npx tsc --noEmit -p tsconfig.check.json` · `npm test` · `npm run build` (SW con
+  `[forja-pwa] sw.js generado con N archivos`).
+- Tests esperados: 33 base → **48** al cerrar R1 → **60** al cerrar R2 → **67** al cerrar R3.
+- Manual: `npm run dev` (nav, F5, offline en preview), preview Netlify y prueba en Android
+  real (390×844) al cerrar cada release.
 
 ---
 
@@ -134,3 +137,44 @@
 2. [x] T9-2 Lógica: dual-read `brazos→bíceps/tríceps` por nombre + migración al guardar — `7b0db2e`/`616e5c5` — auditoría APROBADA (33 tests, fix imports ordenados, DRY deferred).
 - Plan: `docs/superpowers/plans/2026-08-28-rutina-biceps-triceps.md`.
 - **Cierre (2026-08-28)**: auditor final APROBADO (9/9 requisitos, 33 tests, tsc + build SW 23). Commits `ee9c49d`, `7b0db2e`, `616e5c5`, `6909dbd`.
+
+---
+
+## Tarea 10 — Modo GYM R1: confiabilidad (spec: docs/superpowers/specs/2026-10-23-modo-gym-design.md)
+> Plan: `docs/superpowers/plans/2026-10-23-modo-gym-r1-confiabilidad.md`
+> Objetivo: que FORJA no mienta ni se rompa durante el entrenamiento. Cierre esperado: **48 tests**.
+1. [x] T10-1 Volumen canónico: `isCompletedSet`/`setVolume`/`completedSets`/`volumeOf`; `commitSession`, stats, historial, semanal, `exerciseSeries` y `stagnant` usan solo series `done`. Cierre: 39 tests. — `584c0d2` — review APROBADA (spec ✅, 5 minors diferidos al cierre R1).
+2. [x] T10-2 Fechas: `src/lib/date.ts` (`capFirst`, `formatLongDate`, `formatWeekday`) y eliminar `text-transform: capitalize` de fechas. Cierre: 42 tests. — `0cc3bcb` — review APROBADA (spec ✅, 3 minors diferidos al cierre R1).
+3. [x] T10-3 Overlays: toasts arriba (`z-index: 110`, `pointer-events` selectivo), timer abajo; sin solapamiento a 360/390/412 px. — `d2f51c9` + `5bf86e1` — re-review APROBADA (spec ✅, 5/26/26 px de aire medidos; 2 minors diferidos al cierre R1).
+4. [x] T10-4 Timer exacto: `endsAt` + `sync()` por timestamp, pausa real, ±15 s, Wake Lock opcional y resync en `visibilitychange`/`pageshow`/`focus`. Cierre: 48 tests. — `81e040a` — review APROBADA (spec ✅, 5 minors diferidos al cierre R1).
+5. [x] T10-5 Undo: toasts con acción de 6 s; deshacer serie, ejercicio, sesión, historial y medición; “Limpiar” deja de usar `confirm()`. — `a14151f` — review APROBADA (spec ✅, 16/16 checks funcionales, 3 minors diferidos al cierre R1).
+6. [x] T10-6 Targets y tipografía: controles ≥ 44 px, metadatos ≥ 11 px, fila de serie sin overflow a 360 px. — `c4949e6` — re-review APROBADA (targets medidos, 0 overflow, tabular-nums efectivo; 1 minor diferido: inputs de 49 px a 360).
+7. [x] T10-7 Iconos PWA: PNG 192/512/180 + maskable con `scripts/generate-icons.mjs`; manifest y `apple-touch-icon` actualizados; iconos en precaché. — `c3c67eb` — review APROBADA (4 PNG verificados, SW 28 archivos; 1 minor diferido: la franja decorativa del maskable se recorta en las esquinas de la zona segura circular).
+8. [x] T10-8 Docs y cierre R1: URL `https://forjavalera.netlify.app/` en README y `astro.config.mjs`, decisión de volumen en `MIGRACION-ASTRO.md`, validación completa y auditoría final. — cierre documental; auditoría final APROBADA.
+- **Cierre R1 (2026-10-24)**: auditoría final APROBADA (48 tests, tsc + build OK, timer
+  verificado tras salto de 3 min, 0 solapamientos, targets ≥44 px, iconos PNG en precache
+  con 28 archivos).
+- **Criterio de cierre R1**: 48 tests · tsc limpio · build con SW · timer correcto tras 3 min con pantalla bloqueada · 0 solapamientos · undo en las cuatro acciones destructivas · controles ≥ 44 px · iconos PNG en `dist` · auditoría final APROBADA.
+
+## Tarea 11 — Modo GYM R2: sesión-first (spec: docs/superpowers/specs/2026-10-23-modo-gym-design.md)
+> Plan: `docs/superpowers/plans/2026-10-23-modo-gym-r2-sesion-first.md`
+> Objetivo: abrir la app y estar registrando, sin scroll y con una mano. Cierre esperado: **60 tests**.
+1. [x] T11-1 Cuatro vistas: `registrar | plan | cuerpo | progreso`, `Registrar` home, `#hierro` alias, `Base.astro` y `viewFromHash` alineados, 4 vistas montadas. Cierre: 51 tests. — `95fa27d` — review APROBADA (spec ✅, 4 minors corregidos: alias con prototipos, `CSSProperties`, reporte).
+2. [x] T11-2 Inicio de sesión + header sticky: `forja_session_start`, `startSession()`, `formatElapsed`/`sessionSummary`/`nextPending`, `useSaveSession` compartido, header con series/volumen/tiempo/Guardar. Cierre: 56 tests. — `881ceab` — review APROBADA (spec ✅, 3 minors corregidos: `sessionStart` huérfano, intervalo sin sesión, reporte; #418 preexistente diferido).
+3. [x] T11-3 Composer plegado: ejercicios primero, `<details>` al final, autocompletado de rutina + historial, metadata (grupo/reps/rest/nota). Cierre: 58 tests. — `ff4cc54` — review APROBADA (spec ✅, 5 minors: 4 corregidos — grupo manual, `useMemo`, cierre por teclado, `aria-label` del select; 2 diferidos — combobox completo y límite 6 con historial largo).
+4. [x] T11-4 Fila de serie v2: estado activo, ±1 rep, ±2,5 kg, repetir, “La vez pasada”, auto-scroll a la siguiente pendiente y cadena Enter. — `4893438` — review APROBADA (spec ✅, 7 minors: 3 corregidos — `role="group"` con contexto, foco→scroll, CSS muerto; 4 diferidos — `repeatSet` parcial, `NaN` histórico, retroceso del auto-avance y Enter con campos vacíos).
+5. [x] T11-5 Timer manual: presets 60/90/120/180, overlay con anillo, siguiente serie y descanso por defecto de 90 s para ejercicios manuales. — `b25ccd4` — review APROBADA (spec ✅, 4 minors diferidos — header de dos filas en mobile, accesibilidad del panel, `NaN` con kg histórico no numérico y `min-width` bajo 250 px; SW 27 verificado: manifest completo, sin assets faltantes).
+6. [x] T11-6 Fin de semana + ConfirmSheet: banner “Hoy no toca bloque · te preparo el lunes”, cargar lunes o repetir último día, `Cargar día` navega a Registrar con undo, sin `window.confirm`. Cierre: 60 tests. — `19f4c3f` — review Needs fixes → corregido: el backdrop quedaba atrapado en el stacking context del footer y no tapaba header/tabbar/toasts; ahora `ConfirmSheet` usa portal a `document.body`, con focus trap, scroll lock y foco restaurado. 60 tests, SW 28 con manifest completo. Diferidos: heurística de sesiones parciales, tests superficiales, banner bajo el fold a 360, `today` fijo al montar y undo que convive con un guardado.
+7. [x] T11-7 Docs y cierre R2: README/MIGRACION/PLAN, validación completa y auditor final. — `49dfe32` — review APROBADA (spec ✅, 4 minors corregidos: “3 paneles” → cuatro vistas, `forja_session_start` en el modelo de datos, lista de `shared/` completa y reporte ampliado). 60 tests, `tsc` check limpio y SW 28 con manifest completo. — `a0ecc59` — auditor final **APROBADO**.
+- **Cierre R2 (2026-10-23)**: auditor final APROBADO (60 tests, `tsc` + build OK, SW 28 con manifest completo, primera serie sin scroll a 390×844, flujo de 3 series en 2,25 s, 4 pestañas + alias, Guardar visible, timer manual y `ConfirmSheet` sin `window.confirm`). Minor abierto diferido: “La vez pasada” y la precarga muestran `0×0` en series vacías de sesiones parciales guardadas.
+- **Criterio de cierre R2**: 60 tests · primera serie visible sin scroll a 390×844 · ≤ 8 s por serie con una mano · 4 pestañas + alias · Guardar siempre visible · timer manual · `ConfirmSheet` sin `window.confirm` · auditor final APROBADO.
+
+## Tarea 12 — Modo GYM R3: RIR y volumen en vivo (spec: docs/superpowers/specs/2026-10-23-modo-gym-design.md)
+> Plan: `docs/superpowers/plans/2026-10-23-modo-gym-r3-rir-volumen.md`
+> Objetivo: que la inteligencia de FORJA se vea en la fila. Cierre esperado: **67 tests**.
+1. [x] T12-1 RIR opcional: `SetData.rir?: number | null`, `setSetRir`, chips 44 px en el set activo, badge en fila e historial, conservado en respaldo v3. — `46dd760` — review APROBADA (spec ✅, 0 Critical, 0 Important, 3 minors del reporte corregidos). 61 tests, `tsc` check limpio, SW 28.
+2. [x] T12-2 Sugerencias por RIR: todas al tope + RIR 0 → mantener; al tope + RIR ≤ 2 → subir; en rango + RIR ≥ 3 → subir; bajo mínimo → bajar; sin RIR o RIR parcial → fallback actual. Cierre: 67 tests. — `98ae354` — review APROBADA (spec ✅, 0 Critical, 0 Important, 0 minors de código). 67 tests, `tsc` check limpio, SW 28.
+3. [x] T12-3 Semáforo de volumen en vivo: `VolumePulse` reutiliza `weeklyVolume` con la sesión en curso, `role="meter"`, sin duplicar sesiones guardadas. — `44999d3` — review APROBADA (spec ✅, 0 Critical, 0 Important, 2 minors: glifo corregido y duplicación teórica documentada). 67 tests, `tsc` check limpio, SW 28, smoke 33/33.
+4. [x] T12-4 Progreso honesto + docs y cierre R3: “series completadas”, vacío distinto de “sin historial”, README/MIGRACION/PLAN, validación completa y auditor final. — `3ee302c` — review APROBADA (spec ✅, 0 Critical, 0 Important, 1 minor preexistente: cardio fuera de `SET_GUIDE`). 67 tests, `tsc` check limpio, SW 28, smoke 63/63. — `58e1eb5` — auditor final **APROBADO CON OBSERVACIONES** (9/9 criterios, 0 Critical, 0 Important, 2 minors documentales corregidos en el cierre).
+- **Criterio de cierre R3**: 67 tests · RIR opcional visible y conservado · seis reglas de sugerencia testeadas · respaldo con RIR testeado · semáforo con `weeklyVolume` · Progreso sin “series efectivas” · auditor final APROBADO.
+- **Cierre R3 (2026-10-23)**: auditor final APROBADO CON OBSERVACIONES (67 tests, `tsc` check limpio, build OK con SW 28 y manifest completo; RIR opcional visible en fila e historial y conservado en respaldo v3; seis reglas de sugerencia testeadas; semáforo en vivo con `weeklyVolume` sin duplicar volumen; Progreso sin “series efectivas” y con vacío honesto; primera serie visible sin scroll a 360/390/412). Minor abierto diferido: `totalSets` no cuenta cardio y `exerciseSeries` omite kg=0, limitaciones preexistentes fuera de alcance.
