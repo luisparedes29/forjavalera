@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   formatElapsed,
   nextPending,
+  nextSetTarget,
   sessionSummary,
   stepValue,
   suggestExercises
@@ -52,6 +53,35 @@ describe('nextPending', () => {
   it('devuelve -1 si no quedan pendientes', () => {
     expect(nextPending([set(10, 100, true)])).toBe(-1)
     expect(nextPending([])).toBe(-1)
+  })
+})
+
+describe('nextSetTarget', () => {
+  const ex = (id: string, done: boolean[]): Exercise => ({
+    id,
+    name: id,
+    group: 'pecho',
+    sets: done.map((d) => set(10, 100, d))
+  })
+
+  it('elige la próxima pendiente del mismo ejercicio', () => {
+    const exercises = [ex('a', [true, false, false]), ex('b', [false])]
+    expect(nextSetTarget(exercises, 'a', 0)).toEqual({ exId: 'a', si: 1 })
+  })
+
+  it('salta al primer ejercicio con pendientes', () => {
+    const exercises = [
+      ex('a', [true]),
+      ex('b', [true, false]),
+      ex('c', [false])
+    ]
+    expect(nextSetTarget(exercises, 'a', 0)).toEqual({ exId: 'b', si: 1 })
+  })
+
+  it('devuelve null sin pendientes o con un ejercicio inexistente', () => {
+    expect(nextSetTarget([ex('a', [true])], 'a', 0)).toBeNull()
+    expect(nextSetTarget([ex('a', [false])], 'z', 0)).toBeNull()
+    expect(nextSetTarget([], 'a', 0)).toBeNull()
   })
 })
 
