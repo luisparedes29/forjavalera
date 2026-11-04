@@ -408,6 +408,7 @@ export default function Sesion() {
                           }}
                         >
                           <button
+                            type="button"
                             className="set-check"
                             title="Marcar serie completada"
                             aria-pressed={s.done}
@@ -428,7 +429,11 @@ export default function Sesion() {
                                 : ''
                             }: ajustes`}
                             aria-expanded={isActive}
-                            aria-controls={`set-tools-${e.id}-${si} set-rir-${e.id}-${si}`}
+                            aria-controls={
+                              isActive
+                                ? `set-tools-${e.id}-${si} set-rir-${e.id}-${si}`
+                                : undefined
+                            }
                             onClick={() => toggleActive(e.id, si)}
                           >
                             {si + 1}
@@ -479,6 +484,11 @@ export default function Sesion() {
                             onKeyDown={(ev) => {
                               if (ev.key === 'Enter') {
                                 ev.preventDefault()
+                                if (s.done) {
+                                  const next = nextSetTarget(exercises, e.id, si)
+                                  if (next) focusSet(next.exId, next.si)
+                                  return
+                                }
                                 markDone(e, si, true)
                               }
                             }}

@@ -1380,7 +1380,7 @@
         display: grid;
         place-items: center;
         border: 1px solid var(--line);
-        font: 700 12px 'Space Grotesk';
+        font: 700 12px 'Space Grotesk', sans-serif;
         color: var(--gc);
         background: rgba(0, 0, 0, 0.25);
         transition: 0.15s;
@@ -1397,6 +1397,7 @@
         background: var(--gc);
         color: #0c0f0a;
         border-color: var(--gc);
+        box-shadow: 0 0 0 2px rgba(201, 242, 75, 0.35);
       }
       .set-row input {
         background: transparent;
