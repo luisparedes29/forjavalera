@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import type { CSSProperties } from 'react'
 import { useAppStore } from '../../store/appStore'
 import type { SessionHistory } from '../../lib/types'
@@ -8,12 +7,14 @@ import { isCompletedSet, volumeOf } from '../../lib/logic'
 import { formatDate, formatWeekday } from '../../lib/date'
 import { toast } from '../../lib/toast'
 
-export default function Historial() {
+interface HistorialProps {
+  open: Record<string, boolean>
+  onToggle: (id: string) => void
+}
+
+export default function Historial({ open, onToggle }: HistorialProps) {
   const history = useAppStore((s) => s.history)
   const removeSession = useAppStore((s) => s.removeSession)
-  const [open, setOpen] = useState<Record<string, boolean>>({})
-
-  const toggle = (id: string): void => setOpen((o) => ({ ...o, [id]: !o[id] }))
 
   if (!history.length) {
     return (
@@ -57,7 +58,7 @@ export default function Historial() {
             <button
               className="hist-head"
               aria-expanded={isOpen}
-              onClick={() => toggle(h.id)}
+              onClick={() => onToggle(h.id)}
             >
               <span className="hist-date">
                 <b>{weekday}</b>

@@ -2325,6 +2325,9 @@
         min-height: 44px;
         padding: 11px 16px;
       }
+      .hist-panel {
+        --acc: var(--teal);
+      }
       .prog-ctl select {
         flex: 1;
         min-width: 180px;

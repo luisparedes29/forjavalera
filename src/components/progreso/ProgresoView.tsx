@@ -17,6 +17,8 @@ export default function ProgresoView() {
   const [metric, setMetric] = useState<Metric>('kg')
   const [selected, setSelected] = useState<string | null>(null)
   const [weekRange, setWeekRange] = useState<string | null>(null)
+  const [histOpen, setHistOpen] = useState<Record<string, boolean>>({})
+  const toggleHist = (id: string): void => setHistOpen((o) => ({ ...o, [id]: !o[id] }))
   useEffect(() => {
     const fmt = new Intl.DateTimeFormat('es-AR', { day: 'numeric', month: 'short' })
     const startMs = mondayOf(Date.now())
@@ -293,11 +295,11 @@ export default function ProgresoView() {
         </>
       ) : (
         <div className="progreso-main hist-only">
-          <section className="panel" style={{ '--acc': 'var(--teal)' }}>
+          <section className="panel hist-panel">
             <h2>
               <span className="n">01/</span> Historial
             </h2>
-            <Historial />
+            <Historial open={histOpen} onToggle={toggleHist} />
           </section>
         </div>
       )}
