@@ -85,7 +85,7 @@ describe('nextSetTarget', () => {
   })
 
   it('respeta el índice cuando la serie actual no es la primera', () => {
-    const exercises = [ex('a', [true, true, false]), ex('b', [false])]
+    const exercises = [ex('a', [false, true, false]), ex('b', [false])]
     expect(nextSetTarget(exercises, 'a', 1)).toEqual({ exId: 'a', si: 2 })
   })
 
