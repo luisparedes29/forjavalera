@@ -83,6 +83,16 @@ describe('nextSetTarget', () => {
     expect(nextSetTarget([ex('a', [false])], 'z', 0)).toBeNull()
     expect(nextSetTarget([], 'a', 0)).toBeNull()
   })
+
+  it('respeta el índice cuando la serie actual no es la primera', () => {
+    const exercises = [ex('a', [true, true, false]), ex('b', [false])]
+    expect(nextSetTarget(exercises, 'a', 1)).toEqual({ exId: 'a', si: 2 })
+  })
+
+  it('vuelve a un ejercicio anterior si es el único con pendientes', () => {
+    const exercises = [ex('a', [false]), ex('b', [true])]
+    expect(nextSetTarget(exercises, 'b', 0)).toEqual({ exId: 'a', si: 0 })
+  })
 })
 
 const hist = (name: string): SessionHistory => ({
