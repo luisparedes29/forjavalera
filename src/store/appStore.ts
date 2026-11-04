@@ -21,6 +21,8 @@ function mapBrazosByName(n: string): string {
 
 export type ViewId = 'registrar' | 'plan' | 'cuerpo' | 'progreso'
 
+export type ProgresoSub = 'resumen' | 'historial'
+
 export type RoutineExerciseExt = RoutineExercise & {
   name: string
   sets: number[]
@@ -44,8 +46,10 @@ interface AppStore {
   body: BodyRecord[]
   week: WeekState
   view: ViewId
+  progresoSub: ProgresoSub
   sessionStartedAt: number | null
   setView: (view: ViewId, push?: boolean) => void
+  setProgresoSub: (sub: ProgresoSub, push?: boolean) => void
   startSession: () => void
   restoreSessionStart: (ts: number | null) => void
   addExercise: (ex: Exercise) => void
@@ -96,6 +100,7 @@ export const useAppStore = create<AppStore>()((set, get) => ({
   body: load<BodyRecord[]>(LS.body, []),
   week: load<WeekState>(LS.week, { ...RESET_WEEK }),
   view: initialView(),
+  progresoSub: 'resumen',
   sessionStartedAt: savedSessionStart(),
 
   setView: (view, push = false) => {
@@ -105,6 +110,15 @@ export const useAppStore = create<AppStore>()((set, get) => ({
       window.location.hash = view
     }
     if (typeof window !== 'undefined') window.scrollTo({ top: 0 })
+  },
+
+  setProgresoSub: (progresoSub, push = false) => {
+    set({ progresoSub })
+    if (push && typeof window !== 'undefined') {
+      const hash = progresoSub === 'historial' ? 'historial' : 'progreso'
+      if (window.location.hash !== `#${hash}`) window.location.hash = hash
+      else window.scrollTo({ top: 0 })
+    }
   },
 
   startSession: () => {
