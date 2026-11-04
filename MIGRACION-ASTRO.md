@@ -12,7 +12,7 @@ tocar el código para retomar el trabajo sin perder el hilo.
 - **Dato actualizado**: el usuario SÍ tiene datos de entrenamiento (semana pasada) en su
   **teléfono**, en la URL vieja. Antes del deploy final: **exportar respaldo v3** desde el
   teléfono y verificarlo; tras el deploy, comprobar que la app nueva los lee (o importarlos).
-- Verificaciones actuales: tsc ✅ · vitest 60/60 ✅ · `npm run build` ✅ (SW `dist/sw.js` con precache inyectado, 28 archivos)
+- Verificaciones actuales: tsc ✅ · vitest 67/67 ✅ · `npm run build` ✅ (SW `dist/sw.js` con precache inyectado, 28 archivos)
 - Post-migración (paquete 1 de optimizaciones, commit `acde33c` en `dev`): fonts self-hosted
   (Anton + Space Grotesk en `public/fonts/`, sin Google Fonts), precache SW ampliado a
   woff2/json, directivas de islas `client:idle/visible`, refactor (`viewFromHash`, guard SSR,
@@ -27,6 +27,12 @@ tocar el código para retomar el trabajo sin perder el hilo.
 - Decisión post-migración (2026-10-23): `forja_session_start` guarda el inicio de la sesión
   actual. Es estado de UI: no entra en el respaldo v3 y se borra al guardar, vaciar,
   importar o borrar todos los datos.
+- Decisión post-migración (2026-10-23): `SetData.rir` es opcional y no cambia la versión
+  del respaldo (sigue v3). Las sugerencias de carga solo usan RIR cuando todas las series
+  completadas lo tienen; sin RIR se mantiene la regla por reps.
+- Decisión post-migración (2026-10-23): el semáforo de volumen en vivo reutiliza
+  `weeklyVolume` con la sesión en curso como una sesión más. No existe un quinto criterio
+  de volumen.
 - Fixes aplicados y validados: nav tras F5 (sin residuo), acordeón Historial,
   reloj TopBar (sin hydration-mismatch), SW dev (sin registro/errores `chrome-extension`),
   parpadeo de Hierro al F5 (D-lite: `data-view` pre-paint). Servers de dev cerrados.
