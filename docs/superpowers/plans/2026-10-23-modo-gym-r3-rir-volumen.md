@@ -453,7 +453,7 @@ Subagente `general` (NO edita): verifica las seis reglas, que sin RIR el comport
 - Construye un `SessionHistory` sintético `{ id: 'live', ts: new Date(now).toISOString(), volume: 0, focus: '', exercises }` y lo antepone al historial.
 - No renderiza hasta estar montado (evita hydration mismatch).
 
-- [ ] **Step 1: Crear el componente**
+- [x] **Step 1: Crear el componente**
 
 Crear `src/components/hierro/VolumePulse.tsx`:
 
@@ -558,7 +558,7 @@ export default function VolumePulse() {
 }
 ```
 
-- [ ] **Step 2: Insertarlo en Registrar**
+- [x] **Step 2: Insertarlo en Registrar**
 
 En `src/components/hierro/RegistrarView.tsx`:
 
@@ -585,7 +585,7 @@ export default function RegistrarView() {
 }
 ```
 
-- [ ] **Step 3: Estilos**
+- [x] **Step 3: Estilos**
 
 ```css
 .volume-pulse {
@@ -681,7 +681,7 @@ export default function RegistrarView() {
 }
 ```
 
-- [ ] **Step 4: Validar y commitear**
+- [x] **Step 4: Validar y commitear**
 
 Run: `npx tsc --noEmit -p tsconfig.check.json` → sin errores.
 Run: `npm test` → Expected: **67 passed** (sin tests nuevos).
@@ -694,7 +694,7 @@ Regresión de R2: a 360×844, 390×844 y 412×915, con un día cargado, verifica
 Run: `git add src/components/hierro/VolumePulse.tsx src/components/hierro/RegistrarView.tsx src/styles/global.css`
 Run: `git commit -m "feat: semaforo de volumen semanal en vivo"`
 
-- [ ] **Step 5: Auditoría T12-3**
+- [x] **Step 5: Auditoría T12-3**
 
 Subagente `general` (NO edita): verifica que `VolumePulse` use `weeklyVolume` y no un cálculo paralelo, que solo sume series `done`, que no renderice en SSR, que el `role="meter"` tenga min/max/now, que no duplique sesiones guardadas y corre `tsc`/`npm test` (67)/`build`. PASS/FAIL → marcar en `PLAN-V1.md`.
 
