@@ -4,15 +4,11 @@
 > antes de tocar el código. Complementa a `MIGRACION-ASTRO.md` (migración monolito→Astro).
 
 ## Estado
-- Fecha: 2026-10-23 · Última actualización: planificación del Modo GYM (Tareas 10–12).
+- Fecha: 2026-10-23 · Última actualización: R3 cerrado (RIR y volumen en vivo).
 - **Hecho**: Tareas 1 (README), 2 (merge dev→main, por el usuario), 3 (optimizaciones,
-  commiteada en `dev` local `acde33c`, **push pendiente**), 5 (volumen semanal lun–dom, `ae072c6`), 6 (rutina pullover + curl inclinado, `570b8ab`/`616fa4b`), 7 (series 4 + predicador/pushdown, `61bcc8e`/`c4e6137`), 8 (ajuste EZ/overhead a 3, `2b186a0`), 9 (split brazos→bíceps/tríceps, `ee9c49d`/`7b0db2e`/`616e5c5`) y planificación Modo GYM (spec + planes R1/R2/R3, 2026-10-23).
-- **En curso**: — (documentación del Modo GYM lista; falta ejecutar Tareas 10–12).
-- **Pendiente**: ejecutar Tarea 10 (R1 confiabilidad), 11 (R2 sesión-first) y 12 (R3 RIR y
-  volumen en vivo), en ese orden y con auditor final por release; push de `dev` → merge a
-  `main` (lo hace el usuario) → deploy producción + verificación en el teléfono; **respaldo
-  v3 antes del deploy** (el usuario SÍ tiene datos de la semana pasada en el teléfono, en la
-  URL vieja); Tarea 4 opcional.
+  commiteada en `dev` local `acde33c`, **push pendiente**), 5 (volumen semanal lun–dom, `ae072c6`), 6 (rutina pullover + curl inclinado, `570b8ab`/`616fa4b`), 7 (series 4 + predicador/pushdown, `61bcc8e`/`c4e6137`), 8 (ajuste EZ/overhead a 3, `2b186a0`), 9 (split brazos→bíceps/tríceps, `ee9c49d`/`7b0db2e`/`616e5c5`), planificación Modo GYM (spec + planes R1/R2/R3, 2026-10-23) y Tareas 10 (R1 confiabilidad), 11 (R2 sesión-first) y 12 (R3 RIR y volumen en vivo), con auditor final aprobado por release.
+- **En curso**: —
+- **Pendiente**: push de `dev` → merge a `main` (lo hace el usuario) → deploy producción + verificación en el teléfono; **respaldo v3 antes del deploy** (el usuario SÍ tiene datos de la semana pasada en el teléfono, en la URL vieja); Tarea 4 opcional.
 - **URL de producción confirmada**: `https://forjavalera.netlify.app/` (corregir
   `astro.config.mjs` y README en R1; hoy dicen `forja.netlify.app`).
 - **Regla acordada**: tareas por confirmación del usuario; tras cada bloque se actualiza
@@ -179,5 +175,6 @@
 1. [x] T12-1 RIR opcional: `SetData.rir?: number | null`, `setSetRir`, chips 44 px en el set activo, badge en fila e historial, conservado en respaldo v3. — `46dd760` — review APROBADA (spec ✅, 0 Critical, 0 Important, 3 minors del reporte corregidos). 61 tests, `tsc` check limpio, SW 28.
 2. [x] T12-2 Sugerencias por RIR: todas al tope + RIR 0 → mantener; al tope + RIR ≤ 2 → subir; en rango + RIR ≥ 3 → subir; bajo mínimo → bajar; sin RIR o RIR parcial → fallback actual. Cierre: 67 tests. — `98ae354` — review APROBADA (spec ✅, 0 Critical, 0 Important, 0 minors de código). 67 tests, `tsc` check limpio, SW 28.
 3. [x] T12-3 Semáforo de volumen en vivo: `VolumePulse` reutiliza `weeklyVolume` con la sesión en curso, `role="meter"`, sin duplicar sesiones guardadas. — `44999d3` — review APROBADA (spec ✅, 0 Critical, 0 Important, 2 minors: glifo corregido y duplicación teórica documentada). 67 tests, `tsc` check limpio, SW 28, smoke 33/33.
-4. [x] T12-4 Progreso honesto + docs y cierre R3: “series completadas”, vacío distinto de “sin historial”, README/MIGRACION/PLAN, validación completa y auditor final. — `3ee302c` — review APROBADA (spec ✅, 0 Critical, 0 Important, 1 minor preexistente: cardio fuera de `SET_GUIDE`). 67 tests, `tsc` check limpio, SW 28, smoke 63/63.
+4. [x] T12-4 Progreso honesto + docs y cierre R3: “series completadas”, vacío distinto de “sin historial”, README/MIGRACION/PLAN, validación completa y auditor final. — `3ee302c` — review APROBADA (spec ✅, 0 Critical, 0 Important, 1 minor preexistente: cardio fuera de `SET_GUIDE`). 67 tests, `tsc` check limpio, SW 28, smoke 63/63. — `58e1eb5` — auditor final **APROBADO CON OBSERVACIONES** (9/9 criterios, 0 Critical, 0 Important, 2 minors documentales corregidos en el cierre).
 - **Criterio de cierre R3**: 67 tests · RIR opcional visible y conservado · seis reglas de sugerencia testeadas · respaldo con RIR testeado · semáforo con `weeklyVolume` · Progreso sin “series efectivas” · auditor final APROBADO.
+- **Cierre R3 (2026-10-23)**: auditor final APROBADO CON OBSERVACIONES (67 tests, `tsc` check limpio, build OK con SW 28 y manifest completo; RIR opcional visible en fila e historial y conservado en respaldo v3; seis reglas de sugerencia testeadas; semáforo en vivo con `weeklyVolume` sin duplicar volumen; Progreso sin “series efectivas” y con vacío honesto; primera serie visible sin scroll a 360/390/412). Minor abierto diferido: `totalSets` no cuenta cardio y `exerciseSeries` omite kg=0, limitaciones preexistentes fuera de alcance.

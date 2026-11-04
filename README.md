@@ -25,8 +25,8 @@ Cuatro vistas con navegación por hash (`#registrar`, `#plan`, `#cuerpo`, `#prog
 
 **RIR opcional por serie** (`— / 0 / 1 / 2 / 3+`), visible en la fila y el historial: afina
 la sugerencia de carga cuando todas las series completadas lo tienen. **Semáforo de volumen
-semanal en vivo** para los grupos de la sesión: combina el historial de la semana con la
-sesión en curso.
+semanal en vivo** para los grupos con volumen en la semana (sesión + historial): combina el
+historial con la sesión en curso.
 
 Las **series completadas** (`done`) son la fuente de verdad del volumen y del historial: las
 series sin completar no suman volumen ni cuentan como entrenadas.
