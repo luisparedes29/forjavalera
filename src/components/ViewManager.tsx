@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useAppStore } from '../store/appStore'
-import { viewFromHash } from '../lib/view'
+import { progresoSubFromHash, viewFromHash } from '../lib/view'
 import useReveal from '../hooks/useReveal'
 import RegistrarView from './hierro/RegistrarView'
 import PlanView from './hierro/PlanView'
@@ -13,7 +13,10 @@ export default function ViewManager() {
 
   useEffect(() => {
     const fromHash = (): void => {
-      useAppStore.getState().setView(viewFromHash(window.location.hash), false)
+      const hash = window.location.hash
+      const state = useAppStore.getState()
+      state.setView(viewFromHash(hash), false)
+      state.setProgresoSub(progresoSubFromHash(hash), false)
     }
     fromHash()
     window.addEventListener('hashchange', fromHash)

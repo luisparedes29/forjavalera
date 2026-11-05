@@ -8,12 +8,15 @@ sin cuentas, sin red: tus datos viven **solo en este navegador** (`localStorage`
 ## Funcionalidades
 
 Cuatro vistas con navegación por hash (`#registrar`, `#plan`, `#cuerpo`, `#progreso`).
-`#hierro` sigue funcionando como alias de `#registrar`.
+`#hierro` sigue funcionando como alias de `#registrar` y `#historial` abre Progreso en su
+sub-vista Historial.
 
 - **Registrar** — Home y sesión en curso: header sticky con series completadas, volumen y
   tiempo; composer plegado con autocompletado desde la rutina y el historial; fila de serie
-  con ±1 rep, ±2,5 kg, repetir y “La vez pasada”; auto-avance con Enter; timer de descanso
-  manual con presets 60/90/120/180 y aviso de la siguiente serie.
+  con ±1 rep, ±2,5 kg, repetir y “La vez pasada”; herramientas al tocar el número de serie o
+  el espacio libre de la fila (sin abrir teclado); el check no abre teclado y Enter encadena
+  reps → kg → siguiente; timer de descanso manual con presets 60/90/120/180 y aviso de la
+  siguiente serie.
 - **Plan** — Rutina de 5 días (lun–vie) con semanas 1–6 y DELOAD; carga del día en la sesión
   con undo; fin de semana explícito que propone el lunes o repetir el último día entrenado.
 - **Cuerpo** — Registro antropométrico (peso, altura y 9 medidas), deltas y gráfico de
@@ -21,7 +24,9 @@ Cuatro vistas con navegación por hash (`#registrar`, `#plan`, `#cuerpo`, `#prog
 - **Progreso** — Volumen semanal por grupo muscular vs. rango recomendado (`SET_GUIDE`),
   calculado **solo con series completadas** — ventana: semana lun–dom — y progresión por
   ejercicio (kg / e1RM Epley / volumen) con PR, última, cambio y sesiones; todos ellos
-  calculados **solo con series completadas**.
+  calculados **solo con series completadas**. La pestaña tiene dos sub-vistas: **Resumen**
+  (volumen y progresión) e **Historial** (sesiones guardadas); el cuerpo de cada sesión se
+  renderiza solo al abrirlo.
 
 **RIR opcional por serie** (`— / 0 / 1 / 2 / 3+`), visible en la fila y el historial: afina
 la sugerencia de carga cuando todas las series completadas lo tienen. **Semáforo de volumen
@@ -34,6 +39,10 @@ series sin completar no suman volumen ni cuentan como entrenadas.
 > El timer usa la hora de finalización (`endsAt`) y se corrige al volver a la app, pero con
 > la PWA cerrada o la pantalla apagada el sistema puede suspender el aviso. No prometemos
 > notificaciones confiables en segundo plano.
+>
+> Además, el **estado del descanso no se persiste**: si Android recarga la pestaña al apagar
+> la pantalla, el timer desaparece. La sesión y las series sí sobreviven (`forja_session` y
+> `forja_session_start`). Queda documentado como limitación conocida.
 
 Además: **instalable (PWA)** y funciona **sin conexión** (Service Worker con Workbox,
 fuentes Anton + Space Grotesk self-hosted, sin Google Fonts), con **respaldo export/import**
@@ -56,7 +65,7 @@ fuentes Anton + Space Grotesk self-hosted, sin Google Fonts), con **respaldo exp
 | `npm run dev` | Servidor de desarrollo (Astro) |
 | `npm run build` | Build estático → `dist/` |
 | `npm run preview` | Previsualizar el build |
-| `npm test` | Tests con Vitest (67 casos) |
+| `npm test` | Tests con Vitest (80 casos) |
 
 ## Estructura
 

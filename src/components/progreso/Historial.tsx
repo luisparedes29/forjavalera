@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import type { CSSProperties } from 'react'
 import { useAppStore } from '../../store/appStore'
 import type { SessionHistory } from '../../lib/types'
@@ -8,12 +7,14 @@ import { isCompletedSet, volumeOf } from '../../lib/logic'
 import { formatDate, formatWeekday } from '../../lib/date'
 import { toast } from '../../lib/toast'
 
-export default function Historial() {
+interface HistorialProps {
+  open: Record<string, boolean>
+  onToggle: (id: string) => void
+}
+
+export default function Historial({ open, onToggle }: HistorialProps) {
   const history = useAppStore((s) => s.history)
   const removeSession = useAppStore((s) => s.removeSession)
-  const [open, setOpen] = useState<Record<string, boolean>>({})
-
-  const toggle = (id: string): void => setOpen((o) => ({ ...o, [id]: !o[id] }))
 
   if (!history.length) {
     return (
@@ -55,9 +56,11 @@ export default function Historial() {
         return (
           <article className={`hist-item${isOpen ? ' open' : ''}`} key={h.id}>
             <button
+              type="button"
               className="hist-head"
               aria-expanded={isOpen}
-              onClick={() => toggle(h.id)}
+              aria-controls={isOpen ? `hist-body-${h.id}` : undefined}
+              onClick={() => onToggle(h.id)}
             >
               <span className="hist-date">
                 <b>{weekday}</b>
@@ -72,7 +75,8 @@ export default function Historial() {
               </span>
               <span className="chev">▸</span>
             </button>
-            <div className="hist-body">
+            {isOpen ? (
+              <div className="hist-body" id={`hist-body-${h.id}`}>
                 {h.exercises.map((e, i) => (
                   <div className="hist-ex" key={i}>
                     <span>
@@ -98,6 +102,7 @@ export default function Historial() {
                   </div>
                 ))}
                 <button
+                  type="button"
                   className="del-hist"
                   onClick={() => {
                     const prev = history
@@ -110,7 +115,8 @@ export default function Historial() {
                 >
                   Eliminar sesión
                 </button>
-            </div>
+              </div>
+            ) : null}
           </article>
         )
       })}

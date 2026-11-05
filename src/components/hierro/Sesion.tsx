@@ -15,7 +15,7 @@ import {
 import { GROUPS, GCOLORS } from '../../data/routine'
 import { fmtN, normName, uid } from '../../lib/util'
 import {
-  nextPending,
+  nextSetTarget,
   stepValue,
   suggestExercises,
   type ExerciseSuggestion
@@ -252,18 +252,32 @@ export default function Sesion() {
     })
   }
 
-  const markDone = (e: Exercise, si: number): void => {
+  const scrollSet = (exId: string, si: number): void => {
+    window.requestAnimationFrame(() => {
+      document
+        .querySelector<HTMLElement>(`[data-set="${exId}-${si}"]`)
+        ?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    })
+  }
+
+  const toggleActive = (exId: string, si: number): void => {
+    setActive((a) =>
+      a?.exId === exId && a.si === si ? null : { exId, si }
+    )
+  }
+
+  const markDone = (e: Exercise, si: number, focusNext = false): void => {
     const s = e.sets[si]
-    if (!s || s.done) return
+    if (!s) return
+    const next = nextSetTarget(exercises, e.id, si)
+    if (s.done) {
+      if (focusNext && next) focusSet(next.exId, next.si)
+      return
+    }
     toggleSetDone(e.id, si)
-    const nextInEx = nextPending(e.sets, si + 1)
-    if (nextInEx >= 0) {
-      focusSet(e.id, nextInEx)
-    } else {
-      const nextEx = exercises.find(
-        (x) => x.id !== e.id && nextPending(x.sets) >= 0
-      )
-      if (nextEx) focusSet(nextEx.id, nextPending(nextEx.sets))
+    if (next) {
+      if (focusNext) focusSet(next.exId, next.si)
+      else scrollSet(next.exId, next.si)
     }
     const sec = parseRest(e.rest) || 90
     useTimerStore.getState().start(sec, `${e.name} · S${si + 1}`)
@@ -391,8 +405,14 @@ export default function Sesion() {
                             isActive ? ' active' : ''
                           }`}
                           data-set={`${e.id}-${si}`}
+                          onClick={(ev) => {
+                            const target = ev.target as HTMLElement
+                            if (target.closest('input, button')) return
+                            toggleActive(e.id, si)
+                          }}
                         >
                           <button
+                            type="button"
                             className="set-check"
                             title="Marcar serie completada"
                             aria-pressed={s.done}
@@ -403,7 +423,23 @@ export default function Sesion() {
                           >
                             {checkSVG}
                           </button>
-                          <span className="set-num">
+                          <button
+                            type="button"
+                            className="set-num"
+                            title="Ajustes de la serie"
+                            aria-label={`Serie ${si + 1}${
+                              typeof s.rir === 'number'
+                                ? `, RIR ${s.rir === 3 ? '3+' : s.rir}`
+                                : ''
+                            }: ajustes`}
+                            aria-expanded={isActive}
+                            aria-controls={
+                              isActive
+                                ? `set-tools-${e.id}-${si} set-rir-${e.id}-${si}`
+                                : undefined
+                            }
+                            onClick={() => toggleActive(e.id, si)}
+                          >
                             {si + 1}
                             {typeof s.rir === 'number' ? (
                               <i
@@ -413,7 +449,7 @@ export default function Sesion() {
                                 {s.rir === 3 ? '3+' : s.rir}
                               </i>
                             ) : null}
-                          </span>
+                          </button>
                           <input
                             type="number"
                             min={0}
@@ -452,7 +488,7 @@ export default function Sesion() {
                             onKeyDown={(ev) => {
                               if (ev.key === 'Enter') {
                                 ev.preventDefault()
-                                markDone(e, si)
+                                markDone(e, si, true)
                               }
                             }}
                           />
@@ -481,6 +517,7 @@ export default function Sesion() {
                         {isActive ? (
                           <div
                             className="set-tools"
+                            id={`set-tools-${e.id}-${si}`}
                             role="group"
                             aria-label={`Herramientas serie ${si + 1} de ${e.name}`}
                           >
@@ -542,7 +579,10 @@ export default function Sesion() {
                           </div>
                         ) : null}
                         {isActive ? (
-                          <div className="set-tools-rir">
+                          <div
+                            className="set-tools-rir"
+                            id={`set-rir-${e.id}-${si}`}
+                          >
                             <span>RIR</span>
                             <RirChips
                               value={s.rir}

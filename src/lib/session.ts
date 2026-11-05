@@ -31,6 +31,28 @@ export function nextPending(sets: SetData[], from = 0): number {
   return -1
 }
 
+export interface SetTarget {
+  exId: string
+  si: number
+}
+
+export function nextSetTarget(
+  exercises: Exercise[],
+  exId: string,
+  si: number
+): SetTarget | null {
+  const current = exercises.find((e) => e.id === exId)
+  if (!current) return null
+  const nextInEx = nextPending(current.sets, si + 1)
+  if (nextInEx >= 0) return { exId, si: nextInEx }
+  for (const e of exercises) {
+    if (e.id === exId) continue
+    const next = nextPending(e.sets)
+    if (next >= 0) return { exId: e.id, si: next }
+  }
+  return null
+}
+
 export interface ExerciseSuggestion {
   name: string
   group?: string
