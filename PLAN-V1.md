@@ -224,8 +224,21 @@ El historial colapsado explica el **76% del heap y el 84% de los nodos**. Las vi
 
 > Spec: `docs/superpowers/specs/2026-11-04-fila-serie-sin-teclado-design.md`
 > Plan: `docs/superpowers/plans/2026-11-04-fila-serie-sin-teclado.md`
-> Estado: **completa** (bloque 1). El bloque 2 —pestaña Historial propia y renderizado liviano— queda para después.
+> Estado: **completa** (bloque 1). El bloque 2 quedó resuelto en la Tarea 15 como sub-vista de Progreso, sin quinta pestaña.
 
 1. [x] T14-1 `nextSetTarget` puro con 5 tests: misma serie, `si > 0`, siguiente ejercicio, vuelta a pendientes anteriores y sin pendientes. — 72 tests. Commits `1ec716e`, `3da80eb`, `1124852`; review APROBADA.
 2. [x] T14-2 Check sin teclado, Enter encadena reps → kg → siguiente y herramientas al tocar número/fila; `aria-controls` solo expandido, anillo de estado abierto y `type="button"`. — smoke CDP 69/69. Commits `500df52`, `82b3fcc`, `9ca5b1d`; reviews APROBADAS.
 3. [x] T14-3 Docs y cierre del bloque. — `tsc` check limpio, 72 tests, build SW 28, smoke 69/69; auditoría final APROBADA (0 Critical, 0 Important; minor documental del plan corregido).
+
+## Tarea 15 — Historial dentro de Progreso (2026-11-04)
+
+> Spec: `docs/superpowers/specs/2026-11-04-historial-en-progreso-design.md`
+> Plan: `docs/superpowers/plans/2026-11-04-historial-en-progreso.md`
+> Estado: **completa**. Se mantienen 4 pestañas; Historial es sub-vista de Progreso
+> (`Resumen | Historial`), con `#historial` como deep link. El cuerpo de cada sesión se
+> renderiza solo al abrirlo.
+
+1. [x] T15-1 Sub-vista en store y hash: `ProgresoSub`, `progresoSubFromHash`, `#historial` → `progreso`, pre-paint alineado. — 78 tests. Commits `cf9bc62`, `7f406e8`; review APROBADA.
+2. [x] T15-2 Segmento Resumen/Historial, historial mudado a `progreso/`, Registrar sin historial y `#sessionPanel` a ancho completo. — smoke CDP 20/20 (incluye 320–1440 sin overflow y targets de 44 px), 80 tests. Commits `0ef5473`, `b68d763`; review APROBADA.
+3. [x] T15-3 Historial liviano: cuerpo condicional, `aria-controls` solo expandido, animación de apertura. — memoria con 200 sesiones: Registrar 3,21 MB / 4.162 nodos; Resumen 3,26 MB / 4.159; Historial colapsado 3,74 MB / 7.848 con 0 cuerpos. Smoke 15/15. Commit `a0f4ca6`; review APROBADA.
+4. [x] T15-4 Docs y cierre. — `tsc` limpio, 80 tests, build SW 28, smoke final 20/20 + 15/15; auditoría final APROBADA (0 Critical, 0 Important; tabs, storage, backup y timer intactos).

@@ -8,7 +8,8 @@ sin cuentas, sin red: tus datos viven **solo en este navegador** (`localStorage`
 ## Funcionalidades
 
 Cuatro vistas con navegación por hash (`#registrar`, `#plan`, `#cuerpo`, `#progreso`).
-`#hierro` sigue funcionando como alias de `#registrar`.
+`#hierro` sigue funcionando como alias de `#registrar` y `#historial` abre Progreso en su
+sub-vista Historial.
 
 - **Registrar** — Home y sesión en curso: header sticky con series completadas, volumen y
   tiempo; composer plegado con autocompletado desde la rutina y el historial; fila de serie
@@ -23,7 +24,9 @@ Cuatro vistas con navegación por hash (`#registrar`, `#plan`, `#cuerpo`, `#prog
 - **Progreso** — Volumen semanal por grupo muscular vs. rango recomendado (`SET_GUIDE`),
   calculado **solo con series completadas** — ventana: semana lun–dom — y progresión por
   ejercicio (kg / e1RM Epley / volumen) con PR, última, cambio y sesiones; todos ellos
-  calculados **solo con series completadas**.
+  calculados **solo con series completadas**. La pestaña tiene dos sub-vistas: **Resumen**
+  (volumen y progresión) e **Historial** (sesiones guardadas); el cuerpo de cada sesión se
+  renderiza solo al abrirlo.
 
 **RIR opcional por serie** (`— / 0 / 1 / 2 / 3+`), visible en la fila y el historial: afina
 la sugerencia de carga cuando todas las series completadas lo tienen. **Semáforo de volumen
@@ -62,7 +65,7 @@ fuentes Anton + Space Grotesk self-hosted, sin Google Fonts), con **respaldo exp
 | `npm run dev` | Servidor de desarrollo (Astro) |
 | `npm run build` | Build estático → `dist/` |
 | `npm run preview` | Previsualizar el build |
-| `npm test` | Tests con Vitest (67 casos) |
+| `npm test` | Tests con Vitest (80 casos) |
 
 ## Estructura
 
