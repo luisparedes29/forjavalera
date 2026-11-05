@@ -56,8 +56,10 @@ export default function Historial({ open, onToggle }: HistorialProps) {
         return (
           <article className={`hist-item${isOpen ? ' open' : ''}`} key={h.id}>
             <button
+              type="button"
               className="hist-head"
               aria-expanded={isOpen}
+              aria-controls={isOpen ? `hist-body-${h.id}` : undefined}
               onClick={() => onToggle(h.id)}
             >
               <span className="hist-date">
@@ -73,7 +75,8 @@ export default function Historial({ open, onToggle }: HistorialProps) {
               </span>
               <span className="chev">▸</span>
             </button>
-            <div className="hist-body">
+            {isOpen ? (
+              <div className="hist-body" id={`hist-body-${h.id}`}>
                 {h.exercises.map((e, i) => (
                   <div className="hist-ex" key={i}>
                     <span>
@@ -99,6 +102,7 @@ export default function Historial({ open, onToggle }: HistorialProps) {
                   </div>
                 ))}
                 <button
+                  type="button"
                   className="del-hist"
                   onClick={() => {
                     const prev = history
@@ -111,7 +115,8 @@ export default function Historial({ open, onToggle }: HistorialProps) {
                 >
                   Eliminar sesión
                 </button>
-            </div>
+              </div>
+            ) : null}
           </article>
         )
       })}
